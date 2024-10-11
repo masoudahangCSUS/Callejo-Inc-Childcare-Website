@@ -1,0 +1,49 @@
+﻿@inherits LayoutComponentBase
+
+<div class="top-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" /> <!-- Use company logo -->
+        </a>
+
+        <!-- Navigation Links with PNG Icons -->
+        <nav class="nav-menu">
+            <NavLink class="nav-link" href="/enrollment">
+                Enrollment Plans
+            </NavLink>
+            <NavLink class="nav-link" href="/testimonials">
+                Testimonials
+            </NavLink>
+            <NavLink class="nav-link" href="/mission">
+                Mission
+            </NavLink>
+            <NavLink class="nav-link" href="/">
+                <img src="images/home.png" alt="Home Icon" class="nav-icon" /> HOME
+            </NavLink>
+            <NavLink class="nav-link" href="/services">
+                <img src="images/services.png" alt="Services Icon" class="nav-icon" /> SERVICES
+            </NavLink>
+            <NavLink class="nav-link" href="/about">
+                <img src="images/about.png" alt="About Us Icon" class="nav-icon" /> ABOUT US
+            </NavLink>
+            <button class="btn btn-outline-primary">Get Started</button>
+            <NavLink class="nav-link" href="/login">
+                <img src="images/login.png" alt="Login Icon" class="nav-icon" /> Login
+            </NavLink>
+        </nav>
+    </div>
+</div>
+
+<main class="full-width-container">
+    @Body
+</main>
+<footer class="footer full-width-container">
+    <div class="footer-container">
+        <div class="footer-info">
+            <img src="images/location.png" alt="Location Icon" class="footer-icon" /> Location
+            <img src="images/phone.png" alt="Phone Icon" class="footer-icon" /> Phone Number
+            <img src="images/email.png" alt="Email Icon" class="footer-icon" /> Email
+        </div>
+        <p>&copy; 2024 Callejo Inc. All rights reserved.</p>
+    </div>
+</footer>
