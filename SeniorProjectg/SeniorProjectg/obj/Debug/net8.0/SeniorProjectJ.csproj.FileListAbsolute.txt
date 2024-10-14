@@ -1,0 +1,5 @@
+C:\Users\jonmi\source\repos\SeniorProjectg\SeniorProjectg\obj\Debug\net8.0\SeniorProjectJ.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jonmi\source\repos\SeniorProjectg\SeniorProjectg\obj\Debug\net8.0\SeniorProjectJ.AssemblyInfoInputs.cache
+C:\Users\jonmi\source\repos\SeniorProjectg\SeniorProjectg\obj\Debug\net8.0\SeniorProjectJ.AssemblyInfo.cs
+C:\Users\jonmi\source\repos\SeniorProjectg\SeniorProjectg\obj\Debug\net8.0\SeniorProjectJ.csproj.CoreCompileInputs.cache
+C:\Users\jonmi\source\repos\SeniorProjectg\SeniorProjectg\obj\Debug\net8.0\SeniorProjectJ.MvcApplicationPartsAssemblyInfo.cache
