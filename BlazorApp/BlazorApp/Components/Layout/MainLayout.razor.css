@@ -3,14 +3,14 @@
     align-items: center;
     justify-content: center; /* Center the entire navbar */
     background-color: white;
-    padding: 20px 30px; /* Increased padding for a larger nav menu */
+    padding: 30px 30px; /* Increased padding for a larger nav menu */
 }
 
 .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    max-width: 1200px; /* Keep the container width limited */
+    max-width: 2450px; /* Keep the container width limited */
     width: 100%;
 }
 
@@ -20,33 +20,50 @@
 }
 
 .nav-logo {
-    height: 50px; /* Increased size for better visibility */
+    height: 80px; /* Increased size for better visibility */
     margin-right: 15px;
+}
+
+/* Style for the company name next to the logo */
+.brand-name {
+    font-size: 2rem; /* Increase font size */
+    font-weight: bold; /* Make it bold */
+    font-family: 'Arial', sans-serif; /* Change the font for better readability */
+    color: #0073C6; /* Set a slightly darker color for better contrast */
+    margin-left: 10px; /* Add some space between the logo and the text */
 }
 
 .nav-menu {
     display: flex;
-    gap: 40px; /* Increased gap for more spacing between items */
+    gap: 90px; /* Increased gap for more spacing between items */
     align-items: center;
 }
 
-.nav-link {
-    color: black; /* Changed text color to black */
-    text-decoration: none;
-    font-size: 1.2rem; /* Increased font size for better readability */
-    transition: color 0.3s;
+/* Style for the navigation links (excluding "Get Started") */
+.nav-item-link {
+    color: black; /* Set text color to black */
+    font-size: 1.4rem; /* Set font size */
+    text-decoration: none; /* Remove underline from links */
+    transition: color 0.3s; /* Smooth color transition on hover */
+    align-items: center;
+    gap: 10px; /* Gap between icon and text */
+}
+
+.nav-icon-text {
     display: flex;
-    align-items: center;
-    gap: 10px; /* Add spacing between icon and text */
+    flex-direction: column; /* Arrange icon and text vertically */
+    align-items: center; /* Center items horizontally */
+    text-align: center; /* Center text */
+    gap: 5px; /* Space between icon and text */
 }
 
-.nav-link img {
-    width: 30px; /* Increased icon size for better visibility */
-    height: 30px;
+.nav-icon {
+    width: 35px; /* Icon size for better visibility */
+    height: 35px;
 }
 
-.nav-link:hover {
-    color: #00B7D7; /* Highlight color on hover */
+.nav-item-link:hover {
+    color: #00B7D7; /* Highlight color for link on hover */
 }
 
 .btn-outline-primary {
@@ -57,18 +74,18 @@
     text-decoration: none;
     transition: background 0.3s, color 0.3s;
     border-radius: 20px;
-    font-size: 1.1rem; /* Increased font size */
+    font-size: 1.5rem; /* Increased font size */
 }
 
-.btn-outline-primary:hover {
-    background: #00B7D7;
-    color: white;
-}
+    .btn-outline-primary:hover {
+        background: #00B7D7;
+        color: white;
+    }
 
 .footer {
-    background-color: #7031E3;
+    background-color: #7031E3; /* Purple background color */
     color: white;
-    padding: 30px 0;
+    padding: 50px 0; /* Increased padding for more vertical space */
     text-align: center;
 }
 
@@ -76,16 +93,59 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 30px; /* Space between sections in the footer */
 }
 
+/* Company Logo */
+.footer-logo {
+    margin-bottom: 20px; /* Space between logo and contact information */
+}
+
+.footer-company-icon {
+    width: 60px; /* Adjust logo size as needed */
+    height: auto;
+}
+
+/* Contact Information */
 .footer-info {
     display: flex;
-    gap: 20px;
-    margin-bottom: 15px;
+    gap: 50px; /* Increased gap for better separation */
+    align-items: center;
 }
 
 .footer-icon {
-    width: 20px;
-    height: 20px;
-    margin-right: 5px;
+    width: 24px; /* Increased icon size for better visibility */
+    height: 24px;
+    margin-right: 8px; /* Space between icon and text */
+    fill: white;
+}
+
+/* Horizontal Divider */
+.footer-divider {
+    width: 80%;
+    border: 0.5px solid white;
+    margin: 20px 0; /* Space above and below the line */
+}
+
+/* Social Media Links */
+.footer-social {
+    display: flex;
+    gap: 30px; /* Space between social media icons */
+    justify-content: center;
+}
+
+.social-icon {
+    width: 30px; /* Adjust size of social media icons */
+    height: 30px;
+    transition: transform 0.3s; /* Add a slight animation on hover */
+}
+
+    .social-icon:hover {
+        transform: scale(1.2); /* Scale up icon on hover */
+    }
+
+/* Copyright Information */
+.footer-container p {
+    margin-top: 20px;
+    font-size: 0.9rem;
 }
