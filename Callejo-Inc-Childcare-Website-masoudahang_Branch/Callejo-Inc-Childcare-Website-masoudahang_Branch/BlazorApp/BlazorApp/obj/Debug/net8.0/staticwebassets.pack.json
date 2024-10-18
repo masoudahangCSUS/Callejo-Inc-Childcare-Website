@@ -1,0 +1,113 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\BlazorApp.bundle.scp.css",
+      "PackagePath": "staticwebassets\\BlazorApp.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\about.png",
+      "PackagePath": "staticwebassets\\images\\about.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\companyIcon.png",
+      "PackagePath": "staticwebassets\\images\\companyIcon.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\connect.png",
+      "PackagePath": "staticwebassets\\images\\connect.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\email.png",
+      "PackagePath": "staticwebassets\\images\\email.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\facebook.png",
+      "PackagePath": "staticwebassets\\images\\facebook.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\grow.png",
+      "PackagePath": "staticwebassets\\images\\grow.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\home.png",
+      "PackagePath": "staticwebassets\\images\\home.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\in.png",
+      "PackagePath": "staticwebassets\\images\\in.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\insta.png",
+      "PackagePath": "staticwebassets\\images\\insta.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\location.png",
+      "PackagePath": "staticwebassets\\images\\location.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\login.png",
+      "PackagePath": "staticwebassets\\images\\login.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\phone.png",
+      "PackagePath": "staticwebassets\\images\\phone.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\play.png",
+      "PackagePath": "staticwebassets\\images\\play.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\services.png",
+      "PackagePath": "staticwebassets\\images\\services.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\twitter.png",
+      "PackagePath": "staticwebassets\\images\\twitter.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\v31_34.png",
+      "PackagePath": "staticwebassets\\images\\v31_34.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\v31_39.png",
+      "PackagePath": "staticwebassets\\images\\v31_39.png"
+    },
+    {
+      "Id": "C:\\Users\\jonmi\\Downloads\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\Callejo-Inc-Childcare-Website-masoudahang_Branch\\BlazorApp\\BlazorApp\\wwwroot\\images\\welcome.png",
+      "PackagePath": "staticwebassets\\images\\welcome.png"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.BlazorApp.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.BlazorApp.props",
+      "PackagePath": "build\\BlazorApp.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.BlazorApp.props",
+      "PackagePath": "buildMultiTargeting\\BlazorApp.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.BlazorApp.props",
+      "PackagePath": "buildTransitive\\BlazorApp.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

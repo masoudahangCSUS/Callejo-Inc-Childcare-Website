@@ -1,0 +1,80 @@
+﻿@inherits LayoutComponentBase
+
+<div class="top-navbar">
+    <div class="container">
+        <a class="navbar-brand" href="/">
+            <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" /> <!-- Use company logo -->
+            <span class="brand-name">Callejo Inc.</span> <!-- Added span for styling text -->
+        </a>
+
+        <!-- Navigation Links with PNG Icons -->
+        <nav class="nav-menu">
+            <a class="nav-item-link" href="/enrollment">
+                Enrollment Plans
+            </a>
+            <a class="nav-item-link" href="/testimonials">
+                Testimonials
+            </a>
+            <a class="nav-item-link" href="/mission">
+                Mission
+            </a>
+            <a class="nav-item-link" href="/">
+                <div class="nav-icon-text">
+                    <img src="images/home.png" alt="Home Icon" class="nav-icon" />
+                    <span>HOME</span>
+                </div>
+            </a>
+            <a class="nav-item-link" href="/services">
+                <div class="nav-icon-text">
+                    <img src="images/services.png" alt="Services Icon" class="nav-icon" />
+                    <span>SERVICES</span>
+                </div>
+            </a>
+            <a class="nav-item-link" href="/about">
+                <div class="nav-icon-text">
+                    <img src="images/about.png" alt="About Us Icon" class="nav-icon" />
+                    <span>ABOUT US</span>
+                </div>
+            </a>
+            <button class="btn btn-outline-primary">Get Started</button>
+            <a class="nav-item-link" href="/login">
+                <img src="images/login.png" alt="Login Icon" class="nav-icon" /> Login
+            </a>
+        </nav>
+    </div>
+</div>
+
+<main class="full-width-container">
+    @Body
+</main>
+<footer class="footer full-width-container">
+    <div class="footer-container">
+
+        <!-- Contact Information -->
+        <div class="footer-info">
+            <div>
+                <img src="images/location.png" alt="Location Icon" class="footer-icon" /> Location
+            </div>
+            <div>
+                <img src="images/phone.png" alt="Phone Icon" class="footer-icon" /> Phone Number
+            </div>
+            <div>
+                <img src="images/email.png" alt="Email Icon" class="footer-icon" /> Email
+            </div>
+        </div>
+
+        <!-- Horizontal Line -->
+        <hr class="footer-divider" />
+
+        <!-- Social Media Links -->
+        <div class="footer-social">
+            <a href="#"><img src="images/facebook.png" alt="Facebook" class="social-icon" /></a>
+            <a href="#"><img src="images/twitter.png" alt="Twitter" class="social-icon" /></a>
+            <a href="#"><img src="images/in.png" alt="LinkedIn" class="social-icon" /></a>
+            <a href="#"><img src="images/insta.png" alt="Instagram" class="social-icon" /></a>
+        </div>
+
+        <!-- Copyright Information -->
+        <p>&copy; 2024 Callejo Inc. All rights reserved.</p>
+    </div>
+</footer>
