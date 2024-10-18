@@ -27,3 +27,4 @@ C:\Users\jonmi\Downloads\Callejo-Inc-Childcare-Website-masoudahang_Branch\Callej
 C:\Users\jonmi\Downloads\Callejo-Inc-Childcare-Website-masoudahang_Branch\Callejo-Inc-Childcare-Website-masoudahang_Branch\BlazorApp\BlazorApp\obj\Debug\net8.0\BlazorApp.pdb
 C:\Users\jonmi\Downloads\Callejo-Inc-Childcare-Website-masoudahang_Branch\Callejo-Inc-Childcare-Website-masoudahang_Branch\BlazorApp\BlazorApp\obj\Debug\net8.0\BlazorApp.genruntimeconfig.cache
 C:\Users\jonmi\Downloads\Callejo-Inc-Childcare-Website-masoudahang_Branch\Callejo-Inc-Childcare-Website-masoudahang_Branch\BlazorApp\BlazorApp\obj\Debug\net8.0\ref\BlazorApp.dll
+C:\Users\jonmi\Downloads\Callejo-Inc-Childcare-Website-masoudahang_Branch\Callejo-Inc-Childcare-Website-masoudahang_Branch\BlazorApp\BlazorApp\obj\Debug\net8.0\scopedcss\Components\Pages\Enrollment.razor.rz.scp.css

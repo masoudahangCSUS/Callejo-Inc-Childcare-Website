@@ -1,4 +1,4 @@
-/*.page-wrapper {
+﻿.page-wrapper {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -74,4 +74,3 @@
     .plan-button:hover {
         background-color: rgba(143, 54, 255, 0.1);
     }
-*/
