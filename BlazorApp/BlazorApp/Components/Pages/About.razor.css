@@ -1,0 +1,95 @@
+﻿.header {
+    background-color: #00B7D7;
+    text-align: center;
+    padding: 50px;
+    min-height: 550px;
+    
+}
+.header h1{
+    padding: 50px;
+    font-size: 4rem;
+    color:white;
+}
+
+.header p{
+    padding: 15px;
+    font-size: 2rem;
+    color:white;
+}
+
+.jane-info, .sam-info{
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 763px;
+    position:relative;
+}
+
+.sam-profile {
+    background-color: #00B7D7;
+}
+
+.sam-details h2{
+    color:white;
+    font-size: 4rem;
+    margin-top:200px;
+    margin-right:550px;
+    position: absolute;
+    right:2%;
+}
+.sam-details h3 {
+    color: white;
+    font-size: 2rem;
+    margin-right: 550px;
+    margin-top:280px;
+    position: absolute;
+    right: 2%;
+}
+
+.sam-details p {
+    color: white;
+    font-size: 2rem;
+    text-align:center;
+    margin-top:380px;
+    padding-right: 550px;
+}
+
+.sam-image {
+    border-radius: 50px;
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+    margin-top: 131px;
+    position:absolute;
+    right: 2%;
+}
+
+.jane-details h2 {
+    color: #3D9FFA;
+    font-size: 4rem;
+    padding-left: 50px;
+    margin-top:200px;
+}
+
+.jane-details h3 {
+    font-size: 2rem;
+    color: #3D9FFA;
+    padding-left: 50px;
+}
+
+.jane-details p {
+    margin-top:80px;
+    text-align:center;
+    font-size: 2rem;
+    color: #3D9FFA;
+}
+
+.jane-image {
+    border-color: #3D9FFA;
+    border-radius: 50px;
+    width: 500px;
+    height: 500px;
+    object-fit: cover;
+    margin-top: 131px;
+    margin-left: 50px;
+}
