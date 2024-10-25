@@ -1,0 +1,145 @@
+﻿/* General Navbar Styling */
+.top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 20px 20px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 2000px;
+    width: 100%;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo {
+    height: 60px;
+    margin-right: 10px;
+}
+
+/* Style for the company name next to the logo */
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    color: #0073C6;
+    margin-left: 10px;
+}
+
+.nav-menu {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.nav-right {
+    display: flex;
+    gap: 25px;
+    padding: 20px;
+    background-color: #00B7D7; /* Right section with different background color */
+    border-radius: 15px;
+}
+
+
+.nav-item-link {
+    color: black;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+/* Style for icons in the nav menu */
+.nav-icon {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
+/* Hover effects for links */
+.nav-item-link:hover {
+    color: #00B7D7;
+}
+
+    .nav-item-link:hover .nav-icon {
+        transform: scale(1.2);
+    }
+
+/* Special hover color for Profile, Settings, and Logout */
+.nav-right .nav-item-link:hover {
+    color: white; /* You can change this color to any other one (orange-red here for visibility) */
+}
+
+    .nav-right .nav-item-link:hover .nav-icon {
+        transform: scale(1.2);
+    }
+
+/* Improve the layout on smaller screens */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 20px;
+    }
+
+    .nav-link {
+        font-size: 1rem;
+    }
+
+    .nav-icon {
+        width: 25px;
+        height: 25px;
+    }
+}
+
+/* Footer Styling */
+.footer {
+    background-color: #7031E3;
+    color: white;
+    padding: 30px 0;
+    text-align: center;
+}
+
+.footer-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.footer-info {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.footer-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+/* Social Media Icons */
+.social-icon {
+    width: 25px;
+    height: 25px;
+    transition: transform 0.3s;
+}
+
+    .social-icon:hover {
+        transform: scale(1.2);
+    }
+
+.footer-container p {
+    margin-top: 15px;
+    font-size: 0.9rem;
+}
