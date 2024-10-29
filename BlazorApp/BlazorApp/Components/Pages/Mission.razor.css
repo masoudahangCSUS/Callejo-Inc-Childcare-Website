@@ -1,20 +1,23 @@
 ﻿
 /* General styling for cards */
-.card {
+.card 
+{
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     border-radius: 15px;
     margin-bottom: 20px;
 }
 
     /* Style for card images */
-    .card img {
+    .card img 
+    {
         border-radius: 15px 15px 0 0;
         max-height: 200px;
         object-fit: cover;
     }
 
 /* Center text inside the cards */
-.card-title {
+.card-title 
+{
     text-align: center;
     font-weight: bold;
 }
@@ -25,7 +28,8 @@
 }
 
 /* Mission statement styling */
-.mission {
+.mission 
+{
     background-color: #00A5C7;
     color: white;
     padding: 40px;
@@ -35,28 +39,33 @@
 }
 
 /* Footer styles */
-footer {
+footer 
+{
     margin-top: 40px;
     padding: 20px;
     background-color: #252525;
     color: white;
 }
 
-    footer a {
+    footer a 
+    {
         color: white;
         margin: 0 10px;
         text-decoration: none;
     }
 
-        footer a:hover {
+        footer a:hover 
+        {
             color: #00A5C7;
         }
 
 /* Add some spacing between footer items */
-.social-icons {
+.social-icons 
+{
     margin-top: 10px;
 }
 
-    .social-icons a {
+    .social-icons a 
+    {
         font-size: 1.5rem;
     }
