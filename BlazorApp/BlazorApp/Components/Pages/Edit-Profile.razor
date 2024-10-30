@@ -1,6 +1,29 @@
 ﻿@page "/edit-profile"
 @rendermode InteractiveServer
 
+<style>
+.button-group {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+}
+
+.save-button,
+.cancel-button {
+    background-color: #7031E3;
+    color: white;
+    padding: 20px;
+    width: 150px;
+    border-radius: 10px;
+    margin-bottom: 100px;
+}
+
+.save-button:hover,
+.cancel-button:hover {
+    opacity: 0.8;
+}
+</style>
+
 <PageTitle>Edit Profile</PageTitle>
 
 <div class="edit-profile-page">
@@ -96,8 +119,14 @@
         <br /><br />
     </div>
 
-    <!--Save changes button-->
+    <div class="button-group" >
+        <button class="save-button" > Save Changes</button >
+        <button class="cancel-button" > Cancel</button >
+    </div >
+
+    <!--Save changes and Cancel buttons
     <div class="button" style="text-align: center";>
         <button style="background-color: #7031E3; color: white; padding: 20px; width: 150px; border-radius: 10px; margin-bottom: 100px;">Save Changes</button>
-    </div>
+        <button style="background-color: #7031E3; color: white; padding: 20px; width: 150px; border-radius: 10px; margin-bottom: 100px;">Cancel</button>
+    </div>-->
 </div>
