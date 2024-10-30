@@ -13,6 +13,9 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
 
+builder.Services.AddSingleton<UserSessionService>();
+
+
 Env.Load();
 
 var app = builder.Build();

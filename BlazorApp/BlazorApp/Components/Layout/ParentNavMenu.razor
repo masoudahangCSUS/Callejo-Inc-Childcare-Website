@@ -1,12 +1,16 @@
-﻿<!-- ParentNavMenu.razor -->
+﻿@rendermode InteractiveServer
+@inject UserSessionService UserSession
+@inject NavigationManager Navigation
+
+<!-- ParentNavMenu.razor -->
 <div class="container">
-    <a class="navbar-brand" href="/parentHome">
+    <a class="navbar-brand" href="/">
         <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" />
         <span class="brand-name">Callejo Inc.</span>
     </a>
 
     <nav class="nav-menu">
-        <a class="nav-item-link" href="/parentHome">
+        <a class="nav-item-link" href="/">
             <img src="images/home.png" alt="Home Icon" class="nav-icon" /> HOME
         </a>
         <a class="nav-item-link" href="/about">
@@ -25,9 +29,17 @@
             <a class="nav-item-link" href="/settings">
                 <img src="images/settings.png" alt="Settings Icon" class="nav-icon" /> Settings
             </a>
-            <a class="nav-item-link" href="">
+            <a class="nav-item-link" @onclick="LogoutUser">
                 <img src="images/logout.png" alt="Logout Icon" class="nav-icon" /> Logout
             </a>
         </div>
     </nav>
 </div>
+
+@code {
+    private void LogoutUser()
+    {
+        UserSession.SetUserLoggedIn(false);
+        Navigation.NavigateTo("/");
+    }
+}
