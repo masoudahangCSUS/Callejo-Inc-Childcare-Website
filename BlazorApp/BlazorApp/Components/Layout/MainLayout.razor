@@ -1,55 +1,25 @@
 ﻿@inherits LayoutComponentBase
 
+<!-- Main Navbar Section -->
 <div class="top-navbar">
-    <div class="container">
-        <a class="navbar-brand" href="/">
-            <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" /> <!-- Use company logo -->
-            <span class="brand-name">Callejo Inc.</span> <!-- Added span for styling text -->
-        </a>
-
-        <!-- Navigation Links with PNG Icons -->
-        <nav class="nav-menu">
-            <a class="nav-item-link" href="/enrollment">
-                Enrollment Plans
-            </a>
-            <a class="nav-item-link" href="/testimonials">
-                Testimonials
-            </a>
-            <a class="nav-item-link" href="/mission">
-                Mission
-            </a>
-            <a class="nav-item-link" href="/">
-                <div class="nav-icon-text">
-                    <img src="images/home.png" alt="Home Icon" class="nav-icon" />
-                    <span>HOME</span>
-                </div>
-            </a>
-            <a class="nav-item-link" href="/services">
-                <div class="nav-icon-text">
-                    <img src="images/services.png" alt="Services Icon" class="nav-icon" />
-                    <span>SERVICES</span>
-                </div>
-            </a>
-            <a class="nav-item-link" href="/about">
-                <div class="nav-icon-text">
-                    <img src="images/about.png" alt="About Us Icon" class="nav-icon" />
-                    <span>ABOUT US</span>
-                </div>
-            </a>
-            <button class="btn btn-outline-primary">Get Started</button>
-            <a class="nav-item-link" href="/login">
-                <img src="images/login.png" alt="Login Icon" class="nav-icon" /> Login
-            </a>
-        </nav>
-    </div>
+    @if (userIsLoggedIn)
+    {
+        <ParentNavMenu />
+    }
+    else
+    {
+        <MainNavMenu />
+    }
 </div>
 
+<!-- Main Content Area -->
 <main class="full-width-container">
     @Body
 </main>
+
+<!-- Footer Section -->
 <footer class="footer full-width-container">
     <div class="footer-container">
-
         <!-- Contact Information -->
         <div class="footer-info">
             <div>
@@ -63,7 +33,7 @@
             </div>
         </div>
 
-        <!-- Horizontal Line -->
+        <!-- Horizontal Divider -->
         <hr class="footer-divider" />
 
         <!-- Social Media Links -->
@@ -78,3 +48,9 @@
         <p>&copy; 2024 Callejo Inc. All rights reserved.</p>
     </div>
 </footer>
+
+@code {
+    // Placeholder for authentication status, replace this with actual logic later
+    // If true it will show the ParentNavMenu, if false it will show the MainNavMenu
+    private bool userIsLoggedIn = false;
+}

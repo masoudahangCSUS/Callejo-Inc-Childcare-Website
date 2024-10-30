@@ -1,88 +1,4 @@
-.top-navbar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 20px 20px;
-}
-
-.container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    max-width: 2000px;
-    width: 100%;
-}
-
-.navbar-brand {
-    display: flex;
-    align-items: center;
-}
-
-.nav-logo {
-    height: 60px;
-    margin-right: 10px;
-}
-
-/* Style for the company name next to the logo */
-.brand-name {
-    font-size: 1.5rem;
-    font-weight: bold;
-    font-family: 'Arial', sans-serif;
-    color: #0073C6;
-    margin-left: 10px;
-}
-
-.nav-menu {
-    display: flex;
-    gap: 60px; /* Increased gap for more space between items */
-    align-items: center;
-}
-
-/* Style for the navigation links (excluding "Get Started") */
-.nav-item-link {
-    color: black;
-    font-size: 1.2rem;
-    text-decoration: none;
-    transition: color 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.nav-icon-text {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    gap: 5px;
-}
-
-.nav-icon {
-    width: 30px;
-    height: 30px;
-}
-
-.nav-item-link:hover {
-    color: #00B7D7;
-}
-
-.btn-outline-primary {
-    color: #00B7D7;
-    border: 2px solid #00B7D7;
-    background: white;
-    padding: 6px 18px;
-    text-decoration: none;
-    transition: background 0.3s, color 0.3s;
-    border-radius: 15px;
-    font-size: 1.3rem;
-}
-
-    .btn-outline-primary:hover {
-        background: #00B7D7;
-        color: white;
-    }
-
+/* Footer Styling */
 .footer {
     background-color: #7031E3;
     color: white;
@@ -97,16 +13,6 @@
     gap: 20px;
 }
 
-.footer-logo {
-    margin-bottom: 15px;
-}
-
-.footer-company-icon {
-    width: 50px;
-    height: auto;
-}
-
-/* Contact Information */
 .footer-info {
     display: flex;
     gap: 40px;
@@ -117,17 +23,8 @@
     width: 20px;
     height: 20px;
     margin-right: 5px;
-    fill: white;
 }
 
-/* Horizontal Divider */
-.footer-divider {
-    width: 75%;
-    border: 0.5px solid white;
-    margin: 15px 0;
-}
-
-/* Social Media Links */
 .footer-social {
     display: flex;
     gap: 20px;
@@ -137,12 +34,14 @@
 .social-icon {
     width: 25px;
     height: 25px;
-    transition: transform 0.3s;
 }
 
-    .social-icon:hover {
-        transform: scale(1.2);
-    }
+/* Horizontal Divider */
+.footer-divider {
+    width: 75%;
+    border: 0.5px solid white;
+    margin: 15px 0;
+}
 
 /* Copyright Information */
 .footer-container p {
