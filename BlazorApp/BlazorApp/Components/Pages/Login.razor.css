@@ -79,11 +79,11 @@
 }
 
 .forgot-password-link {
-    display: block;
+    display: inline-block;
     font-size: 14px;
     color: white;
     text-decoration: none;
-    text-align: right;
+    float: right;
 }
 
 .forgot-password-link:hover {
