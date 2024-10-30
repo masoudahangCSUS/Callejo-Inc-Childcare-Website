@@ -1,4 +1,4 @@
-﻿.login-page {
+.login-page {
     min-height: 600px;
     display: flex;
     justify-content: center;
@@ -78,19 +78,37 @@
     color: white;
 }
 
-.forgot-password-link {
-    display: block;
-    font-size: 14px;
-    color: white;
-    text-decoration: none;
-    text-align: right;
-}
-
 .forgot-password-link:hover {
     text-decoration: underline;
 }
 
+.create-profile-link:hover {
+    text-decoration: underline;
+}
+
+
 .input-header {
     color: white;
     text-align: left;
+}
+
+.link-container {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.create-profile-link {
+    display: inline-block;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    /* margin-right: 0px; Adds space to the right */
+}
+
+.forgot-password-link {
+    display: inline-block;
+    font-size: 14px;
+    color: white;
+    text-decoration: none;
+    margin-left: 70px;
 }
