@@ -1,103 +1,95 @@
-﻿@page "/create-profile"
-@rendermode InteractiveServer
+@page "/create-profile"
+@inject IJSRuntime JS
 
-<PageTitle>Create Profile</PageTitle>
+@inject CallejoSystemDbContext DbContext
+@using BlazorApp.Data
+@using BlazorApp.Models
+@using Microsoft.AspNetCore.Components.Forms
 
-<div class="create-profile-page">
-    <!--Edit profile section-->
-    <div class="create-profile" style="text-align: center;">
-        <h1>Create Profile</h1>
+<h3>Create Profile</h3>
 
-        <!--First and last name-->
-        <label for="fname" style="padding: 0px 22px;"><b>First Name:</b></label>
-        <label for="lname" style="padding: 0px 230px;"><b>Last Name:</b></label><br />
-        <input type="text" id="fname" name="fname" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <input type="text" id="lname" name="lname" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <br /><br />
+<EditForm Model="@newUser" OnSubmit="SaveProfile" FormName="CreateProfileForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
 
-        <!--Email address-->
-        <label for="email" style="padding-right: 520px;"><b>Email Address:</b></label><br />
-        <input type="text" id="email" name="email" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <!--Phone number-->
-        <label for="phone" style="padding-right: 510px;"><b>Phone Number:</b></label><br />
-        <input type="text" id="phone" name="phone" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <!--Address-->
-        <label for="address" style="padding-right: 560px;"><b>Address:</b></label><br />
-        <input type="text" id="address" name="address" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <!--City, State, ZIP-->
-        <label for="city" style="padding-right: 380px;"><b>City:</b></label>
-        <label for="state" style="padding-right: 80px;"><b>State:</b></label>
-        <label for="zip" style="padding-right: 60px;"><b>ZIP:</b></label><br />
-        <input type="text" id="city" name="city" style="padding: 5px; width: 390px; margin: 0px 10px;">
-        <input type="text" id="state" name="state" style="padding: 5px; width: 100px; margin: 0px 10px;">
-        <input type="text" id="zip" name="zip" style="padding: 5px; width: 100px; margin: 0px 10px;">
-        <br /><br />
-
-        <!--Password-->
-        <label for="password" style="padding-right: 550px;"><b>Password:</b></label><br />
-        <input type="text" id="password" name="password" style="padding: 5px; width: 640px">
-        <br /><br />
-        <!--Relationship to child-->
-        <label for="relationship" style="padding-right: 470px;"><b>Relationship to Child:</b></label><br />
-        <input type="text" id="relationship" name="relationship" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <br /><br />
+    <div>
+        <label>First Name:</label>
+        <InputText @bind-Value="newUser.FirstName" class="form-control" />
     </div>
 
-    <!--Emergency contact section-->
-    <div class="emergency-contact" style="text-align: center;">
-        <h1>Emergency Contact</h1>
-
-        <!--First and last name-->
-        <label for="fnameEC" style="padding: 0px 22px"><b>First Name:</b></label>
-        <label for="lnameEC" style="padding: 0px 230px"><b>Last Name:</b></label><br />
-        <input type="text" id="fnameEC" name="fnameEC" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <input type="text" id="lnameEC" name="lnameEC" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <br /><br />
-
-        <!--Phone number-->
-        <label for="phoneEC" style="padding-right: 510px;"><b>Phone Number:</b></label><br />
-        <input type="text" id="phoneEC" name="phoneEC" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <!--Relationship to child-->
-        <label for="relationshipEC" style="padding-right: 470px;"><b>Relationship to Child:</b></label><br />
-        <input type="text" id="relationshipEC" name="relationshipEC" style="padding: 5px; width: 640px">
-        <br /><br />
-
-        <br /><br />
+    <div>
+        <label>Middle Name:</label>
+        <InputText @bind-Value="newUser.MiddleName" class="form-control" />
     </div>
 
-    <!--Child info-->
-    <div class="child-info" style="text-align: center;">
-        <h1>Child Information</h1>
-
-        <!--First and last name-->
-        <label for="fnameChild" style="padding: 0px 22px"><b>First Name:</b></label><label for="lnameChild" style="padding: 0px 230px"><b>Last Name:</b></label><br />
-        <input type="text" id="fnameChild" name="fnameChild" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <input type="text" id="lnameChild" name="lnameChild" style="margin: 0px 20px; padding: 5px; width: 300px">
-        <br /><br />
-
-        <!--Allergies-->
-        <label for="allergies" style="padding-right: 560px;"><b>Allergies:</b></label><br />
-        <input type="text" id="allergies" name="allergies" style="padding: 5px; width: 640px;">
-        <br /><br />
-
-        <!--Special accomodations-->
-        <label for="accomodations" style="padding-right: 450px;"><b>Special Accomodations:</b></label><br />
-        <input type="text" id="accomodations" name="accomodations" style="padding: 5px; width: 640px; margin: 0px 0px 50px">
-        <br /><br />
+    <div>
+        <label>Last Name:</label>
+        <InputText @bind-Value="newUser.LastName" class="form-control" />
     </div>
 
-    <!--Save changes button-->
-    <div class="button" style="text-align: center";>
-        <button style="background-color: #7031E3; color: white; padding: 20px; width: 150px; border-radius: 10px; margin-bottom: 100px;">Save Changes</button>
+    <div>
+        <label>Address:</label>
+        <InputText @bind-Value="newUser.Address" class="form-control" />
     </div>
-</div>
+
+    <div>
+        <label>City:</label>
+        <InputText @bind-Value="newUser.City" class="form-control" />
+    </div>
+
+    <div>
+        <label>State:</label>
+        <InputText @bind-Value="newUser.State" class="form-control" />
+    </div>
+
+    <div>
+        <label>Zip Code:</label>
+        <InputText @bind-Value="newUser.ZipCode" class="form-control" />
+    </div>
+
+    <div>
+        <label>Role:</label>
+        <InputNumber @bind-Value="newUser.FkRole" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Profile</button>
+</EditForm>
+
+
+    @code {
+        private CallejoIncUser newUser = new CallejoIncUser();
+
+        private async Task SaveProfile()
+
+
+        {
+        Console.WriteLine("Profile saved successfully.");
+
+        var newUser = new CallejoIncUser
+            {
+                Id = Guid.NewGuid(),
+                FirstName = "Jon",
+                LastName = "Chris",
+                Address = "123 Main St",   // Ensure this is populated
+                City = "Example City",
+                State = "Example State",
+                ZipCode = "12345",
+                FkRole = 1 // Assuming 1 is a valid foreign key in Role table
+            };
+            try
+            {
+
+     
+                DbContext.CallejoIncUsers.Add(newUser);
+                await DbContext.SaveChangesAsync();
+                Console.WriteLine("Profile saved successfully.");
+                //newUser = new CallejoIncUser(); // Clear the form after save
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error saving profile: {ex.Message}");
+            }
+        }
+    }
+}
+
