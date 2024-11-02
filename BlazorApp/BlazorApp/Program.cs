@@ -8,7 +8,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register HttpClient for making HTTP requests in Blazor components
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Configuration["BaseAddress"] ?? "https://localhost:44343") });
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Environment.IsDevelopment() ? "https://localhost:44343" : builder.Configuration["BaseAddress"]) });
 
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
