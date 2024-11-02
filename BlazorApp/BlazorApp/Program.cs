@@ -1,4 +1,7 @@
 using BlazorApp.Components;
+using BlazorApp.Data;
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,20 +9,52 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+// Register HttpClient for making HTTP requests in Blazor components
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Environment.IsDevelopment() ? "https://localhost:44343" : builder.Configuration["BaseAddress"]) });
+
+// Add Controllers for API endpoints
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,                 // Number of retry attempts
+            maxRetryDelay: TimeSpan.FromSeconds(10), // Delay between retries
+            errorNumbersToAdd: null           // Specific SQL error codes to consider transient
+        ))
+       .EnableSensitiveDataLogging()
+       .LogTo(Console.WriteLine)
+);
+
+// Add Blazor Server with SignalR configuration
+builder.Services.AddServerSideBlazor()
+    .AddCircuitOptions(options =>
+    {
+        options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+        options.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(60);
+    });
+
+// Register any additional services
+builder.Services.AddSingleton<UserSessionService>();
+
+// Load environment variables
+Env.Load();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.MapControllers();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();

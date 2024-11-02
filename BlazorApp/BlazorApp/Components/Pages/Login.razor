@@ -1,4 +1,10 @@
 ﻿@page "/login"
+@rendermode InteractiveServer
+@inject UserSessionService UserSession
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
@@ -16,8 +22,20 @@
                 <i class="fa fa-lock"></i>
                 <input type="password" placeholder="password" />
             </div>
-            <button class="login-btn">LOGIN</button>
+            <button class="login-btn" @onclick="LoginUser">LOGIN</button>
+            <a href="/create-profile" class="create-profile-link">Create Account</a>
             <a href="/forgot-password" class="forgot-password-link">Forgot password?</a>
         </div>
     </div>
 </div>
+
+@code {
+    private void LoginUser()
+    {
+        Console.WriteLine("ErrorCheck");
+        // API call to back end to check if user credentials are valid
+        UserSession.SetUserLoggedIn(true);
+        Navigation.NavigateTo("/");
+         
+    }
+}
