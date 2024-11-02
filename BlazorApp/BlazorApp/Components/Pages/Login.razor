@@ -1,4 +1,4 @@
-﻿@page "/login"
+@page "/login"
 @rendermode InteractiveServer
 @inject UserSessionService UserSession
 @inject NavigationManager Navigation
@@ -32,10 +32,8 @@
 @code {
     private void LoginUser()
     {
-        Console.WriteLine("ErrorCheck");
         // API call to back end to check if user credentials are valid
         UserSession.SetUserLoggedIn(true);
         Navigation.NavigateTo("/");
-         
     }
 }
