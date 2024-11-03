@@ -11,7 +11,7 @@
     <div class="login-box">
         <h1>CALLEJO INC.</h1>
         <div class="login-form">
-            <form Model="account" OnSubmit="HandleLogin" FormName="Login">
+            <EditForm Model="account" OnSubmit="HandleLogin" FormName="Login">
                 <AntiforgeryToken />
             <div class="input-header">Email Address</div>
             <div class="input-wrapper">
@@ -24,7 +24,7 @@
                 <input type="password" placeholder="password" name="passWord" id="passWord"/>
             </div>
                 <button class="login-btn" type="submit" formmethod="post">LOGIN</button>
-            </form>
+            </EditForm>
             @if (loginState == false)
             {
                 <p>Incorrect Username or Password</p>
