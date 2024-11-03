@@ -1,11 +1,4 @@
 ﻿/* Navbar Styling */
-.top-navbar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 30px;
-}
 
 .container {
     display: flex;
@@ -85,17 +78,8 @@
     }
 
 /* Responsiveness */
-@media (max-width: 768px) {
-    .nav-menu {
-        gap: 20px;
-    }
-
-    .nav-item-link {
-        font-size: 1rem;
-    }
-
-    .nav-icon {
-        width: 25px;
-        height: 25px;
+@media (max-width: 500px) {
+    .container{
+        display:none;   
     }
 }
