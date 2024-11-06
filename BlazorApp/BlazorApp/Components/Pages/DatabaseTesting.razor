@@ -1,0 +1,33 @@
+﻿@using BlazorApp.Data;
+@using BlazorApp.Models;
+@using Microsoft.EntityFrameworkCore
+
+@page "/database-test"
+
+@inject CallejoSystemDbContext DbContext
+
+<h3>Database Test</h3>
+
+<ul>
+    @if (users != null)
+    {
+        @foreach (var user in users)
+        {
+            <li>@user.FirstName @user.LastName</li>
+        }
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+</ul>
+
+@code {
+    private List<CallejoIncUser> users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Retrieve data from the database
+        users = await DbContext.CallejoIncUsers.ToListAsync();
+    }
+}

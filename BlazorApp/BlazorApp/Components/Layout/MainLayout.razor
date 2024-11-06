@@ -1,8 +1,9 @@
 ﻿@inherits LayoutComponentBase
+@inject UserSessionService UserSession
 
 <!-- Main Navbar Section -->
 <div class="top-navbar">
-    @if (userIsLoggedIn)
+    @if (UserSession.UserIsLoggedIn)
     {
         <ParentNavMenu />
     }
@@ -48,9 +49,3 @@
         <p>&copy; 2024 Callejo Inc. All rights reserved.</p>
     </div>
 </footer>
-
-@code {
-    // Placeholder for authentication status, replace this with actual logic later
-    // If true it will show the ParentNavMenu, if false it will show the MainNavMenu
-    private bool userIsLoggedIn = false;
-}

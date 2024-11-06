@@ -21,7 +21,7 @@ namespace BlazorApp.Controllers
         public async Task<IActionResult> SendResetPasswordEmail([FromBody] PasswordResetRequest model)
         {
             var token = "123";
-            var resetLink = $"https://localhost:44343/reset-password?token={token}";
+            var resetLink = $"{model.BaseUrl}reset-password?token={token}";
             var subject = "Reset Your Password";
             var body = $"<p>Click <a href='{resetLink}'>here</a> to reset your password.</p>";
 
@@ -50,6 +50,7 @@ namespace BlazorApp.Controllers
     public class PasswordResetRequest
     {
         public string Email { get; set; }
+        public String BaseUrl { get; set; }
     }
 
     public class SmtpSettings
