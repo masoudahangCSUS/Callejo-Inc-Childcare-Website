@@ -5,6 +5,7 @@
 @using BlazorApp.Data
 @using BlazorApp.Models
 @using Microsoft.AspNetCore.Components.Forms
+@rendermode InteractiveServer
 
 <h3>Create Profile</h3>
 
@@ -57,39 +58,19 @@
 
 
     @code {
-        private CallejoIncUser newUser = new CallejoIncUser();
 
+        private CallejoIncUser newUser = new CallejoIncUser();
         private async Task SaveProfile()
 
 
         {
-        Console.WriteLine("Profile saved successfully.");
+        //test purposes 
+        Console.WriteLine(newUser.FirstName);
 
-        var newUser = new CallejoIncUser
-            {
-                Id = Guid.NewGuid(),
-                FirstName = "Jon",
-                LastName = "Chris",
-                Address = "123 Main St",   // Ensure this is populated
-                City = "Example City",
-                State = "Example State",
-                ZipCode = "12345",
-                FkRole = 1 // Assuming 1 is a valid foreign key in Role table
-            };
-            try
-            {
+        DbContext.CallejoIncUsers.Add(newUser);
+        await DbContext.SaveChangesAsync();
 
-     
-                DbContext.CallejoIncUsers.Add(newUser);
-                await DbContext.SaveChangesAsync();
-                Console.WriteLine("Profile saved successfully.");
-                //newUser = new CallejoIncUser(); // Clear the form after save
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error saving profile: {ex.Message}");
-            }
         }
     }
 }
-
+ 
