@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BlazorApp.Models
+namespace BlazorApp.Server.Models
 {
     public class PhoneNumber
     {

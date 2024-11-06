@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 
-namespace BlazorApp.Models
+namespace BlazorApp.Server.Models
 {
-    public class PhoneNumberType
+    public class Role
     {
         public long Id { get; set; }
         public string Description { get; set; }
 
-        public ICollection<PhoneNumber> PhoneNumbers { get; set; }
+        public ICollection<CallejoIncUser> Users { get; set; }
     }
 }

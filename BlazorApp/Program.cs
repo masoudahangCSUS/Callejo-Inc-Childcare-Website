@@ -1,5 +1,5 @@
-using BlazorApp.Components;
-using BlazorApp.Data;
+using BlazorApp.Client;
+using BlazorApp.Server.Data;
 using DotNetEnv;
 
 using Microsoft.AspNetCore.Builder;

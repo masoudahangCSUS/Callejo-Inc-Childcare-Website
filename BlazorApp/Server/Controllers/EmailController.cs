@@ -4,7 +4,7 @@ using MimeKit;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 
-namespace BlazorApp.Controllers
+namespace BlazorApp.Server.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -50,7 +50,7 @@ namespace BlazorApp.Controllers
     public class PasswordResetRequest
     {
         public string Email { get; set; }
-        public String BaseUrl { get; set; }
+        public string BaseUrl { get; set; }
     }
 
     public class SmtpSettings

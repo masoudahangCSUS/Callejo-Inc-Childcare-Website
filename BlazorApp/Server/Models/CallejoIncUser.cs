@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BlazorApp.Models;
+namespace BlazorApp.Server.Models;
 
 [Table("Callejo_Inc_Users", Schema = "dbo")]
 public class CallejoIncUser

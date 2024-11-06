@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BlazorApp.Models
+namespace BlazorApp.Server.Models
 {
     public class Child
     {

@@ -1,9 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BlazorApp.Models;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Data;
+using BlazorApp.Server.Models;
 
-namespace BlazorApp.Data
+namespace BlazorApp.Server.Data
 {
     public class CallejoSystemDbContext : DbContext
     {
