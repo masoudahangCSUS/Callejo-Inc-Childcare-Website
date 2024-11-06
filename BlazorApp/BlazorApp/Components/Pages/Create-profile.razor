@@ -47,30 +47,34 @@
         <label>Zip Code:</label>
         <InputText @bind-Value="newUser.ZipCode" class="form-control" />
     </div>
-
-    <div>
-        <label>Role:</label>
-        <InputNumber @bind-Value="newUser.FkRole" class="form-control" />
-    </div>
+    <br/>
 
     <button type="submit" class="btn btn-primary">Save Profile</button>
 </EditForm>
 
 
-    @code {
+@code {
+    private CallejoIncUser newUser = new CallejoIncUser();
+    private bool saveSuccess;
 
-        private CallejoIncUser newUser = new CallejoIncUser();
-        private async Task SaveProfile()
-
-
+    private async Task SaveProfile()
+    {
+        try
         {
-        //test purposes 
-        Console.WriteLine(newUser.FirstName);
+            newUser.FkRole = 1; 
+            DbContext.CallejoIncUsers.Add(newUser);
+            await DbContext.SaveChangesAsync();
 
-        DbContext.CallejoIncUsers.Add(newUser);
-        await DbContext.SaveChangesAsync();
+            // Clear the form
+            newUser = new CallejoIncUser();
 
+            // Set the success flag to true
+            saveSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving profile: {ex.Message}");
+            saveSuccess = false;
         }
     }
 }
- 

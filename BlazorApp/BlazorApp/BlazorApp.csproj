@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -7,8 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="appsettings - Copy.Development.json" />
-    <Content Remove="appsettings - Copy.json" />
     <Content Remove="Components\Pages\About.razor.razor" />
     <Content Remove="Components\Pages\Counter.razor" />
     <Content Remove="Components\Pages\Error.razor" />
@@ -18,13 +16,14 @@
   <ItemGroup>
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
     <PackageReference Include="MailKit" Version="4.8.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+
+
+
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10"/>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10"/>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
