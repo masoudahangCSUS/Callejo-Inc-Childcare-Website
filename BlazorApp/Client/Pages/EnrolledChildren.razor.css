@@ -1,0 +1,192 @@
+﻿/* Main Container for Child Enrollment Page */
+.child-enrollment-page {
+    padding: 80px 20px;
+    max-width: 900px;
+    margin: auto;
+    background-color: #00B7D7; /* Bright blue matching theme */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px; /* Added space between the section and footer */
+    margin-top: 40px;
+}
+
+/* Child Information Overview Section */
+.child-overview-section {
+    padding: 30px;
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: #f5f5ff; /* Light purple for subtle contrast */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Child Overview Styling */
+.child-overview {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-direction: column;
+    text-align: center;
+}
+
+/* Container for Child Photo */
+.child-photo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Child Photo Styling */
+.child-photo {
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff; /* White border for contrast */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Child Details Paragraph */
+.child-details p {
+    margin: 10px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #4a4a4a; /* Darker text color for readability */
+}
+
+/* Page Title Styling */
+h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-family: 'Arial', sans-serif;
+    color: #0073C6; /* Theme color to match bright blue */
+    margin-bottom: 30px;
+}
+
+h2 {
+    text-align: center;
+    font-size: 2rem;
+    font-family: 'Arial', sans-serif;
+    color: #ffffff; /* Changed back to white for better readability on blue background */
+    margin-bottom: 30px;
+}
+
+/* Styling for Child Form */
+.child-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px;
+    background-color: #ffffff; /* White background for form fields */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Label Styling */
+label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 4px;
+    font-weight: bold;
+    color: #0073C6; /* Theme color */
+    font-size: 0.95rem;
+}
+
+    label .tooltip {
+        font-size: 0.8rem;
+        color: #666;
+        cursor: pointer;
+    }
+
+/* Input, Select, and Textarea Styling */
+input,
+select,
+textarea {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #dcdcdc;
+    font-size: 0.9rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    appearance: none; /* Remove default styling */
+}
+
+    /* Focus State Styling for Input, Select, and Textarea */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: #0073C6;
+        box-shadow: 0 0 5px rgba(0, 115, 198, 0.5);
+    }
+
+/* Textarea Resize */
+textarea {
+    resize: vertical;
+}
+
+/* Adding Dropdown Arrow Styling */
+.with-arrow {
+    background: url('data:image/svg+xml;utf8,<svg fill="%230073C6" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 10px center;
+    background-size: 1.2em;
+    padding-right: 35px; /* Add padding for arrow visibility */
+}
+
+/* Input Error Styling */
+.input-error {
+    border-color: #e74c3c; /* Red border for error fields */
+}
+
+/* Error Message Styling */
+.error-message {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+/* Error Icon Styling */
+.error-icon {
+    color: #e74c3c;
+    font-size: 1rem;
+    margin-left: 5px;
+    vertical-align: middle;
+}
+
+/* Gender Container Styling for Positioning Error Icon */
+.gender-container {
+    position: relative;
+}
+
+    .gender-container .error-icon {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+/* Save Button Styling */
+.btn-save {
+    margin-top: 20px;
+    background-color: #0073C6; /* Theme color for button */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(0, 115, 198, 0.4);
+}
+
+    /* Save Button Hover State */
+    .btn-save:hover {
+        background-color: #005a9c;
+        box-shadow: 0 6px 20px rgba(0, 115, 198, 0.5);
+    }
+
+    /* Save Button Active State */
+    .btn-save:active {
+        transform: scale(0.98);
+    }
