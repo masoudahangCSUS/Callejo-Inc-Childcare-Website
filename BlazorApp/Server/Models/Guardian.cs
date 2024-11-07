@@ -1,7 +1,7 @@
 ﻿using Org.BouncyCastle.Asn1.Ocsp;
 using System;
 
-namespace BlazorApp.Models
+namespace BlazorApp.Server.Models
 {
     public class Guardian
     {

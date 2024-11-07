@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
 // Basic Model template for login testing
-namespace BlazorApp.Models
+namespace BlazorApp.Server.Models
 {
     public class TestModel
     {

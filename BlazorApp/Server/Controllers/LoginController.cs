@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 
 
-namespace BlazorApp.Controllers
+namespace BlazorApp.Server.Controllers
 {
     // Implements Backend Logic on login...
     // Doesn't work with login page yet
@@ -22,7 +22,7 @@ namespace BlazorApp.Controllers
             {
                 if (userName == validUser && passWord == validPass)
                 {
-                    
+
                     return Content("Login was successful!");
                 }
                 else
