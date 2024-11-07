@@ -10,10 +10,10 @@ public class CallejoIncUser
     public Guid Id { get; set; }
 
     [Column("first_name")]
-    public string FirstName { get; set; }
+    public string? FirstName { get; set; }
 
     [Column("middle_name")]
-    public string MiddleName { get; set; }
+    public string? MiddleName { get; set; }
 
     [Column("last_name")]
     public string LastName { get; set; }
@@ -34,7 +34,7 @@ public class CallejoIncUser
     public long FkRole { get; set; }
 
     // Navigation Properties
-    public Role Role { get; set; }
-    public ICollection<Guardian> Guardians { get; set; } = new List<Guardian>();
-    public ICollection<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
+    public Role? Role { get; set; }
+    public ICollection<Guardian>? Guardians { get; set; } = new List<Guardian>();
+    public ICollection<PhoneNumber>? PhoneNumbers { get; set; } = new List<PhoneNumber>();
 }

@@ -1,11 +1,12 @@
 @page "/create-profile"
 @inject IJSRuntime JS
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@rendermode InteractiveServer
 
-@inject CallejoSystemDbContext DbContext
 @using BlazorApp.Server.Data
 @using BlazorApp.Server.Models
 @using Microsoft.AspNetCore.Components.Forms
-@rendermode InteractiveServer
 
 <h3>Create Profile</h3>
 
@@ -61,15 +62,23 @@
     {
         try
         {
-            newUser.FkRole = 1; 
-            DbContext.CallejoIncUsers.Add(newUser);
-            await DbContext.SaveChangesAsync();
+            newUser.FkRole = 1;
+            // DbContext.CallejoIncUsers.Add(newUser);
+            // await DbContext.SaveChangesAsync();
 
-            // Clear the form
-            newUser = new CallejoIncUser();
+            var apiUrl = $"{Navigation.BaseUri}api/users/create-user";
+            var response = await Http.PostAsJsonAsync(apiUrl, newUser);
 
-            // Set the success flag to true
-            saveSuccess = true;
+            if (response.IsSuccessStatusCode)
+            {
+                saveSuccess = true;
+                newUser = new CallejoIncUser();
+            }
+            else{
+                saveSuccess = false;
+                Console.WriteLine($"Error saving profile: {response.ReasonPhrase}");
+                Console.WriteLine(response);
+            }
         }
         catch (Exception ex)
         {
