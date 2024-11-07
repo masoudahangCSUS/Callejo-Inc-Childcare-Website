@@ -1,0 +1,56 @@
+﻿@page "/enrolled-children"
+
+<div class="child-overview-section">
+    <h1>Child Information Overview</h1>
+    <div class="child-overview">
+        <div class="child-photo-container">
+            <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
+        </div>
+        <div class="child-details">
+            <p><strong>First Name:</strong> [First Name]</p>
+            <p><strong>Middle Name:</strong> [Middle Name]</p>
+            <p><strong>Last Name:</strong> [Last Name]</p>
+            <p><strong>Age:</strong> [Age]</p>
+            <p><strong>Gender:</strong> [Gender]</p>
+        </div>
+    </div>
+</div>
+
+<div class="child-enrollment-page">
+    <h2>Manage Your Child's Enrollment Details</h2>
+    <div class="child-photo-container">
+        <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
+    </div>
+    <div class="child-form">
+        <div class="form-group">
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" class="form-control" value="" />
+        </div>
+        <div class="form-group">
+            <label for="middleName">Middle Name:</label>
+            <input type="text" id="middleName" class="form-control" value="" />
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" class="form-control" value="" />
+        </div>
+        <div class="form-group">
+            <label for="age">Age:</label>
+            <input type="number" id="age" class="form-control" value="" />
+        </div>
+        <div class="form-group gender-container">
+            <label for="gender">Gender:</label>
+            <select id="gender" class="form-control with-arrow">
+                <option value="" disabled selected>Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="notes">Notes:</label>
+            <textarea id="notes" class="form-control" placeholder="Add any notes about the child's schedule, activities, etc."></textarea>
+        </div>
+        <button class="btn-save">Save Changes</button>
+    </div>
+</div>
