@@ -1,10 +1,8 @@
-﻿@using BlazorApp.Server.Data;
-@using BlazorApp.Server.Models;
-@using Microsoft.EntityFrameworkCore
+﻿@page "/database-test"
 
-@page "/database-test"
-
-@inject CallejoSystemDbContext DbContext
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using BlazorApp.Server.Models
 
 <h3>Database Test</h3>
 
@@ -13,7 +11,7 @@
     {
         @foreach (var user in users)
         {
-            <li>@user.FirstName @user.LastName</li>
+            <li>@user.FirstName - @user.LastName</li>
         }
     }
     else
@@ -23,11 +21,11 @@
 </ul>
 
 @code {
-    private List<CallejoIncUser> users;
+    private List<CallejoIncUser>? users;
 
     protected override async Task OnInitializedAsync()
     {
-        // Retrieve data from the database
-        users = await DbContext.CallejoIncUsers.ToListAsync();
+        var apiUrl = $"{Navigation.BaseUri}api/users";
+        users = await Http.GetFromJsonAsync<List<CallejoIncUser>>(apiUrl);
     }
 }
