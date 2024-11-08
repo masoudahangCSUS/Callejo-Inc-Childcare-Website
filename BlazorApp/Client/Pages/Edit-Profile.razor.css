@@ -1,0 +1,121 @@
+﻿/* Edit Profile Page Main Container */
+.edit-profile-page {
+    padding: 40px 20px;
+    max-width: 900px; /* Reverted width for normal fit */
+    margin: auto;
+    background-color: #00B7D7; /* Bright blue background */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    margin-top: 40px;
+    position: relative;
+}
+
+/* Section Title Container */
+.title-container {
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    box-sizing: border-box;
+}
+
+    .title-container h1 {
+        font-size: 2rem;
+        font-family: 'Arial', sans-serif;
+        color: #ffffff; /* White color for title text */
+        margin: 0;
+    }
+
+/* Section for editing profile and emergency contact */
+.profile-section {
+    margin-bottom: 30px;
+    padding: 20px;
+    background-color: #ffffff; /* White background for contrast */
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Field Styles */
+.profile-fields, .emergency-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Row Styles for paired input fields */
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+    .row label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0073C6; /* Blue color for labels */
+        width: auto; /* Allow labels to adjust to text length */
+        white-space: nowrap; /* Keep label in one line */
+    }
+
+    .row input {
+        flex: 2; /* Adjusted to make input boxes longer */
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #cccccc;
+    }
+
+/* Single Field Styling */
+.single-field {
+    display: flex;
+    flex-direction: column;
+}
+
+    .single-field label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0073C6; /* Blue color for labels */
+        margin-bottom: 8px;
+    }
+
+    .single-field input {
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #cccccc;
+    }
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Save and Cancel Button Styling */
+.save-button,
+.cancel-button {
+    background-color: #0073C6; /* Blue button to match the page theme */
+    color: white;
+    padding: 20px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+    box-shadow: 0 4px 15px rgba(0, 115, 198, 0.4);
+}
+
+    .save-button:hover,
+    .cancel-button:hover {
+        background-color: #005fa3; /* Darker shade for hover effect */
+        box-shadow: 0 6px 20px rgba(0, 115, 198, 0.5);
+    }
+
+    .save-button:active,
+    .cancel-button:active {
+        transform: scale(0.98);
+    }
