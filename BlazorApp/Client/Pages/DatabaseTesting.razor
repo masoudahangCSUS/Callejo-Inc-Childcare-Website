@@ -1,0 +1,31 @@
+﻿@page "/database-test"
+
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@using BlazorApp.Server.Models
+
+<h3>Database Test</h3>
+
+<ul>
+    @if (users != null)
+    {
+        @foreach (var user in users)
+        {
+            <li>@user.FirstName - @user.LastName</li>
+        }
+    }
+    else
+    {
+        <p>Loading...</p>
+    }
+</ul>
+
+@code {
+    private List<CallejoIncUser>? users;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = $"{Navigation.BaseUri}api/users";
+        users = await Http.GetFromJsonAsync<List<CallejoIncUser>>(apiUrl);
+    }
+}

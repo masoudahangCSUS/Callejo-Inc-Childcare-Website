@@ -1,0 +1,101 @@
+﻿/* Navbar Styling */
+.top-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    padding: 30px;
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 2000px;
+    width: 100%;
+}
+
+/* Brand Styling */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+}
+
+.nav-logo {
+    height: 60px;
+    margin-right: 10px;
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: 'Arial', sans-serif;
+    color: #0073C6;
+    margin-left: 10px;
+}
+
+/* Main Navigation Menu */
+.nav-menu {
+    display: flex;
+    gap: 40px;
+    align-items: center;
+}
+
+.nav-item-link {
+    color: black;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: color 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Icon Styling */
+.nav-icon {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
+/* Hover Effects */
+.nav-item-link:hover {
+    color: #00B7D7;
+}
+
+    .nav-item-link:hover .nav-icon {
+        transform: scale(1.2);
+    }
+
+/* Button Styling */
+.btn-outline-primary {
+    color: #00B7D7;
+    border: 2px solid #00B7D7;
+    background: white;
+    padding: 6px 18px;
+    text-decoration: none;
+    border-radius: 15px;
+    font-size: 1.3rem;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+    .btn-outline-primary:hover {
+        background-color: #00B7D7; /* Bright blue background on hover */
+        color: white; /* White text on hover */
+    }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .nav-menu {
+        gap: 20px;
+    }
+
+    .nav-item-link {
+        font-size: 1rem;
+    }
+
+    .nav-icon {
+        width: 25px;
+        height: 25px;
+    }
+}
