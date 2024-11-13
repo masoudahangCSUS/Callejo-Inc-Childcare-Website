@@ -60,7 +60,47 @@ namespace Common.Services.User
 
             return response;
         }
-    
+
+        /// <summary>
+        /// Get all users in the user table
+        /// </summary>
+        /// <returns></returns>
+        public ListUsers GetAllUsers()
+        {
+            ListUsers listUsers = new ListUsers();
+
+            try
+            {
+                var userRecs = _context.CallejoIncUsers.ToList();
+                UserView userViewRec = null;
+                foreach (Models.Data.CallejoIncUser userRec in userRecs)
+                {
+                    userViewRec = new UserView();
+                    userViewRec.userId = userRec.Id;
+                    userViewRec.userFirstName = userRec.FirstName;
+                    userViewRec.userMiddleName = userRec.MiddleName;
+                    userViewRec.userLastName = userRec.LastName;
+                    userViewRec.userAddress = userRec.Address;
+                    userViewRec.userCity = userRec.City;
+                    userViewRec.userState = userRec.State;
+                    userViewRec.userZipCode = userRec.ZipCode;
+                    userViewRec.userEmail = userRec.Email;
+
+                    listUsers.users.Add(userViewRec);
+                }
+
+                listUsers.Success = true;
+                listUsers.Message = "Retrieved " + listUsers.users.Count.ToString() + " user records";
+            }
+            catch (Exception ex)
+            {
+                listUsers.Success = false;
+                listUsers.Message = "Problems retrieving all user record. Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+            }
+
+            return listUsers;
+        }
+
     }
 
 }

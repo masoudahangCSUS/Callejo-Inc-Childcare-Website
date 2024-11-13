@@ -12,7 +12,7 @@ namespace Common.Services.User
         APIResponse InsertUser(UserView userInfo);
         //APIResponse UpdateUser(RoleView roleView);
         //APIResponse DeleteUser(long id);
-        //ListRoles GetAllUsers();
+        ListUsers GetAllUsers();
         //ListRoles GetUser(long id);
     }
 }

@@ -30,4 +30,17 @@ public class CustomerInfoService
         var apiUrl = "https://localhost:7139/api/CustomerInfo/create-user";
         return await _httpClient.PostAsJsonAsync(apiUrl, newUser);
     }
+    public async Task<List<UserView>> GetAllUsersAsync()
+    {
+        var response = await _httpClient.GetFromJsonAsync<ListUsers>("https://localhost:7139/api/CustomerInfo/get-all-users");
+        Console.WriteLine(response);
+        if (response != null)
+        {
+            return response.users;
+        }
+        else
+        {
+            return new List<UserView>();
+        }
+    } 
 }

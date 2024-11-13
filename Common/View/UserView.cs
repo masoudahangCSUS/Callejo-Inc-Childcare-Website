@@ -8,7 +8,7 @@ namespace Common.View
 {
     public class UserView
     {
-        public long Id { get; set; }
+        public Guid userId { get; set; }
         public string userFirstName { get; set; }
         public string userMiddleName { get; set; }
         public string userLastName { get; set; }

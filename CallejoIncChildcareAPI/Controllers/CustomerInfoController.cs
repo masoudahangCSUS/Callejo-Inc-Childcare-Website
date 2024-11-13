@@ -39,5 +39,13 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             return BadRequest(result);
         }
+        // GET: api/Role
+        [HttpGet]
+        [Route("get-all-users")]
+        public ActionResult<ListUsers> GetAllUsers()
+        {
+            var result = _userService.GetAllUsers();
+            return Ok(result);
+        }
     }
 }

@@ -2,41 +2,37 @@
 @using Common.View
 @inject CustomerInfoService CustomerInfoService
 
-<h3>Children and Guardians</h3>
+<h3>Users</h3>
 
-@if (childrenGuardians == null)
+@if (users == null)
 {
     <p>Loading data...</p>
 }
-else if (childrenGuardians.Count == 0)
+else if (users.Count == 0)
 {
-    <p>No children and guardians found.</p>
+    <p>No users found.</p>
 }
 else
 {
     <table class="table">
         <thead>
             <tr>
-                <th>Child First Name</th>
-                <th>Child Last Name</th>
-                <th>Guardian First Name</th>
-                <th>Guardian Last Name</th>
+                <th>User First Name</th>
+                <th>User Last Name</th>
                 <th>Address</th>
                 <th>City</th>
                 <th>ZIP</th>
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in childrenGuardians)
+            @foreach (var item in users)
             {
                 <tr>
-                    <td>@item.childFirstName</td>
-                    <td>@item.childLastName</td>
-                    <td>@item.guadianFirstName</td>
-                    <td>@item.guardianLastName</td>
-                    <td>@item.address</td>
-                    <td>@item.city</td>
-                    <td>@item.zip_code</td>
+                    <td>@item.userFirstName</td>
+                    <td>@item.userLastName</td>
+                    <td>@item.userAddress</td>
+                    <td>@item.userCity</td>
+                    <td>@item.userZipCode</td>
                 </tr>
             }
         </tbody>
@@ -44,10 +40,10 @@ else
 }
 
 @code {
-    private List<ChildrenGuardianView> childrenGuardians;
+    private List<UserView> users;
 
     protected override async Task OnInitializedAsync()
     {
-        childrenGuardians = await CustomerInfoService.GetChildrenGuardiansAsync();
+        users = await CustomerInfoService.GetAllUsersAsync();
     }
 }
