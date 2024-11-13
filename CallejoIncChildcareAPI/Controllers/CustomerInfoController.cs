@@ -1,6 +1,9 @@
 ﻿using Common.Services.SQL;
+using Common.Services.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Common.Models.Data;
+using Common.View;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -9,17 +12,39 @@ namespace CallejoIncChildcareAPI.Controllers
     public class CustomerInfoController : ControllerBase
     {
         private ISQLServices _sqlServices;
+        private IUserService _userService;
 
-        public CustomerInfoController(ISQLServices sqlServices)
+        public CustomerInfoController(ISQLServices sqlServices, IUserService userService)
         {
             _sqlServices = sqlServices;
+            _userService = userService;
         }
 
         [HttpGet]
         [Route("childrenguardian")]
-        public IActionResult GetChildrentGuardian()
+        public IActionResult GetChildrenGuardian()
         {
             var result = _sqlServices.GetListOfAllChildrenAndGuardians();
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("create-user")]
+        public ActionResult<APIResponse> InsertUser([FromBody] UserView userInfo)
+        {
+            var result = _userService.InsertUser(userInfo);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+        // GET: api/Role
+        [HttpGet]
+        [Route("get-all-users")]
+        public ActionResult<ListUsers> GetAllUsers()
+        {
+            var result = _userService.GetAllUsers();
             return Ok(result);
         }
     }

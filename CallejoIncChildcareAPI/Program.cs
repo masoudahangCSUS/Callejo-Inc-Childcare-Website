@@ -1,6 +1,7 @@
 using Common.Models.Data;
 using Common.Services.Role;
 using Common.Services.SQL;
+using Common.Services.User;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,6 +24,7 @@ builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
 // Register services here
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 

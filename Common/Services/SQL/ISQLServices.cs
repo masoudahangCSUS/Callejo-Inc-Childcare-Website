@@ -1,4 +1,5 @@
-﻿using Common.View;
+﻿using Common.Models.Data;
+using Common.View;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Common.Services.SQL
     public interface ISQLServices
     {
         ListChildrenGuardianView GetListOfAllChildrenAndGuardians();
+
     }
 
 }

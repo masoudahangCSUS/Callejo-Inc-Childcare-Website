@@ -1,31 +1,49 @@
 ﻿@page "/database-test"
+@using Common.View
+@inject CustomerInfoService CustomerInfoService
 
-@inject HttpClient Http
-@inject NavigationManager Navigation
-@using BlazorApp.Server.Models
+<h3>Users</h3>
 
-<h3>Database Test</h3>
-
-<ul>
-    @if (users != null)
-    {
-        @foreach (var user in users)
-        {
-            <li>@user.FirstName - @user.LastName</li>
-        }
-    }
-    else
-    {
-        <p>Loading...</p>
-    }
-</ul>
+@if (users == null)
+{
+    <p>Loading data...</p>
+}
+else if (users.Count == 0)
+{
+    <p>No users found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>User First Name</th>
+                <th>User Last Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>ZIP</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in users)
+            {
+                <tr>
+                    <td>@item.userFirstName</td>
+                    <td>@item.userLastName</td>
+                    <td>@item.userAddress</td>
+                    <td>@item.userCity</td>
+                    <td>@item.userZipCode</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private List<CallejoIncUser>? users;
+    private List<UserView> users;
 
     protected override async Task OnInitializedAsync()
     {
-        var apiUrl = $"{Navigation.BaseUri}api/users";
-        users = await Http.GetFromJsonAsync<List<CallejoIncUser>>(apiUrl);
+        users = await CustomerInfoService.GetAllUsersAsync();
     }
 }

@@ -23,7 +23,9 @@ public partial class CallejoIncUser
 
     public long FkRole { get; set; }
 
-    public string? Email { get; set; }
+    public string Email { get; set; } = null!;
+
+    public string Password { get; set; } = null!;
 
     public virtual Role FkRoleNavigation { get; set; } = null!;
 
