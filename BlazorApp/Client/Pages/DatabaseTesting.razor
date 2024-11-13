@@ -1,31 +1,53 @@
 ﻿@page "/database-test"
+@using Common.View
+@inject CustomerInfoService CustomerInfoService
 
-@inject HttpClient Http
-@inject NavigationManager Navigation
-@using BlazorApp.Server.Models
+<h3>Children and Guardians</h3>
 
-<h3>Database Test</h3>
-
-<ul>
-    @if (users != null)
-    {
-        @foreach (var user in users)
-        {
-            <li>@user.FirstName - @user.LastName</li>
-        }
-    }
-    else
-    {
-        <p>Loading...</p>
-    }
-</ul>
+@if (childrenGuardians == null)
+{
+    <p>Loading data...</p>
+}
+else if (childrenGuardians.Count == 0)
+{
+    <p>No children and guardians found.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Child First Name</th>
+                <th>Child Last Name</th>
+                <th>Guardian First Name</th>
+                <th>Guardian Last Name</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>ZIP</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in childrenGuardians)
+            {
+                <tr>
+                    <td>@item.childFirstName</td>
+                    <td>@item.childLastName</td>
+                    <td>@item.guadianFirstName</td>
+                    <td>@item.guardianLastName</td>
+                    <td>@item.address</td>
+                    <td>@item.city</td>
+                    <td>@item.zip_code</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
-    private List<CallejoIncUser>? users;
+    private List<ChildrenGuardianView> childrenGuardians;
 
     protected override async Task OnInitializedAsync()
     {
-        var apiUrl = $"{Navigation.BaseUri}api/users";
-        users = await Http.GetFromJsonAsync<List<CallejoIncUser>>(apiUrl);
+        childrenGuardians = await CustomerInfoService.GetChildrenGuardiansAsync();
     }
 }

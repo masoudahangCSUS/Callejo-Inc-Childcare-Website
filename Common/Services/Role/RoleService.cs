@@ -31,6 +31,7 @@ namespace Common.Services.Role
             try
             {
                 var roleRecord = _context.Roles.Where(r => r.Id == id).FirstOrDefault();
+
                 if (roleRecord != null)
                 {
                     response.Message = "Role record " + roleRecord.Id.ToString() + " : " + roleRecord.Description + " has been deleted";

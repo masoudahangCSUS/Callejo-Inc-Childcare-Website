@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.View
 {
-    public class ChildrenGuadianView
+    public class ChildrenGuardianView
     {
         public long childId { get; set; }
         public string childFirstName { get; set; }
@@ -23,10 +23,10 @@ namespace Common.View
 
     public class ListChildrenGuardianView : APIResponse
     {
-        public List<ChildrenGuadianView> listChildrenGuardian { get; set; }
+        public List<ChildrenGuardianView> listChildrenGuardian { get; set; }
         public ListChildrenGuardianView()
         {
-            listChildrenGuardian = new List<ChildrenGuadianView>();
+            listChildrenGuardian = new List<ChildrenGuardianView>();
         }
     }
 }
