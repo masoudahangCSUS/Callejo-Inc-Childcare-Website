@@ -1,0 +1,48 @@
+﻿@rendermode InteractiveServer
+@inject UserSessionService UserSession
+@inject NavigationManager Navigation
+
+<!-- ParentNavMenu.razor -->
+<div class="container">
+    <a class="navbar-brand" href="/">
+        <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" />
+        <span class="brand-name">Callejo Inc.</span>
+    </a>
+
+    <nav class="nav-menu">
+        <a class="nav-item-link" href="/">
+            <img src="images/home.png" alt="Home Icon" class="nav-icon" /> HOME
+        </a>
+        <a class="nav-item-link" href="/about">
+            <img src="images/about.png" alt="About Us Icon" class="nav-icon" /> ABOUT US
+        </a>
+        <a class="nav-item-link" href="/schedule">
+            <img src="images/schedule.png" alt="Child's Schedule Icon" class="nav-icon" /> Child's Schedule
+        </a>
+        <a class="nav-item-link" href="/notifications">
+            <img src="images/Notifications.png" alt="Notifications Icon" class="nav-icon" /> Notifications
+        </a>
+        <div class="nav-right">
+            <a class="nav-item-link" href="/profile">
+                <img src="images/myprofile.png" alt="My Profile Icon" class="nav-icon" /> Profile
+            </a>
+            <a class="nav-item-link" href="/enrolled-children">
+                <img src="images/child-placeholder.png" alt="My Child Info Icon" class="nav-icon child-info" /> My Child Info
+            </a>
+            <a class="nav-item-link" href="/settings">
+                <img src="images/settings.png" alt="Settings Icon" class="nav-icon" /> Settings
+            </a>
+            <a class="nav-item-link" @onclick="LogoutUser">
+                <img src="images/logout.png" alt="Logout Icon" class="nav-icon" /> Logout
+            </a>
+        </div>
+    </nav>
+</div>
+
+@code {
+    private void LogoutUser()
+    {
+        UserSession.SetUserLoggedIn(false);
+        Navigation.NavigateTo("/");
+    }
+}

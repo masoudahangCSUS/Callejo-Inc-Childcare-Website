@@ -1,0 +1,96 @@
+﻿@page "/edit-profile"
+@rendermode InteractiveServer
+
+<PageTitle>Edit Profile</PageTitle>
+
+<div class="edit-profile-page">
+    <div class="title-container">
+        <h1>Edit Profile</h1>
+    </div>
+
+    <!-- Edit profile section -->
+    <div class="profile-section">
+        <div class="profile-fields">
+            <!-- First and last name -->
+            <div class="row">
+                <label for="fname"><b>First Name:</b></label>
+                <input type="text" id="fname" name="fname">
+                <label for="lname"><b>Last Name:</b></label>
+                <input type="text" id="lname" name="lname">
+            </div>
+
+            <!-- Email address -->
+            <div class="single-field">
+                <label for="email"><b>Email Address:</b></label>
+                <input type="text" id="email" name="email">
+            </div>
+
+            <!-- Phone number -->
+            <div class="single-field">
+                <label for="phone"><b>Phone Number:</b></label>
+                <input type="text" id="phone" name="phone">
+            </div>
+
+            <!-- Address -->
+            <div class="single-field">
+                <label for="address"><b>Address:</b></label>
+                <input type="text" id="address" name="address">
+            </div>
+
+            <!-- City, State, ZIP -->
+            <div class="row">
+                <label for="city"><b>City:</b></label>
+                <input type="text" id="city" name="city" class="city-input">
+                <label for="state"><b>State:</b></label>
+                <input type="text" id="state" name="state" class="state-input">
+                <label for="zip"><b>ZIP:</b></label>
+                <input type="text" id="zip" name="zip" class="zip-input">
+            </div>
+
+            <!-- Password -->
+            <div class="single-field">
+                <label for="password"><b>Password:</b></label>
+                <input type="text" id="password" name="password">
+            </div>
+
+            <!-- Relationship to child -->
+            <div class="single-field">
+                <label for="relationship"><b>Relationship to Child:</b></label>
+                <input type="text" id="relationship" name="relationship">
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency contact section -->
+    <div class="title-container">
+        <h1>Emergency Contact</h1>
+    </div>
+    <div class="profile-section">
+        <div class="emergency-fields">
+            <!-- First and last name -->
+            <div class="row">
+                <label for="fnameEC"><b>First Name:</b></label>
+                <input type="text" id="fnameEC" name="fnameEC">
+                <label for="lnameEC"><b>Last Name:</b></label>
+                <input type="text" id="lnameEC" name="lnameEC">
+            </div>
+
+            <!-- Phone number -->
+            <div class="single-field">
+                <label for="phoneEC"><b>Phone Number:</b></label>
+                <input type="text" id="phoneEC" name="phoneEC">
+            </div>
+
+            <!-- Relationship to child -->
+            <div class="single-field">
+                <label for="relationshipEC"><b>Relationship to Child:</b></label>
+                <input type="text" id="relationshipEC" name="relationshipEC">
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="save-button" onclick="location.href='/profile'">Save Changes</button>
+        <button class="cancel-button" onclick="location.href='/profile'">Cancel</button>
+    </div>
+</div>

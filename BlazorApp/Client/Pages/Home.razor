@@ -1,0 +1,97 @@
+﻿@page "/"
+@inject UserSessionService UserSession
+@inject NavigationManager Navigation
+
+@if (UserSession.UserIsLoggedIn)
+{
+    <!-- Main Container with Bright Blue Background -->
+    <div class="full-width-container" style="background-color: #00B7D7; padding: 150px 0;">
+        <div style="max-width: 1200px; margin: auto; display: flex; align-items: flex-start; gap: 40px;">
+            <!-- Left Side: Text Content in a Card with Rounded Corners -->
+            <div style="flex: 2; background-color: white; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); padding: 30px; text-align: left;">
+                <h1 style="color: #0073C6; font-size: 2.5rem; font-family: 'Times New Roman', serif; margin-bottom: 10px;">
+                    Welcome to Callejo Inc.
+                </h1>
+                <p style="color: #333; font-size: 1.2rem; font-family: 'Arial', sans-serif; margin-top: 10px;">
+                    At Callejo Inc., we provide a nurturing and safe environment where your child can learn, grow, and thrive. Our platform is designed to simplify your experience as a parent, giving you access to all the tools you need to manage your child’s daily routine. Whether it's keeping track of your child’s schedule or staying informed on important updates, you’ll find everything in one place for peace of mind.
+                </p>
+
+                <!-- Creative Bullet Points -->
+                <div style="display: flex; align-items: flex-start; gap: 15px; margin: 20px 0;">
+                    <div style="width: 10px; height: 10px; background-color: #00B7D7; border-radius: 50%; margin-top: 10px;"></div>
+                    <p style="color: #333; font-size: 1.2rem; font-family: 'Arial', sans-serif;">
+                        Easily view and manage your child’s daily schedule, sign them up for activities, and receive real-time notifications.
+                    </p>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 15px; margin: 20px 0;">
+                    <div style="width: 10px; height: 10px; background-color: #00B7D7; border-radius: 50%; margin-top: 10px;"></div>
+                    <p style="color: #333; font-size: 1.2rem; font-family: 'Arial', sans-serif;">
+                        Stay updated with instant notifications on your child’s progress or any important announcements.
+                    </p>
+                </div>
+                <div style="display: flex; align-items: flex-start; gap: 15px;">
+                    <div style="width: 10px; height: 10px; background-color: #00B7D7; border-radius: 50%; margin-top: 10px;"></div>
+                    <p style="color: #333; font-size: 1.2rem; font-family: 'Arial', sans-serif;">
+                        Communicate directly with caregivers, share requirements, and request updates about your child's day.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Right Side: Images with Soft Shadow -->
+            <div style="flex: 1; text-align: right; display: flex; flex-direction: column; gap: 20px;">
+                <img src="images/welcomeparentHome.png" alt="Welcome" style="width: 300px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" />
+                <img src="images/parentHomepic.png" alt="Parent Home" style="width: 300px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" />
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- THE Main Homepage Section -->
+    <div class="full-width-container" style="background-color: #00B7D7; padding: 150px 0;">
+        <div style="max-width: 1200px; margin: auto; display: flex; align-items: center; gap: 20px;">
+            <div style="flex: 2; text-align: left;">
+                <h1 style="color: white; font-size: 2.5rem; font-family: 'Times New Roman', serif;">
+                    WELCOME TO CALLEJO INC.! WHERE PLAY, LEARNING, AND GROWTH COME TOGETHER FOR YOUR CHILD'S HAPPINESS.
+                </h1>
+                <button style="background-color: white; color: #00B7D7; border: none; padding: 15px 30px; font-size: 1.2rem; cursor: pointer; border-radius: 10px;">
+                    Learn more
+                </button>
+            </div>
+            <div style="flex: 1; text-align: right;">
+                <img src="images/welcome.png" alt="Welcome" style="width: 600px; border-radius: 15px;" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Section -->
+    <div style="text-align: center; padding: 100px 0;">
+        <h2 style="color: #7031E3; font-size: 3rem; margin-bottom: 10px;">The Right Choice For Your Family</h2>
+        <p style="color: #B76EFF; margin-top: 5px; font-size: 1.5rem;">Ignite your child's development to new heights!</p>
+        <p style="max-width: 1200px; margin: 40px auto; color: #555; font-size: 1.3rem;">
+            We firmly believe that a play-based childcare is a source for a safe, stress-free, no-fear, or no-punishment enviornment.
+            Our approach centers around building positive relationships and meeting our clients exactly where they are
+            in their unique journeys. By creating a welcoming environment where a play-based enviornment is fun and exciting, we open
+            up the space for meaningful growth to occur. We understand that when a play-based enviornment is enjoyable, it becomes a
+            catalyst for progress. This allows each child to thrive and reach their full potential.
+        </p>
+        <div style="display: flex; justify-content: center; gap: 200px; margin-top: 60px;">
+            <div>
+                <img src="images/connect.png" alt="Connect" style="width: 250px; height: 250px; border-radius: 10px;" />
+                <h3 style="color: #7031E3; font-size: 1.8rem; margin-top: 30px;">Connect</h3>
+            </div>
+            <div>
+                <img src="images/play.png" alt="Play" style="width: 250px; height: 250px; border-radius: 10px;" />
+                <h3 style="color: #7031E3; font-size: 1.8rem; margin-top: 30px;">Play</h3>
+            </div>
+            <div>
+                <img src="images/grow.png" alt="Grow" style="width: 250px; height: 250px; border-radius: 10px;" />
+                <h3 style="color: #7031E3; font-size: 1.8rem; margin-top: 30px;">Grow</h3>
+            </div>
+        </div>
+        <button style="background-color: #7031E3; color: white; border: none; padding: 20px 40px; font-size: 1.4rem; cursor: pointer; margin-top: 80px; border-radius: 8px;">
+            Get more details
+        </button>
+    </div>
+}
+
