@@ -24,9 +24,8 @@
     private string ModalStyle => IsVisible ? "display: block; opacity: 1; z-index: 1050;" : "display: none; opacity: 0;";
     private string ModalClass => IsVisible ? "show" : "";
 
-    private void CloseModal()
+    private async Task CloseModal()
     {
-        IsVisible = false;
-        OnClose.InvokeAsync();
+        await OnClose.InvokeAsync();
     }
 }

@@ -48,7 +48,7 @@ else
 }
 
 <Modal Title="Create Profile" IsVisible="@isCreateProfileModalVisible" OnClose="CloseCreateProfileModal">
-    <CreateProfileForm OnUserCreated="LoadUsers" />
+    <CreateProfileForm OnUserCreated="LoadUsers" OnSuccess="CloseCreateProfileModal" />
 </Modal>
 
 @code {
