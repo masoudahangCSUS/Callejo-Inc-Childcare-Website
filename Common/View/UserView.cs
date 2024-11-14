@@ -8,18 +8,21 @@ namespace Common.View
 {
     public class UserView
     {
-        public Guid userId { get; set; }
-        public string userFirstName { get; set; }
-        public string userMiddleName { get; set; }
-        public string userLastName { get; set; }
-        public string userAddress { get; set; }
-        public string userCity { get; set; }
-        public string userState { get; set; }
-        public string userZipCode { get; set; }
-        public string userEmail { get; set; }
-        public string userPassword { get; set; }
-        public long userFkRole { get; set; }
-        public string userPhoneNumber { get; set; }
+        public Guid Id { get; set; }
+        public string FirstName { get; set; }
+        public string MiddleName { get; set; }
+        public string LastName { get; set; }
+        public string Address { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string ZipCode { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public long FkRole { get; set; }
+        public string PhoneNumber { get; set; }
+
+        public List<ChildView> Children { get; set; } = new List<ChildView>();
+
     }
     public class ListUsers : APIResponse
     {
