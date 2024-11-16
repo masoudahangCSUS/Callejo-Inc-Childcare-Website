@@ -28,7 +28,7 @@ builder.Services.AddServerSideBlazor()
 // Register any additional services
 builder.Services.AddSingleton<UserSessionService>();
 
-builder.Services.AddScoped<CustomerInfoService>();
+builder.Services.AddScoped<AdminService>();
 
 // Load environment variables
 Env.Load();

@@ -4,11 +4,11 @@ using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Common.View;
 
-public class CustomerInfoService
+public class AdminService
 {
     private readonly HttpClient _httpClient;
 
-    public CustomerInfoService(HttpClient httpClient)
+    public AdminService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
@@ -25,14 +25,14 @@ public class CustomerInfoService
             return new List<ChildrenGuardianView>();
         }
     }
-    public async Task<HttpResponseMessage> CreateUserAsync(UserView newUser)
+    public async Task<HttpResponseMessage> CreateUserAsync(AdminUserCreationDTO newUser)
     {
-        var apiUrl = "https://localhost:7139/api/CustomerInfo/create-user";
+        var apiUrl = "https://localhost:7139/api/admin/create-user";
         return await _httpClient.PostAsJsonAsync(apiUrl, newUser);
     }
-    public async Task<List<UserView>> GetAllUsersAsync()
+    public async Task<List<AdminUserCreationDTO>> GetAllUsersAsync()
     {
-        var response = await _httpClient.GetFromJsonAsync<ListUsers>("https://localhost:7139/api/CustomerInfo/get-all-users");
+        var response = await _httpClient.GetFromJsonAsync<ListUsers>("https://localhost:7139/api/admin/get-all-users");
         Console.WriteLine(response);
         if (response != null)
         {
@@ -40,13 +40,13 @@ public class CustomerInfoService
         }
         else
         {
-            return new List<UserView>();
+            return new List<AdminUserCreationDTO>();
         }
     }
 
     public async Task<HttpResponseMessage> DeleteUserAsync(Guid userId)
     {
-        var response = await _httpClient.DeleteAsync($"https://localhost:7139/api/CustomerInfo/delete-user?userId={userId}");
+        var response = await _httpClient.DeleteAsync($"https://localhost:7139/api/admin/delete-user?userId={userId}");
         return response;
     }
 }

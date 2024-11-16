@@ -1,4 +1,4 @@
-﻿@inject CustomerInfoService CustomerInfoService
+﻿@inject AdminService CustomerInfoService
 @using Common.View
 
 <EditForm Model="@newUser" OnSubmit="SaveProfile" FormName="CreateProfileForm">
@@ -77,7 +77,7 @@
 @code {
     [Parameter] public EventCallback OnUserCreated { get; set; }
     [Parameter] public EventCallback OnSuccess { get; set; }
-    private UserView newUser = new UserView();
+    private AdminUserCreationDTO newUser = new AdminUserCreationDTO();
 
     private async Task SaveProfile()
     {
@@ -89,7 +89,7 @@
             {
                 await OnUserCreated.InvokeAsync();
                 await OnSuccess.InvokeAsync();
-                newUser = new UserView();
+                newUser = new AdminUserCreationDTO();
             }
             else
             {

@@ -9,17 +9,18 @@ namespace CallejoIncChildcareAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class CustomerInfoController : ControllerBase
+    public class CustomerController : ControllerBase
     {
         private ISQLServices _sqlServices;
         private IUserService _userService;
 
-        public CustomerInfoController(ISQLServices sqlServices, IUserService userService)
+        public CustomerController(ISQLServices sqlServices, IUserService userService)
         {
             _sqlServices = sqlServices;
             _userService = userService;
         }
 
+        // GET: api/customer/childrenguardian
         [HttpGet]
         [Route("childrenguardian")]
         public IActionResult GetChildrenGuardian()
@@ -28,9 +29,10 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
+        // POST: api/customer/create-user
         [HttpPost]
         [Route("create-user")]
-        public ActionResult<APIResponse> InsertUser([FromBody] UserView userInfo)
+        public ActionResult<APIResponse> InsertUser([FromBody] CustomerUserCreationDTO userInfo)
         {
             var result = _userService.InsertUser(userInfo);
             if (result.Success)
@@ -52,24 +54,5 @@ namespace CallejoIncChildcareAPI.Controllers
         //    return BadRequest(result);
         //}
 
-        [HttpDelete("delete-user")]
-        public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
-        {
-            var result = _userService.DeleteUser(userId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result.Message);
-        }
-
-        // GET: api/Role
-        [HttpGet]
-        [Route("get-all-users")]
-        public ActionResult<ListUsers> GetAllUsers()
-        {
-            var result = _userService.GetAllUsers();
-            return Ok(result);
-        }
     }
 }

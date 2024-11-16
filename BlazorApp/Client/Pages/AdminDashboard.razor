@@ -1,6 +1,6 @@
 ﻿@page "/admin"
 @using Common.View
-@inject CustomerInfoService CustomerInfoService
+@inject AdminService CustomerInfoService
 @rendermode InteractiveServer
 
 <div>
@@ -52,7 +52,7 @@ else
 </Modal>
 
 @code {
-    private List<UserView> users;
+    private List<AdminUserCreationDTO> users;
     private bool isCreateProfileModalVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -76,7 +76,7 @@ else
         isCreateProfileModalVisible = false;
     }
 
-    public void EditUser(UserView user)
+    public void EditUser(AdminUserCreationDTO user)
     {
         Console.WriteLine($"Clicked to edit user: {user.FirstName}");
     }
