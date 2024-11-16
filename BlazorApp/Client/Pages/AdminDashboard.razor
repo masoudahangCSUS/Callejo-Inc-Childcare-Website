@@ -39,7 +39,7 @@ else
                     <td>@user.ZipCode</td>
                     <td>
                         <button @onclick = "() => EditUser(user)">Edit</button> 
-                        <button @onclick = "() => DeleteUser(user)">Delete</button>
+                        <button @onclick = "() => DeleteUser(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -63,11 +63,11 @@ else
     private async Task LoadUsers()
     {
         users = await CustomerInfoService.GetAllUsersAsync();
+        StateHasChanged();
     }
 
     private void ShowCreateProfileModal()
     {
-        Console.WriteLine("making modal visible");
         isCreateProfileModalVisible = true;
     }
 
@@ -81,8 +81,12 @@ else
         Console.WriteLine($"Clicked to edit user: {user.FirstName}");
     }
 
-    public void DeleteUser(UserView user)
+    public async Task DeleteUser(Guid userId)
     {
-        Console.WriteLine($"Clicked to delete user: {user.FirstName}");
+        var response = await CustomerInfoService.DeleteUserAsync(userId);
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadUsers();
+        }
     }
 }

@@ -42,5 +42,11 @@ public class CustomerInfoService
         {
             return new List<UserView>();
         }
-    } 
+    }
+
+    public async Task<HttpResponseMessage> DeleteUserAsync(Guid userId)
+    {
+        var response = await _httpClient.DeleteAsync($"https://localhost:7139/api/CustomerInfo/delete-user?userId={userId}");
+        return response;
+    }
 }

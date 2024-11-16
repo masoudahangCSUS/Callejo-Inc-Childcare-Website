@@ -10,8 +10,9 @@ namespace Common.Services.User
     public interface IUserService
     {
         APIResponse InsertUser(UserView userInfo);
+        APIResponse InsertChild(ChildView childInfo, UserView userInfo);
         //APIResponse UpdateUser(RoleView roleView);
-        //APIResponse DeleteUser(long id);
+        APIResponse DeleteUser(Guid userId);
         ListUsers GetAllUsers();
         //ListRoles GetUser(long id);
     }

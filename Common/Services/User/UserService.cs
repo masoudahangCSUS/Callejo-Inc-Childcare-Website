@@ -30,7 +30,7 @@ namespace Common.Services.User
         public APIResponse InsertUser(UserView userInfo)
         {
             APIResponse response = new APIResponse();
-            string userName = userInfo.FirstName + " " + userInfo.MiddleName + " " + userInfo.LastName;
+            string userName = $"{userInfo.FirstName} {userInfo.MiddleName} {userInfo.LastName}";
 
             try
             {
@@ -79,14 +79,14 @@ namespace Common.Services.User
                 _context.CallejoIncUsers.Add(newUser);
                 _context.SaveChanges();
 
-                response.Message = "User record for  " + userName + " was saved to database";
+                response.Message = $"User record for {userName} was saved to database";
 
                 response.Success = true;
             }
             catch (Exception ex)
             {
                 response.Success = false;
-                response.Message = "Problems saving user record " + userName + ". Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+                response.Message = $"Problems saving user record {userName}. Error: {ex.Message}. Inner Exception: {ex.InnerException}. Stack Trace: {ex.StackTrace}";
             }
 
             return response;
@@ -180,17 +180,73 @@ namespace Common.Services.User
 
                     listUsers.users.Add(userViewRec);
                 }
-
                 listUsers.Success = true;
-                listUsers.Message = "Retrieved " + listUsers.users.Count.ToString() + " user records";
+                listUsers.Message = $"Retrieved {listUsers.users.Count.ToString()} user records";
             }
             catch (Exception ex)
             {
                 listUsers.Success = false;
-                listUsers.Message = "Problems retrieving all user record. Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+                listUsers.Message = $"Problems retrieving all user record. Error: {ex.Message}. Inner Exception: {ex.InnerException}. Stack Trace: {ex.StackTrace}";
             }
 
             return listUsers;
+        }
+
+        /// <summary>
+        /// Deletes user record from database
+        /// NOTE: Deletion will fail if user is referred to in any other table
+        /// </summary>
+        /// <param object of UserView>Primary key of the record to delete</param>
+        /// <returns></returns>
+        public APIResponse DeleteUser(Guid userId)
+        {
+            Console.WriteLine("Delete USER API CALLED");
+            APIResponse response = new APIResponse();
+
+            try
+            {
+                var userRecord = _context.CallejoIncUsers.Include(user => user.FkChildren).Where(user => user.Id == userId).FirstOrDefault();
+
+                if (userRecord != null)
+                {
+
+                    _context.Entry(userRecord).Collection(u => u.FkChildren).Load();
+
+                    // Removes all the children from user record, essentially removing any Guardian entries linking them together
+                    var linkedChildren = userRecord.FkChildren.ToList();
+                    foreach (var child in linkedChildren)
+                    {
+                        userRecord.FkChildren.Remove(child);
+                        _context.SaveChanges();
+
+                        // Checks if child belongs to any other guardians, if not then delete child record.
+                        var otherGuardian = _context.CallejoIncUsers.Include(u => u.FkChildren).Where(u => u.FkChildren.Contains(child)).ToList();
+                        if (!otherGuardian.Any())
+                        {
+                            Console.WriteLine($"Child record {child.Id} has no other guardian on record, deleting record now.");
+                            _context.Children.Remove(child);
+                        }
+                    }
+
+                    response.Message = $"User record {userRecord.Id.ToString()} : {userRecord.FirstName} has been deleted.";
+                    _context.CallejoIncUsers.Remove(userRecord);
+
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    response.Message = $"No record with the id of {userId.ToString()} was not found.";
+                }
+
+                response.Success = true;
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = $"Problems deleting user record. Error: {ex.Message}. Inner Exception: {ex.InnerException}. Stack Trace: {ex.StackTrace}";
+            }
+
+            return response;
         }
 
     }
