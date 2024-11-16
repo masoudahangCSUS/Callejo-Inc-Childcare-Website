@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Common.View
 {
-    public class UserView
+    public class AdminUserCreationDTO
     {
         public Guid Id { get; set; }
         public string FirstName { get; set; }
@@ -26,11 +26,11 @@ namespace Common.View
     }
     public class ListUsers : APIResponse
     {
-        public List<UserView> users { get; set; }
+        public List<AdminUserCreationDTO> users { get; set; }
 
         public ListUsers()
         {
-            users = new List<UserView>();
+            users = new List<AdminUserCreationDTO>();
         }
     }
 }

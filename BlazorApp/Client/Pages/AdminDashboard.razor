@@ -1,6 +1,6 @@
 ﻿@page "/admin"
 @using Common.View
-@inject CustomerInfoService CustomerInfoService
+@inject AdminService CustomerInfoService
 @rendermode InteractiveServer
 
 <div>
@@ -39,7 +39,7 @@ else
                     <td>@user.ZipCode</td>
                     <td>
                         <button @onclick = "() => EditUser(user)">Edit</button> 
-                        <button @onclick = "() => DeleteUser(user)">Delete</button>
+                        <button @onclick = "() => DeleteUser(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -52,7 +52,7 @@ else
 </Modal>
 
 @code {
-    private List<UserView> users;
+    private List<AdminUserCreationDTO> users;
     private bool isCreateProfileModalVisible = false;
 
     protected override async Task OnInitializedAsync()
@@ -63,11 +63,11 @@ else
     private async Task LoadUsers()
     {
         users = await CustomerInfoService.GetAllUsersAsync();
+        StateHasChanged();
     }
 
     private void ShowCreateProfileModal()
     {
-        Console.WriteLine("making modal visible");
         isCreateProfileModalVisible = true;
     }
 
@@ -76,13 +76,17 @@ else
         isCreateProfileModalVisible = false;
     }
 
-    public void EditUser(UserView user)
+    public void EditUser(AdminUserCreationDTO user)
     {
         Console.WriteLine($"Clicked to edit user: {user.FirstName}");
     }
 
-    public void DeleteUser(UserView user)
+    public async Task DeleteUser(Guid userId)
     {
-        Console.WriteLine($"Clicked to delete user: {user.FirstName}");
+        var response = await CustomerInfoService.DeleteUserAsync(userId);
+        if (response.IsSuccessStatusCode)
+        {
+            await LoadUsers();
+        }
     }
 }
