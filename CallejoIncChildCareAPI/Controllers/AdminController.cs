@@ -51,5 +51,47 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             return BadRequest(result.Message);
         }
+
+
+        // POST: api/admin/login
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
+        {
+            var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
+
+            if (user == null)
+            {
+                return Unauthorized(new APIResponse
+                {
+                    Success = false,
+                    Message = "Invalid email or password."
+                });
+            }
+
+            // Verify password (you should hash passwords in production)
+            if (user.Password != loginInfo.Password)
+            {
+                return Unauthorized(new APIResponse
+                {
+                    Success = false,
+                    Message = "Invalid email or password."
+                });
+            }
+
+            return Ok(new APIResponse
+            {
+                Success = true,
+                Message = "Login successful.",
+                Data = new
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Role = user.FkRole
+                }
+            });
+        }
     }
 }

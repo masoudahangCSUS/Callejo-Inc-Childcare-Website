@@ -1,8 +1,6 @@
 using BlazorApp.Client;
 using DotNetEnv;
-
 using Microsoft.AspNetCore.Builder;
-
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,7 +10,13 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register HttpClient for making HTTP requests in Blazor components
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Environment.IsDevelopment() ? "https://localhost:44343" : builder.Configuration["BaseAddress"]) });
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(builder.Environment.IsDevelopment()
+            ? "https://localhost:7139" // Correct API URL for development
+            : builder.Configuration["BaseAddress"])
+    });
 
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
@@ -27,7 +31,6 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddSingleton<UserSessionService>();
-
 builder.Services.AddScoped<AdminService>();
 
 // Load environment variables

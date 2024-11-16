@@ -113,6 +113,13 @@ namespace Common.Services.User
             }
         }
 
+        public async Task<CallejoIncUser?> GetUserByEmailAsync(string email)
+        {
+            return await _context.CallejoIncUsers
+                .FirstOrDefaultAsync(user => user.Email == email);
+        }
+
+
         public APIResponse InsertChild(ChildView childInfo, CustomerUserViewDTO userInfo)
         {
             APIResponse response = new APIResponse();
