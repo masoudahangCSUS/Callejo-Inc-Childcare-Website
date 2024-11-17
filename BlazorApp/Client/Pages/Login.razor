@@ -61,7 +61,7 @@
                 var result = await response.Content.ReadFromJsonAsync<APIResponse>();
                 if (result?.Success == true)
                 {
-                    Navigation.NavigateTo("/admin-home"); // Redirect after successful login
+                    Navigation.NavigateTo("/admin"); // Redirect after successful login
                 }
             }
             else
