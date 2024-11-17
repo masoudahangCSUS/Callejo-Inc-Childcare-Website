@@ -1,0 +1,204 @@
+﻿@inject AdminService AdminService
+@using Common.View
+
+<EditForm Model="@newUser" OnSubmit="SaveProfile" FormName="ProfileForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>First Name:</label>
+        <InputText @bind-Value="newUser.FirstName" class="form-control" />
+    </div>
+    <div>
+        <label>Middle Name:</label>
+        <InputText @bind-Value="newUser.MiddleName" class="form-control" />
+    </div>
+    <div>
+        <label>Last Name:</label>
+        <InputText @bind-Value="newUser.LastName" class="form-control" />
+    </div>
+    <div>
+        <label>Address:</label>
+        <InputText @bind-Value="newUser.Address" class="form-control" />
+    </div>
+    <div>
+        <label>City:</label>
+        <InputText @bind-Value="newUser.City" class="form-control" />
+    </div>
+    <div>
+        <label>State:</label>
+        <InputText @bind-Value="newUser.State" class="form-control" />
+    </div>
+    <div>
+        <label>Zip Code:</label>
+        <InputText @bind-Value="newUser.ZipCode" class="form-control" />
+    </div>
+    <div>
+        <label>Email:</label>
+        <InputText @bind-Value="newUser.Email" class="form-control" />
+    </div>
+    <div>
+        <label>Password:</label>
+        <InputText @bind-Value="newUser.Password" class="form-control" />
+    </div>
+    <div>
+        <label>Phone Number:</label>
+        <InputText @bind-Value="newUser.PhoneNumber" class="form-control" />
+    </div>
+    <div>
+        <label>Role:</label>
+        <InputNumber @bind-Value="newUser.FkRole" class="form-control" />
+    </div>
+
+    <div>
+        <h4>Children</h4>
+        @foreach (var child in newUser.Children)
+        {
+            <div class="child-inputs">
+                <label>First Name:</label>
+                <InputText @bind-Value="child.FirstName" class="form-control" />
+                <label>Middle Name:</label>
+                <InputText @bind-Value="child.MiddleName" class="form-control" />
+                <label>Last Name:</label>
+                <InputText @bind-Value="child.LastName" class="form-control" />
+                <label>Age:</label>
+                <InputNumber @bind-Value="child.Age" class="form-control" />
+
+                <button type="button" class="btn btn-danger" @onclick="() => RemoveChild(child)">-</button>
+            </div>
+        }
+        <button type="button" class="btn btn-success" @onclick="AddChild">+ Add Child</button>
+    </div>
+
+    <br />
+    <button type="submit" class="btn btn-primary">
+        @(Mode == FormMode.Create ? "Create Profile" : "Save Changes")
+     </button>
+</EditForm>
+
+@code {
+
+    [Parameter] public EventCallback OnUserCreated { get; set; }
+    [Parameter] public EventCallback OnSuccess { get; set; }
+    [Parameter] public FormMode Mode { get; set; } = FormMode.Create;
+    [Parameter] public AdminUserCreationDTO? ExistingUser { get; set; }
+
+    private AdminUserCreationDTO newUser = new AdminUserCreationDTO();
+
+    protected override void OnParametersSet()
+    {
+        if (Mode == FormMode.Edit && ExistingUser != null)
+        {
+            Console.WriteLine(ExistingUser.Children.Count());
+            newUser = new AdminUserCreationDTO
+            {
+                Id = ExistingUser.Id,
+                FirstName = ExistingUser.FirstName,
+                MiddleName = ExistingUser.MiddleName,
+                LastName = ExistingUser.LastName,
+                Address = ExistingUser.Address,
+                City = ExistingUser.City,
+                State = ExistingUser.State,
+                ZipCode = ExistingUser.ZipCode,
+                Email = ExistingUser.Email,
+                Password = ExistingUser.Password,
+                PhoneNumber = ExistingUser.PhoneNumber,
+                FkRole = ExistingUser.FkRole,
+                Children = ExistingUser.Children.Select(c => new ChildView
+                {
+                    Id = c.Id,
+                    FirstName = c.FirstName,
+                    MiddleName = c.MiddleName,
+                    LastName = c.LastName,
+                    Age = c.Age
+                }).ToList()
+            };
+        }
+        else if (Mode == FormMode.Create)
+        {
+            newUser = new AdminUserCreationDTO();
+        }
+    }
+
+    private async Task SaveProfile()
+    {
+        try
+        {
+            HttpResponseMessage response = new HttpResponseMessage();
+
+            if (Mode == FormMode.Create)
+            {
+                response = await AdminService.CreateUserAsync(newUser);
+            }
+            else if (Mode == FormMode.Edit)
+            {
+                var existingChildren = ExistingUser?.Children ?? new List<ChildView>();
+
+                var updateUserDTO = new AdminUserUpdateDTO
+                {
+                    Id = newUser.Id,
+                    FirstName = newUser.FirstName,
+                    MiddleName = newUser.MiddleName,
+                    LastName = newUser.LastName,
+                    Address = newUser.Address,
+                    City = newUser.City,
+                    State = newUser.State,
+                    ZipCode = newUser.ZipCode,
+                    Email = newUser.Email,
+                    Password = newUser.Password,
+                    PhoneNumber = newUser.PhoneNumber,
+                    FkRole = newUser.FkRole,
+                    ChildrenToAdd = newUser.Children.Where(c => c.Id == 0).ToList(),
+                    ChildrenToRemove = ExistingUser.Children
+                        .Where(e => !newUser.Children.Any(c => c.Id == e.Id))
+                        .Select(c => c.Id)
+                        .ToList(),
+                    ChildrenToUpdate = newUser.Children
+                    .Where(c => c.Id != 0)
+                    .Where(c =>
+                    {
+                        var existingChild = existingChildren.FirstOrDefault(ec => ec.Id == c.Id);
+                        return existingChild != null &&
+                                (existingChild.FirstName != c.FirstName ||
+                                existingChild.LastName != c.LastName ||
+                                existingChild.MiddleName != c.MiddleName ||
+                                existingChild.Age != c.Age);
+                    })
+                    .ToList()
+                };
+
+                response = await AdminService.UpdateUserAsync(updateUserDTO);
+            }
+
+            if (response.IsSuccessStatusCode)
+            {
+                await OnUserCreated.InvokeAsync();
+                await OnSuccess.InvokeAsync();
+                if (Mode == FormMode.Create)
+                {
+                    newUser = new AdminUserCreationDTO();
+                }
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error creating profile: {response.ReasonPhrase}");
+                Console.WriteLine(errorContent);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating profile: {ex.Message}");
+        }
+    }
+
+    private void AddChild()
+    {
+        newUser.Children.Add(new ChildView());
+    }
+
+    private void RemoveChild(ChildView child)
+    {
+        newUser.Children.Remove(child);
+    }
+}

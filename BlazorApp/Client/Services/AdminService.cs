@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Common.View;
+using Microsoft.AspNetCore.Mvc;
 
 public class AdminService
 {
@@ -25,11 +26,19 @@ public class AdminService
             return new List<ChildrenGuardianView>();
         }
     }
+
     public async Task<HttpResponseMessage> CreateUserAsync(AdminUserCreationDTO newUser)
     {
         var apiUrl = "https://localhost:7139/api/admin/create-user";
         return await _httpClient.PostAsJsonAsync(apiUrl, newUser);
     }
+
+    public async Task<HttpResponseMessage> UpdateUserAsync(AdminUserUpdateDTO userInfo)
+    {
+        var apiUrl = "https://localhost:7139/api/admin/update-user";
+        return await _httpClient.PutAsJsonAsync(apiUrl, userInfo);
+    }
+
     public async Task<List<AdminUserCreationDTO>> GetAllUsersAsync()
     {
         var response = await _httpClient.GetFromJsonAsync<ListUsers>("https://localhost:7139/api/admin/get-all-users");
