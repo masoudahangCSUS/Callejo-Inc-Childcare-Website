@@ -1,132 +1,55 @@
-﻿@page "/admin-home"
-@using System.Collections.Generic
+﻿@page "/admin"
+@rendermode InteractiveServer
 
 <div class="admin-dashboard">
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="profile">
-            <img src="user-profile.jpg" alt="Welcome, Jane" class="profile-img" />
             <h4>Jane C.</h4>
         </div>
         <nav>
             <ul>
-                <li><a href="/admin-home" class="active">Dashboard</a></li>
-                <li><a href="/UserManagement">Accounts</a></li>
-                <li><a href="/admin-home">Tasks</a></li>
-                <li><a href="/admin-home">Events</a></li>
-                <li><a href="/admin-home">Employees</a></li>
-                <li><a href="/admin-expenses">Expenses</a></li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminOverview), "Overview")'
+                            class="btn-link @(ActivePage == "Overview" ? "active" : "")">
+                        Overview
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminAccountManagement), "Accounts")'
+                            class="btn-link @(ActivePage == "Accounts" ? "active" : "")">
+                        Accounts
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminExpenses), "Expenses")'
+                            class="btn-link @(ActivePage == "Expenses" ? "active" : "")">
+                        Expenses
+                    </button>
+                </li>
             </ul>
         </nav>
     </div>
 
     <!-- Main Content -->
     <div class="content">
-        <div class="grid">
-            <!-- Company Facts -->
-            <div class="card">
-                <h5>Company Facts</h5>
-                <p>Employees</p>
-                <div>
-                    <!-- Placeholder for chart component -->
-                    <p>Employee List (2024)</p>
-                </div>
-                <ul>
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-
-                </ul>
-            </div>
-
-            <!-- Statistics -->
-            <div class="card">
-                <h5>Statistics</h5>
-                <p>Projects by account</p>
-                <div>
-  
-                </div>
-                <ul>
-                    <li>Nothing to report.</li>
-                    <br/>
-                    <br />
-                    <br />
-                    <br />
-
-                </ul>
-            </div>
-
-            <!-- Assigned Risks -->
-            <div class="card">
-                <h5>Assigned Risks</h5>
-                <p>There are no risks assigned.</p>
-            </div>
-
-            <!-- Assigned Action Items -->
-            <div class="card">
-                <h5>Assigned Action Items</h5>
-                <p>There are no action items assigned.</p>
-            </div>
-        </div>
+        <DynamicComponent Type="@DynamicComponentType" />
     </div>
 </div>
 
-<style>
-    .admin-dashboard {
-        display: flex;
+@code {
+    private Type? DynamicComponentType { get; set; }
+    private string ActivePage { get; set; } = "Overview";
+
+    private void SetContent(Type componentType, string pageName)
+    {
+        ActivePage = pageName;
+        DynamicComponentType = componentType;
+        StateHasChanged();
     }
 
-    .sidebar {
-        width: 250px;
-        background-color: #f8f9fa;
-        padding: 20px;
+    protected override void OnInitialized()
+    {
+        SetContent(typeof(AdminOverview), "Overview");
     }
-
-    .sidebar .profile {
-        text-align: center;
-    }
-
-    .sidebar .profile-img {
-        border-radius: 50%;
-        width: 80px;
-        height: 80px;
-    }
-
-    .sidebar nav ul {
-        list-style-type: none;
-        padding: 0;
-    }
-
-    .sidebar nav ul li {
-        margin: 15px 0;
-    }
-
-    .sidebar nav ul li a {
-        text-decoration: none;
-        color: #333;
-        font-weight: bold;
-    }
-
-    .sidebar nav ul li a.active {
-        color: #007bff;
-    }
-
-    .content {
-        flex: 1;
-        padding: 20px;
-    }
-
-    .grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-
-    .card {
-        background-color: #fff;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-</style>
+}
