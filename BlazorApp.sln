@@ -5,9 +5,9 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{FABD08A9-FE61-4A74-A16F-11AECF3E6229}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CallejoIncChildcareAPI", "CallejoIncChildcareAPI\CallejoIncChildcareAPI.csproj", "{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CallejoIncChildcareAPI", "CallejoIncChildcareAPI\CallejoIncChildcareAPI.csproj", "{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{78F0A130-7940-458C-A716-6159880DF47C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{78F0A130-7940-458C-A716-6159880DF47C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -58,10 +58,10 @@ namespace Common.Services.SQL
                     DataSet dataSet = new DataSet();
                     sqlAdapter.Fill(dataSet);
 
-                    ChildrenGuadianView childrenGuadianView = null;
+                    ChildrenGuardianView childrenGuadianView = null;
                     foreach (DataRow dataRow in dataSet.Tables[0].Rows)
                     {
-                        childrenGuadianView = new ChildrenGuadianView();
+                        childrenGuadianView = new ChildrenGuardianView();
                         childrenGuadianView.childId = long.Parse(dataRow["childId"].ToString());
                         childrenGuadianView.childFirstName = dataRow["childFirstName"].ToString();
                         childrenGuadianView.childMiddleName = dataRow["childMiddleName"].ToString();
@@ -88,6 +88,7 @@ namespace Common.Services.SQL
             }
             return listChildren;
         }
+
     }
 
 }
