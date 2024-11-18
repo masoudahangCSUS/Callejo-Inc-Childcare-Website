@@ -143,61 +143,55 @@ namespace Common.Services.User
                         user.Password = adminDTO.Password;
                     }
                     user.FkRole = adminDTO.FkRole;
-
-                    if (adminDTO.ChildrenToAdd != null)
+                    if (adminDTO.Children != null)
                     {
-                        foreach (var childView in adminDTO.ChildrenToAdd)
+                        var existingChildren = user.FkChildren.ToList();
+
+                        // Remove children not in the new list
+                        var childrenToRemove = existingChildren
+                            .Where(ec => !adminDTO.Children.Any(nc => nc.Id == ec.Id))
+                            .ToList();
+                        foreach (var childToRemove in childrenToRemove)
                         {
-                            
-                            if (childView.Id == 0)
+                            user.FkChildren.Remove(childToRemove);
+                        }
+
+                        // Add or update children in the new list
+                        foreach (var child in adminDTO.Children)
+                        {
+                            // new child
+                            if (child.Id == 0)
                             {
-                                var newChild = new Child
+                                var checkIfChildExists = _context.Children.FirstOrDefault(c => c.FirstName == child.FirstName && c.MiddleName == child.MiddleName && c.LastName == child.LastName && c.Age == child.Age);
+                                
+                                if (checkIfChildExists == null)
                                 {
-                                    FirstName = childView.FirstName,
-                                    MiddleName = childView.MiddleName,
-                                    LastName = childView.LastName,
-                                    Age = childView.Age,
-                                };
-                                _context.Children.Add(newChild);
-                                user.FkChildren.Add(newChild);
-                                newChild.FkParents.Add(user);
+                                    var newChild = new Child
+                                    {
+                                        FirstName = child.FirstName,
+                                        MiddleName = child.MiddleName,
+                                        LastName = child.LastName,
+                                        Age = child.Age
+                                    };
+                                    user.FkChildren.Add(newChild);
+                                    _context.Children.Add(newChild);
+                                }
+                                else
+                                {
+                                    user.FkChildren.Add(checkIfChildExists);
+                                }
                             }
                             else
                             {
-                                var existingChild = _context.Children.FirstOrDefault(c => c.Id == childView.Id);
-                                if (existingChild != null && !user.FkChildren.Contains(existingChild))
+                                // existing child, update it
+                                var childToUpdate = existingChildren.FirstOrDefault(c => c.Id == child.Id);
+                                if (childToUpdate != null)
                                 {
-                                    user.FkChildren.Add(existingChild);
-                                    existingChild.FkParents.Add(user);
+                                    childToUpdate.FirstName = child.FirstName;
+                                    childToUpdate.MiddleName = child.MiddleName;
+                                    childToUpdate.LastName = child.LastName;
+                                    childToUpdate.Age = child.Age;
                                 }
-                            }
-                        }
-                    }
-
-                    if (adminDTO.ChildrenToRemove != null)
-                    {
-                        foreach (var childId in adminDTO.ChildrenToRemove)
-                        {
-                            var childToRemove = user.FkChildren.FirstOrDefault(c => c.Id == childId);
-                            if (childToRemove != null)
-                            {
-                                user.FkChildren.Remove(childToRemove);
-                                childToRemove.FkParents.Remove(user);
-                            }
-                        }
-                    }
-
-                    if (adminDTO.ChildrenToUpdate != null)
-                    {
-                        foreach (var childView in adminDTO.ChildrenToUpdate)
-                        {
-                            var childToUpdate = user.FkChildren.FirstOrDefault(c => c.Id == childView.Id);
-                            if (childToUpdate != null)
-                            {
-                                childToUpdate.FirstName = childView.FirstName;
-                                childToUpdate.MiddleName = childView.MiddleName;
-                                childToUpdate.LastName = childView.LastName;
-                                childToUpdate.Age = childView.Age;
                             }
                         }
                     }

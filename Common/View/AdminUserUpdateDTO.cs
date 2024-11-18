@@ -21,8 +21,6 @@ namespace Common.View
         public long FkRole { get; set; }
         public string? PhoneNumber { get; set; }
 
-        public List<ChildView>? ChildrenToAdd { get; set; } = new List<ChildView>();
-        public List<long>? ChildrenToRemove { get; set; } = new();
-        public List<ChildView>? ChildrenToUpdate { get; set; }
+        public List<ChildView> Children { get; set; }
     }
 }

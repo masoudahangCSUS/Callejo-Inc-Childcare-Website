@@ -148,23 +148,7 @@
                     Password = newUser.Password,
                     PhoneNumber = newUser.PhoneNumber,
                     FkRole = newUser.FkRole,
-                    ChildrenToAdd = newUser.Children.Where(c => c.Id == 0).ToList(),
-                    ChildrenToRemove = ExistingUser.Children
-                        .Where(e => !newUser.Children.Any(c => c.Id == e.Id))
-                        .Select(c => c.Id)
-                        .ToList(),
-                    ChildrenToUpdate = newUser.Children
-                    .Where(c => c.Id != 0)
-                    .Where(c =>
-                    {
-                        var existingChild = existingChildren.FirstOrDefault(ec => ec.Id == c.Id);
-                        return existingChild != null &&
-                                (existingChild.FirstName != c.FirstName ||
-                                existingChild.LastName != c.LastName ||
-                                existingChild.MiddleName != c.MiddleName ||
-                                existingChild.Age != c.Age);
-                    })
-                    .ToList()
+                    Children = newUser.Children
                 };
 
                 response = await AdminService.UpdateUserAsync(updateUserDTO);
