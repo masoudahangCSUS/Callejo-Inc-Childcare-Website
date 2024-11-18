@@ -1,5 +1,8 @@
-# Project Title and Logo
-*Include the project title and any software logo here.*
+<h1 align="center">Callejo Inc. Childcare Website</h1>
+
+<p align="center">
+  <img src="Company_logo.png" alt="Callejo Inc. Logo" style="width: 200px;">
+</p>
 
 ## Overview
 Briefly describe the purpose and goals of the project.
