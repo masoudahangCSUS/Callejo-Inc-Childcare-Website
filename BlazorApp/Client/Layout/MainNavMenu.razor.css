@@ -1,5 +1,4 @@
 ﻿/* Navbar Styling */
-
 .top-navbar {
     display: flex;
     align-items: center;
@@ -80,10 +79,10 @@
     transition: background-color 0.3s, color 0.3s;
 }
 
-.btn-outline-primary:hover {
-    background-color: #00B7D7; /* Bright blue background on hover */
-    color: white; /* White text on hover */
-}
+    .btn-outline-primary:hover {
+        background-color: #00B7D7; /* Bright blue background on hover */
+        color: white; /* White text on hover */
+    }
 
 .nav-mobile {
     display: none;
@@ -112,11 +111,12 @@
     z-index: 1;
     width: 200px;
 }
-.nav-mobile a {
-    color: #fff;
-    padding: 1rem 1.5rem;
-    display: block;
-}
+
+    .nav-mobile a {
+        color: #fff;
+        padding: 1rem 1.5rem;
+        display: block;
+    }
 
 .mobile-container {
     display: none;
@@ -124,25 +124,29 @@
 
 /* Responsiveness */
 @media (max-width: 768px) {
-    .checkbtn{
+    .checkbtn {
         display: block;
         font-size: 5rem;
         position: absolute;
         top: -45px;
         left: 10px;
     }
+
     .nav-mobile {
         top: 80px;
         width: 100%;
     }
-    .nav-mobile a {
-        font-size: 2rem;
-        padding: 2rem, 3rem;
-    }
+
+        .nav-mobile a {
+            font-size: 2rem;
+            padding: 2rem, 3rem;
+        }
+
     .container {
         display: none;
     }
-    .mobile-container{
+
+    .mobile-container {
         display: block;
     }
 }

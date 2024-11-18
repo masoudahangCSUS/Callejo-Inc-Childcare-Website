@@ -4,6 +4,8 @@ using Common.Services.Role;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using BlazorApp.Client.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
