@@ -1,10 +1,10 @@
 ﻿@using Common.View
-@inject AdminService CustomerInfoService
+@inject AdminService AdminService
 @rendermode InteractiveServer
 
 <div>
     <h3>Users</h3>
-    <button @onclick = "() => ShowCreateProfileModal()">ADD</button>
+    <button @onclick="() => AddUser()">ADD</button>
 </div>
 
 @if (users == null)
@@ -46,13 +46,20 @@ else
     </table>
 }
 
-<Modal Title="Create Profile" IsVisible="@isCreateProfileModalVisible" OnClose="CloseCreateProfileModal">
-    <CreateProfileForm OnUserCreated="LoadUsers" OnSuccess="CloseCreateProfileModal" />
+<Modal Title="@GetModalTitle()" IsVisible="@isProfileModalVisible" OnClose="CloseProfileModal">
+    <ProfileForm OnUserCreated="LoadUsers" OnSuccess="CloseProfileModal" Mode="@formMode" ExistingUser="@selectedUser" />
 </Modal>
 
 @code {
     private List<AdminUserCreationDTO> users;
-    private bool isCreateProfileModalVisible = false;
+    private bool isProfileModalVisible = false;
+    private FormMode formMode;
+    private AdminUserCreationDTO? selectedUser;
+
+    private string GetModalTitle()
+    {
+        return formMode == FormMode.Create ? "Create Profile" : "Edit Profile";
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -61,28 +68,38 @@ else
 
     private async Task LoadUsers()
     {
-        users = await CustomerInfoService.GetAllUsersAsync();
+        users = await AdminService.GetAllUsersAsync();
         StateHasChanged();
     }
 
-    private void ShowCreateProfileModal()
+    private void ShowProfileModal()
     {
-        isCreateProfileModalVisible = true;
+        isProfileModalVisible = true;
     }
 
-    private void CloseCreateProfileModal()
+    private void CloseProfileModal()
     {
-        isCreateProfileModalVisible = false;
+        isProfileModalVisible = false;
+        selectedUser = null;
     }
 
-    public void EditUser(AdminUserCreationDTO user)
+    public async void EditUser(AdminUserCreationDTO user)
     {
-        Console.WriteLine($"Clicked to edit user: {user.FirstName}");
+        selectedUser = user;
+        formMode = FormMode.Edit;
+        ShowProfileModal();
+    }
+
+    public void AddUser()
+    {
+        selectedUser = null;
+        formMode = FormMode.Create;
+        ShowProfileModal();
     }
 
     public async Task DeleteUser(Guid userId)
     {
-        var response = await CustomerInfoService.DeleteUserAsync(userId);
+        var response = await AdminService.DeleteUserAsync(userId);
         if (response.IsSuccessStatusCode)
         {
             await LoadUsers();

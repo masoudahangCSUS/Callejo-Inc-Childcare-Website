@@ -52,6 +52,18 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        //PUT: api/admin/update-user
+        [HttpPut("update-user")]
+        public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
+        {
+            var result = _userService.UpdateUser(userDTO);
+            Console.WriteLine("Does it reach here?");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+        }
 
         // POST: api/admin/login
         [HttpPost]

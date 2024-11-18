@@ -12,7 +12,7 @@ namespace Common.Services.User
     {
         APIResponse InsertUser(object userDTO);
         //APIResponse InsertChild(ChildView childInfo, CustomerUserView userInfo);
-        //APIResponse UpdateUser(RoleView roleView);
+        APIResponse UpdateUser(object userDTO);
         APIResponse DeleteUser(Guid userId);
         ListUsers GetAllUsers();
         //ListRoles GetUser(long id);
