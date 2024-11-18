@@ -41,10 +41,17 @@ Use information from JIRA to outline the timeline and key milestones for the pro
 *Add more potential future features or improvements.*
 
 ## Contributors
-**Team Name**
-- Team Member 1 - Role
-- Team Member 2 - Role
-*Add more team members as needed.*
+**Team Tech Squad**
+- Evan Callejo (Team Lead)
+- Chris Iverson
+- Alan Lei
+- Wei Chong
+- Justin Ear
+- Jonathon Delemos
+- Masoud Ahang
+- Angel Calderon
+
+*All team members contributed to both front-end and back-end development for this project.*
 
 ## Contact Information
 For inquiries, please contact [Your Email or Support Information].
