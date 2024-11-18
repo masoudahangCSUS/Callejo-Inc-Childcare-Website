@@ -1,4 +1,44 @@
 ﻿@page "/profile"
+@inject IFileService FileService
+@using BlazorApp.Client.Services
+@using Microsoft.AspNetCore.Components.Forms
+
+@code {
+    private bool showUploadDialog = false;
+    private IBrowserFile? selectedFile;
+    //    private Guid CurrentUserId = Guid.NewGuid();
+    Guid CurrentUserId = new Guid("0C8F87FB-D4B9-40A1-920F-49EC92C3D132");      // Temporary testing parameter ~ delete once file upload is working
+
+    void ShowFileUploadDialog()
+    {
+        showUploadDialog = true;
+        Console.WriteLine("TEST");          // Test input to confirm function is being called
+    }
+
+    void CancelUpload()
+    {
+        showUploadDialog = false;
+    }
+
+    async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    async Task UploadFile()
+    {
+        if (selectedFile is not null)
+        {
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 1048576); // 1 MB
+            byte[] fileData = new byte[stream.Length];
+            await stream.ReadAsync(fileData);
+
+            // Save file to user
+            await FileService.UploadFileAsync(CurrentUserId, fileData);
+            showUploadDialog = false;
+        }
+    }
+}
 
 <div class="parent-profile-page">
     <h1>Profile</h1>
@@ -46,5 +86,16 @@
 
     <div class="button-group">
         <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
+        <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
     </div>
+
+    @if (showUploadDialog)
+    {
+        <div>
+            <InputFile OnChange="HandleFileSelected" />
+            <button class="btn-upload" @onclick="UploadFile">Upload</button>
+            <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
+        </div>
+    }
+
 </div>

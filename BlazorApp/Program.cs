@@ -1,4 +1,6 @@
 using BlazorApp.Client;
+using Common.Models.Data;
+using Common.Services.Role;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +34,8 @@ builder.Services.AddServerSideBlazor()
 // Register any additional services
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=DESKTOP-49NHJ9N;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
 // Load environment variables
 Env.Load();
