@@ -128,8 +128,8 @@
         display: block;
         font-size: 5rem;
         position: absolute;
-        top: 30px;
-        left: 40px;
+        top: -45px;
+        left: 10px;
     }
     .nav-mobile {
         top: 160px;
