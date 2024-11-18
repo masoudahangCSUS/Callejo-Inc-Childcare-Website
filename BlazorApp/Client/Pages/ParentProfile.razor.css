@@ -128,3 +128,27 @@ h2 {
     .btn-edit:active {
         transform: scale(0.98);
     }
+
+/* Registration Upload Button Styling */
+.btn-regupload {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+    .btn-regupload:hover {
+        background-color: #5b28b5;
+        box-shadow: 0 6px 20px rgba(112, 49, 227, 0.5);
+    }
+
+    .btn-regupload:active {
+        transform: scale(0.98);
+    }
