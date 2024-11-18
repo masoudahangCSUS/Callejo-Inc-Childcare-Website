@@ -64,6 +64,10 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("middle_name");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("password");
             entity.Property(e => e.State)
                 .HasMaxLength(120)
                 .IsUnicode(false)
@@ -118,31 +122,19 @@ public partial class CallejoSystemDbContext : DbContext
 
         modelBuilder.Entity<InterestedParent>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Interested_Parents");
+            entity.ToTable("Interested_Parents");
 
-            entity.Property(e => e.Address)
-                .HasMaxLength(512)
-                .IsUnicode(false)
-                .HasColumnName("address");
-            entity.Property(e => e.City)
-                .HasMaxLength(512)
-                .IsUnicode(false)
-                .HasColumnName("city");
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
             entity.Property(e => e.Email)
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("email");
-            entity.Property(e => e.FirstName)
-                .HasMaxLength(20)
-                .IsUnicode(false)
-                .HasColumnName("first_name");
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.LastName)
+            entity.Property(e => e.Name)
                 .HasMaxLength(512)
                 .IsUnicode(false)
-                .HasColumnName("last_name");
+                .HasColumnName("name");
             entity.Property(e => e.ReasonForInquiry)
                 .HasMaxLength(512)
                 .IsUnicode(false)

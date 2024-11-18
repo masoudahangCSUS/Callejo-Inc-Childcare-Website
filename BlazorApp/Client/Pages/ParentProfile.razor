@@ -1,0 +1,50 @@
+﻿@page "/profile"
+
+<div class="parent-profile-page">
+    <h1>Profile</h1>
+    <div class="profile-overview">
+        <div class="profile-photo-container">
+            <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
+        </div>
+        <div class="profile-details-box">
+            <div class="profile-details">
+                <div class="profile-info">
+                    <div class="profile-column">
+                        <p><strong>First Name:</strong> John</p>
+                        <p><strong>Last Name:</strong> Doe</p>
+                        <p><strong>Email Address:</strong> johndoe@example.com</p>
+                        <p><strong>Phone Number:</strong> (555) 123-4567</p>
+                    </div>
+                    <div class="profile-column">
+                        <p><strong>Street Address:</strong> 123 Elm Street</p>
+                        <p><strong>City:</strong> Springfield</p>
+                        <p><strong>State:</strong> IL</p>
+                        <p><strong>ZIP:</strong> 62704</p>
+                        <p><strong>Relationship to Child:</strong> Parent</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Contact Section -->
+    <div class="emergency-contact-section">
+        <h2>Emergency Contact</h2>
+        <div class="emergency-details-box">
+            <div class="emergency-details">
+                <div class="emergency-info">
+                    <div class="emergency-column">
+                        <p><strong>First Name:</strong> Jane</p>
+                        <p><strong>Last Name:</strong> Doe</p>
+                        <p><strong>Phone Number:</strong> (555) 765-4321</p>
+                        <p><strong>Relationship to Child:</strong> Aunt</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="button-group">
+        <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
+    </div>
+</div>

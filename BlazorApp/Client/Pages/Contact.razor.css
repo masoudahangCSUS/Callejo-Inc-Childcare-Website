@@ -1,0 +1,101 @@
+/* Contact Page Main Container */
+.contact-page {
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: auto;
+    background-color: #00B7D7; /* Bright blue background */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    font-family: 'Arial', sans-serif;
+    color: #ffffff; /* White title text */
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+    /* Title Styling */
+    .contact-page h2 {
+        font-weight: bold;
+        font-size: 2.5rem;
+        margin-bottom: 30px;
+    }
+
+/* Contact Form Container */
+.contact-form-container {
+    background-color: #ffffff; /* White background for form container */
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Form Group Styling */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+    .form-group label {
+        font-size: 1rem;
+        font-weight: bold;
+        color: #0073C6; /* Blue label color */
+        display: block;
+        margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid #cccccc;
+        box-sizing: border-box;
+        margin-top: 5px;
+    }
+
+/* Info Links Styling */
+.info-links {
+    margin-top: 30px;
+}
+
+.info-link {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: #0073C6; /* Blue color for link */
+    text-decoration: none;
+    margin-bottom: 20px;
+    transition: color 0.3s;
+}
+
+    .info-link:hover {
+        color: #005fa3; /* Darker blue for hover effect */
+        text-decoration: underline;
+    }
+
+/* Button Group Styling */
+.button-group {
+    margin-top: 30px;
+}
+
+.submit-button {
+    background-color: #0073C6; /* Blue button to match the theme */
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.1s;
+    box-shadow: 0 4px 15px rgba(0, 115, 198, 0.4);
+}
+
+    .submit-button:hover {
+        background-color: #005fa3; /* Darker shade for hover effect */
+        box-shadow: 0 6px 20px rgba(0, 115, 198, 0.5);
+    }
+
+    .submit-button:active {
+        transform: scale(0.98);
+    }

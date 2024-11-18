@@ -1,9 +1,6 @@
 using BlazorApp.Client;
-using BlazorApp.Server.Data;
 using DotNetEnv;
-
 using Microsoft.AspNetCore.Builder;
-
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,22 +10,16 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 // Register HttpClient for making HTTP requests in Blazor components
-builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.Environment.IsDevelopment() ? "https://localhost:44343" : builder.Configuration["BaseAddress"]) });
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(builder.Environment.IsDevelopment()
+            ? "https://localhost:7139" // Correct API URL for development
+            : builder.Configuration["BaseAddress"])
+    });
 
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
-
-builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlOptions => sqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 5,                 // Number of retry attempts
-            maxRetryDelay: TimeSpan.FromSeconds(10), // Delay between retries
-            errorNumbersToAdd: null           // Specific SQL error codes to consider transient
-        ))
-       .EnableSensitiveDataLogging()
-       .LogTo(Console.WriteLine)
-);
 
 // Add Blazor Server with SignalR configuration
 builder.Services.AddServerSideBlazor()
@@ -40,6 +31,7 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddSingleton<UserSessionService>();
+builder.Services.AddScoped<AdminService>();
 
 // Load environment variables
 Env.Load();
