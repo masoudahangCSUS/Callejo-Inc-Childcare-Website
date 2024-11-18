@@ -67,6 +67,13 @@
     transition: transform 0.3s;
 }
 
+
+    /* Make the "My Child Info" Icon Circular */
+    .nav-icon.child-info {
+        border-radius: 50%;
+        border: 2px solid #0073C6; /* Optional: Add a border matching the theme color */
+    }
+
 /* Hover Effects */
 .nav-item-link:hover {
     color: #00B7D7;

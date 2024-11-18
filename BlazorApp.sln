@@ -5,6 +5,10 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorApp", "BlazorApp\BlazorApp.csproj", "{FABD08A9-FE61-4A74-A16F-11AECF3E6229}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CallejoIncChildcareAPI", "CallejoIncChildcareAPI\CallejoIncChildcareAPI.csproj", "{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{78F0A130-7940-458C-A716-6159880DF47C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{FABD08A9-FE61-4A74-A16F-11AECF3E6229}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FABD08A9-FE61-4A74-A16F-11AECF3E6229}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FABD08A9-FE61-4A74-A16F-11AECF3E6229}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED10C698-D7A4-4BC6-98AD-71F1C9425FEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{78F0A130-7940-458C-A716-6159880DF47C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{78F0A130-7940-458C-A716-6159880DF47C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{78F0A130-7940-458C-A716-6159880DF47C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{78F0A130-7940-458C-A716-6159880DF47C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
