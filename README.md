@@ -4,13 +4,12 @@
   <img src="Company_logo.png" alt="Callejo Inc. Logo" style="width: 200px;">
 </p>
 
-## Overview
-The Callejo Inc. Childcare Website is a senior project undertaken by Tech Squad, a group of Computer Science students at California State University, Sacramento. Running from Fall 2024 to Spring 2025, this project is designed to support Jane Callejo's family-owned childcare business by creating an intuitive and efficient website.
-
-This website will simplify key operations like managing child rosters, scheduling employees, and tracking expenses—all tasks that currently take significant manual effort. By centralizing these processes, the website will save time, reduce errors, and help the childcare business run smoothly. Additionally, it will strengthen the connection between the business and parents by offering timely updates and clear communication.
-
 ## Project Synopsis
-A more detailed description outlining the project's rationale, objectives, and how it benefits the client.
+The Callejo Inc. Childcare Website is an ongoing senior project being developed by Tech Squad, a team of Computer Science students at California State University, Sacramento. Running from Fall 2024 to Spring 2025, this project aims to support Jane Callejo’s family-owned childcare business by creating a user-friendly and effective website.
+
+Our goal is to make daily operations at Callejo Inc. smoother and more efficient. Right now, tasks like managing child rosters, scheduling staff, and keeping track of business expenses are done manually, which takes time and can lead to mistakes. By building this website, we hope to centralize these processes, making them easier to manage and reducing the chance for errors. This will ultimately save time for the staff and allow them to focus more on what really matters—caring for the children.
+
+We’re also focusing on making communication with parents easier and clearer. The website will provide timely updates and notifications so parents stay informed and connected. Through these features, we aim to create a reliable and organized system that supports the childcare center’s operations and builds trust with families. We're currently in the process of developing the website and are committed to delivering a tool that meets the needs of both the business and the parents it serves.
 
 ## Key Features
 - **Feature 1**: User Experience
