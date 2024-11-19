@@ -13,9 +13,9 @@ This website will simplify key operations like managing child rosters, schedulin
 A more detailed description outlining the project's rationale, objectives, and how it benefits the client.
 
 ## Key Features
-- **Feature 1**: Description
-- **Feature 2**: Description
-- **Feature 3**: Description
+- **Feature 1**: User Experience
+- **Feature 2**: Admin Controls 
+- **Feature 3**: Database Management
 *Add more features as needed.*
 
 ## Project Status
