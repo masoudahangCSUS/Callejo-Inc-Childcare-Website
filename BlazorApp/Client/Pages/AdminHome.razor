@@ -1,0 +1,55 @@
+﻿@page "/admin"
+@rendermode InteractiveServer
+
+<div class="admin-dashboard">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <h4>Jane C.</h4>
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminOverview), "Overview")'
+                            class="btn-link @(ActivePage == "Overview" ? "active" : "")">
+                        Overview
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminAccountManagement), "Accounts")'
+                            class="btn-link @(ActivePage == "Accounts" ? "active" : "")">
+                        Accounts
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminExpenses), "Expenses")'
+                            class="btn-link @(ActivePage == "Expenses" ? "active" : "")">
+                        Expenses
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <DynamicComponent Type="@DynamicComponentType" />
+    </div>
+</div>
+
+@code {
+    private Type? DynamicComponentType { get; set; }
+    private string ActivePage { get; set; } = "Overview";
+
+    private void SetContent(Type componentType, string pageName)
+    {
+        ActivePage = pageName;
+        DynamicComponentType = componentType;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        SetContent(typeof(AdminOverview), "Overview");
+    }
+}

@@ -1,0 +1,130 @@
+﻿/* Parent Profile Page Main Container */
+.parent-profile-page {
+    padding: 60px 20px;
+    max-width: 800px;
+    margin: auto;
+    background-color: #00B7D7; /* Bright blue background */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    margin-bottom: 40px;
+    margin-top: 40px;
+}
+
+/* Profile Photo Container Styling */
+.profile-photo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+/* Profile Photo Styling */
+.profile-photo {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #ffffff; /* White border for contrast */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Profile Overview Title */
+h1 {
+    text-align: center;
+    font-size: 2.5rem; /* Increased font size */
+    font-family: 'Arial', sans-serif;
+    color: #ffffff; /* White title color */
+    margin-bottom: 15px;
+}
+
+/* Profile Details Box Styling */
+.profile-details-box {
+    background-color: #ffffff; /* White background for contrast */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+/* Profile Info Container for columns */
+.profile-info {
+    display: flex;
+    justify-content: space-between;
+}
+
+/* Profile Column Styling */
+.profile-column {
+    width: 48%;
+}
+
+/* Profile Details Styling */
+.profile-details p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a; /* Darker text color for readability */
+}
+
+/* Emergency Contact Section Styling */
+.emergency-contact-section {
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #f0f9ff; /* Light blue background for contrast */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+/* Emergency Contact Box Styling */
+.emergency-details-box {
+    background-color: #ffffff; /* White background for emergency contact */
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Emergency Contact Title */
+h2 {
+    text-align: center;
+    font-size: 1.8rem;
+    font-family: 'Arial', sans-serif;
+    color: #0073C6; /* Theme color to match bright blue */
+    margin-bottom: 20px;
+}
+
+/* Emergency Details Styling */
+.emergency-details p {
+    margin: 10px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a; /* Darker text color for readability */
+}
+
+/* Button Group Styling */
+.button-group {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+/* Edit Button Styling */
+.btn-edit {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+    .btn-edit:hover {
+        background-color: #5b28b5;
+        box-shadow: 0 6px 20px rgba(112, 49, 227, 0.5);
+    }
+
+    .btn-edit:active {
+        transform: scale(0.98);
+    }
