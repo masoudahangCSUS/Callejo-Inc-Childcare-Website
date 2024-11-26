@@ -40,9 +40,24 @@ Use information from JIRA to outline the timeline and key milestones for the pro
 *Placeholder for developer setup instructions including dependencies, installation, and configuration steps to be completed in CSC 191.*
 
 ## Future Enhancements
-1. Future Feature 1
-2. Future Feature 2
-*Add more potential future features or improvements.*
+
+### 1. Expense Tracking and Reporting
+- **Expense Tracking**: Add a feature in the admin panel for the childcare operator to log and manage business expenses.
+- **Receipt Management**: Allow the operator to upload receipts for better financial tracking.
+- **Expense Reporting**: Generate detailed reports (daily, weekly, and monthly) summarizing expenses.
+
+### 2. Email Notification System
+- Modularize our email system to allow childcare operators to send updates or notifications to parents and guardians:
+  - Automated thank-you emails with attached paperwork for parents expressing interest in enrolling their children.
+  - Customizable email templates for sending important announcements or reminders.
+
+### 3. Authentication, Authorization, and State Management
+- Introduce an authentication and authorization system to manage user roles (e.g., admin, parent, staff) and dynamically change website content based on the logged-in state and user role.
+- Implement state management to maintain user sessions and improve user experience.
+
+### 4. Enhanced Admin Panel
+- Provide functionality in the admin panel to allow the operator to:
+  - Add, remove, or update registration paperwork for parents and guardians.
 
 ## Contributors
 **Team Tech Squad**
