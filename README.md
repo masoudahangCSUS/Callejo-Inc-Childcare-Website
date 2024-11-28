@@ -23,8 +23,9 @@ The software engineering team developed a comprehensive web application involvin
 
 ## Images and Diagrams
 ### ERD (Entity-Relationship Diagram)
-*Include an ERD image here.*
-
+<p align="center">
+  <img src="childcare_ERD.png" alt="ERD" style="width: 300px;">
+</p>
 ### Prototype Images
 *Insert prototype images or actual UI screenshots here.*
 
