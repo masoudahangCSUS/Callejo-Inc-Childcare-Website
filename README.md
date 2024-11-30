@@ -104,4 +104,22 @@ The software engineering team developed a comprehensive web application involvin
 *All team members contributed to both front-end and back-end development for this project.*
 
 ## Contact Information
-For inquiries, please contact [Your Email or Support Information].
+- Evan Callejo (Development Team):
+    - evancallejo@csus.edu
+- Chris Iverson (Development Team):
+    - civerson@csus.edu
+- Alan Lei (Development Team):
+    - alei2@csus.edu
+- Wei Chong (Development Team):
+    - weichong@csus.edu
+- Justin Ear (Development Team):
+    - justinear@csus.edu
+- Jonathon Delemos (Development Team):
+    - jdelemos@csus.edu
+- Masoud Ahang (Development Team):
+    - masoudahang@csus.edu
+- Angel Calderon (Development Team):
+    - angelcalderon2@csus.edu
+- Samuel and Jane Callejo (Clients):
+    - samuelcallejo7406@gmail.com
+    - samuelcallejo@callejoinc527.onmicrosoft.com
