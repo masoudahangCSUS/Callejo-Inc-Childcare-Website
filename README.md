@@ -30,8 +30,17 @@ The software engineering team developed a comprehensive web application involvin
 <p align="center">
   <img src="childcare_ERD.png" alt="ERD" style="width: 600px;">
 </p>
+
 ### Prototype Images
-*Insert prototype images or actual UI screenshots here.*
+Welcome Page: 
+<p align="center">
+  <img src="visitors_page.png" alt="visitors_page" style="width: 500px;">
+</p>
+
+Personalized Customer Page: 
+<p align="center">
+  <img src="customer_page.png" alt="customer_page" style="width: 500px;">
+</p>
 
 ## Timeline and Milestones
 ### Sprint 5
