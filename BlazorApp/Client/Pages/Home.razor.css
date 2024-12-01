@@ -1,0 +1,147 @@
+﻿.full-width-container {
+    width: 100vw;
+    background-color: #00B7D7;
+    padding-bottom:5%;
+}
+
+.welcome-section {
+    color: white;
+    font-family: 'Times New Roman', Times, serif;
+    padding:10%;
+    
+}
+
+.button-section{
+    display:flex;
+    flex-direction:column;
+    margin-right:50%;
+}
+
+.button-section h1{
+   padding-top:5%;
+   font-size:2.5vmax;
+}
+
+.welcome-image {
+    margin-left: 50%;
+    border-radius: 15px;
+    position: absolute;
+    top: 30%;
+    right: 15%;
+    overflow: hidden;
+    width: auto;
+    height: auto;
+}
+
+.learn-button {
+    color: #00B7D7;
+    border: none;
+    cursor: pointer;
+    padding: 1vmax 1.5vmax;
+    font-size: 1.5vmax;
+    border-radius:1vmax;
+    width:15vmax;
+}
+
+.info-section{
+    text-align:center;
+    
+    
+}
+.info-section h2 {
+    color: #7031E3;
+    font-size:3vmax;
+    padding-top:5%;
+    
+}
+
+.info-section h3 {
+    color: #B76EFF;
+    font-size:1.5vmax;
+    padding-bottom:5%;
+}
+
+.info-section p{
+    padding-left:10%;
+    padding-right:10%;
+    font-size: 1.3vmax;
+}
+
+.image-section{
+    display:flex;
+    justify-content:center;
+    padding-top:5%;
+}
+
+.image-section {
+    justify-content: space-evenly;
+    color: #7031E3;
+    font-size: 2vmax;
+    
+}
+
+.connect{
+    padding-top:90%;
+}
+.connect-image{
+    width: 120%;
+    height:auto;
+    padding-bottom:10%;
+}
+
+.play-image {
+    width: 120%;
+    height: auto;
+    padding-bottom:10%;
+}
+
+.grow-image {
+    width: 120%;
+    height: auto;
+    padding-bottom:10%;
+}
+
+.details-button {
+    background: #7031E3;
+    color:white;
+    border:none;
+    margin-top:5%;
+    margin-bottom:10%;
+    padding: 1.5% 3%;
+    font-size: 1.5vmax;
+    cursor:pointer;
+    border-radius:8px;
+
+}
+
+
+
+
+@media (max-width: 768px){
+    .welcome-image{
+       width:50%;
+       height:auto; 
+       position:absolute;
+       right:3%;
+       top:10%;
+    }
+
+    .connect-image {
+        width: 50%;
+        height: auto;
+        padding-bottom: 10%;
+    }
+
+    .play-image {
+        width: 50%;
+        height: auto;
+        padding-bottom: 10%;
+    }
+
+    .grow-image {
+        width: 50%;
+        height: auto;
+        padding-bottom: 10%;
+    }
+    
+}
