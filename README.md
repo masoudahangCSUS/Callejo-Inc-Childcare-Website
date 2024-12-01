@@ -33,12 +33,12 @@ The software engineering team developed a comprehensive web application involvin
 
 ### Prototype Images
 Welcome Page: 
-<p align="center">
+<p align="left">
   <img src="visitors_page.png" alt="visitors_page" style="width: 500px;">
 </p>
 
 Personalized Customer Page: 
-<p align="center">
+<p align="left">
   <img src="customer_page.png" alt="customer_page" style="width: 500px;">
 </p>
 
