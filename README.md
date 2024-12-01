@@ -26,6 +26,11 @@ The software engineering team developed a comprehensive web application involvin
 
 
 ## Images and Diagrams
+### Mock Up (created in Jira)
+<p align="center">
+  <img src="childcare_figma.png" alt="figma" style="width: 800px;">
+</p>
+
 ### ERD (Entity-Relationship Diagram)
 <p align="center">
   <img src="childcare_ERD.png" alt="ERD" style="width: 600px;">
@@ -106,33 +111,33 @@ Personalized Customer Page:
 ## Contributors
 **Team Tech Squad**
 - Evan Callejo (Team Lead)
-- Chris Iverson
-- Alan Lei
-- Wei Chong
-- Justin Ear
-- Jonathon Delemos
 - Masoud Ahang
 - Angel Calderon
+- Wei Chong
+- Jonathon Delemos
+- Justin Ear
+- Chris Iverson
+- Alan Lei
 
 *All team members contributed to both front-end and back-end development for this project.*
 
 ## Contact Information
-- Evan Callejo (Development Team):
-    - evancallejo@csus.edu
-- Chris Iverson (Development Team):
-    - civerson@csus.edu
-- Alan Lei (Development Team):
-    - alei2@csus.edu
-- Wei Chong (Development Team):
-    - weichong@csus.edu
-- Justin Ear (Development Team):
-    - justinear@csus.edu
-- Jonathon Delemos (Development Team):
-    - jdelemos@csus.edu
 - Masoud Ahang (Development Team):
     - masoudahang@csus.edu
 - Angel Calderon (Development Team):
     - angelcalderon2@csus.edu
+- Evan Callejo (Development Team):
+    - evancallejo@csus.edu
+- Wei Chong (Development Team):
+    - weichong@csus.edu
+- Jonathon Delemos (Development Team):
+    - jdelemos@csus.edu
+- Justin Ear (Development Team):
+    - justinear@csus.edu
+- Chris Iverson (Development Team):
+    - civerson@csus.edu
+- Alan Lei (Development Team):
+    - alei2@csus.edu
 - Samuel and Jane Callejo (Clients):
     - samuelcallejo7406@gmail.com
     - samuelcallejo@callejoinc527.onmicrosoft.com
