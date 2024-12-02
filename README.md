@@ -48,6 +48,28 @@ Personalized Customer Page:
 </p>
 
 ## Timeline and Milestones
+### Sprint 1
+- Development and Planning
+
+### Sprint 2
+- Public Side: Create website landing pages that parents looking for childcare can navigate to
+
+### Sprint 3
+- Public Side: Create login page for parents whose children are enrolled in childcare, employees of the childcare, along with the owner/operator of the childcare
+- Set up forgotten password structure
+- Align edit profile page with client's needs
+- Public Side: Please create necessary SQL tables to store interested parents
+- Update placeholder text for Mission page
+
+### Sprint 4
+- Database Development: Form Control, API Integration, Data Retrieval
+- Parents Side: Create UI and Database for the Enrolled Children Page
+- Parents Side: Ability to upload registration paperwork to childcare owner/operator
+- Refactor website to fix scaling issue
+- Update placeholder text for rest of the landing pages
+- Public Side: Contact Page Functionality
+- Parents Side: Create UI for Parent Profile Page and Link it to Edit Profile page
+
 ### Sprint 5
 - Public Side: Provide a mechanism to inform childcare operator/owner when parents register their interest in enrolling their kids.
 - Parents Side: Provide functionality that displays notes and communications from the childcare provider/owner.
