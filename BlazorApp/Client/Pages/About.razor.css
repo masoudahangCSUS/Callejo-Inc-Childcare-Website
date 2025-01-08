@@ -10,15 +10,21 @@
     justify-content: space-between;
     align-items: flex-start;
     width: 100%;
-    min-height: 70vh; 
+    min-height: 70vh;
+    padding: 14px;
 }
 
 .header {
-    text-align: left;
+    color: white;
+    background-color: #00A5C7;
+    padding: 40px;
+    text-align: center;
+    font-size: 1.5rem;
+    border-radius: 10px;
+    min-height: 400px;
     padding-bottom: 10%;
     padding-top: 10%;
     margin-left: 1%;
-    color:rgba(143, 54, 255, 1);
 }
 
 .header h1{
@@ -30,7 +36,7 @@
 }
 .text-section {
     margin-left:1%;
-    width: 50%; 
+    width: 90%; 
     padding-right: 20px; 
     font-size:1.2rem;
     text-align:left;
@@ -45,13 +51,12 @@
 }
 
 .jane-image {
-    width: 80%; 
-    height: auto; 
+    width: 50%;
+    height: auto;
     display: block;
-    padding-top:5%;
-    padding-bottom:5%;
+    padding-top: 5%;
+    padding-bottom: 5%;
 }
-
 
 @media (max-width: 768px) {
     .full-width-container{
