@@ -1,0 +1,51 @@
+﻿@page "/roles"
+@rendermode InteractiveServer
+@using ExBlazorWithAPI.Service
+@inject RoleService RoleService 
+
+<h3>Roles</h3>
+
+<table>
+    <tr>
+        <td>
+            <br />
+            <h3>Existing roles</h3>
+            <label>@((MarkupString)allroles)</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br /><br /><br />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Get a Role</h3>
+            <input type="number" @bind="roleId" placeholder="Enter Role ID" />
+            <button @onclick="GetRoleById">Get Role</button>
+            <br /><label>@((MarkupString)roleInfo)</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Add a Role</h3>
+            <input type="text" @bind="newRoleName" placeholder="Enter Role Name" />
+            <button @onclick="AddRole">Add Role</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Update a Role</h3>
+            <input type="number" @bind="updateRoleId" placeholder="Enter Role ID" />
+            <input type="text" @bind="updateRoleName" placeholder="Enter New Role Name" />
+            <button @onclick="UpdateRole">Update Role</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Delete a Role</h3>
+            <input type="number" @bind="deleteRoleId" placeholder="Enter Role ID" />
+            <button @onclick="DeleteRole">Delete Role</button>
+        </td>
+    </tr>
+</table>
