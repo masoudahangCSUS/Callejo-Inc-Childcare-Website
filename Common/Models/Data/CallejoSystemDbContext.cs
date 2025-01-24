@@ -26,6 +26,7 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DataContext");

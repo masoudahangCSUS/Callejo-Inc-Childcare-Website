@@ -1,0 +1,86 @@
+﻿@page "/notifications"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@rendermode InteractiveServer
+@inject NotificationService NotificationService
+
+<h1 class="notifications-title">Notifications</h1>
+
+@if (notifications == null)
+{
+    <div class="loading-message">
+        <p>Loading notifications...</p>
+    </div>
+}
+else if (!notifications.Any())
+{
+    <div class="empty-message">
+        <p>No notifications found.</p>
+    </div>
+}
+else
+{
+    <div class="notifications-container">
+        @foreach (var notification in notifications)
+        {
+            <div class="notification-card @(notification.IsRead ? "" : "unread")">
+                <h3>@notification.Title</h3>
+                <p>@notification.Message</p>
+                <small>Sent on: @notification.SentOn.ToString("MMMM dd, yyyy hh:mm tt")</small>
+                @if (!notification.IsRead)
+                {
+                    <button class="mark-read-btn" @onclick="() => MarkAsRead(notification.Id)">Mark as Read</button>
+                }
+                else
+                {
+                    <span class="read-indicator">Read</span>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Notification> notifications = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string parentId = "45F522AF-9A9E-435E-B549-19373D3381EE"; // Replace with your actual parentId
+            notifications = await NotificationService.GetNotificationsByParentId(parentId);
+            Console.WriteLine($"Loaded {notifications.Count} notifications.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading notifications: {ex.Message}");
+        }
+    }
+
+    private async Task MarkAsRead(long id)
+    {
+        Console.WriteLine($"Marking notification {id} as read...");
+        try
+        {
+            var success = await NotificationService.MarkAsRead(id);
+            if (success)
+            {
+                var notification = notifications.FirstOrDefault(n => n.Id == id);
+                if (notification != null)
+                {
+                    notification.IsRead = true;
+                    StateHasChanged(); // Refresh the UI
+                }
+                Console.WriteLine($"Notification {id} marked as read.");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to mark notification {id} as read.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error marking notification as read: {ex.Message}");
+        }
+    }
+}
