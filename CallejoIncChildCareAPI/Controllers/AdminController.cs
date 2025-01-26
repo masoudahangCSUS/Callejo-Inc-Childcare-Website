@@ -11,7 +11,7 @@ namespace CallejoIncChildcareAPI.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
 
         public AdminController(IUserService userService)
         {
@@ -19,8 +19,7 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // POST: api/admin/create-user
-        [HttpPost]
-        [Route("create-user")]
+        [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
             var result = _userService.InsertUser(userInfo);
@@ -32,8 +31,7 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // GET: api/admin/get-all-users
-        [HttpGet]
-        [Route("get-all-users")]
+        [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
             var result = _userService.GetAllUsers();
@@ -52,7 +50,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result.Message);
         }
 
-        //PUT: api/admin/update-user
+        // PUT: api/admin/update-user
         [HttpPut("update-user")]
         public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
         {
@@ -66,12 +64,10 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // POST: api/admin/login
-        [HttpPost]
-        [Route("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
             var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
-
             if (user == null)
             {
                 return Unauthorized(new APIResponse
@@ -81,7 +77,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
 
-            // Verify password (you should hash passwords in production)
+            // Verify password (in production, use hashing + salted storage)
             if (user.Password != loginInfo.Password)
             {
                 return Unauthorized(new APIResponse
@@ -91,18 +87,22 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
 
+            // Create a DTO so we don't expose fields like Password, RegistrationDocument, etc.
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                // Cast from long to int if needed:
+                Role = (int)user.FkRole
+            };
+
             return Ok(new APIResponse
             {
                 Success = true,
                 Message = "Login successful.",
-                Data = new
-                {
-                    UserId = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Role = user.FkRole
-                }
+                Data = userDTO
             });
         }
     }
