@@ -1,0 +1,81 @@
+﻿<style >
+/* Main container */
+.user-home {
+    padding: 2rem;
+    background: linear-gradient(to right, #f5f5ff, #ffffff);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+}
+
+/* Welcome / Hero Section */
+.user-home .welcome {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+    .user-home .welcome h2 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        color: #6c63ff; /* Use a brand-like purple, matching your style */
+    }
+
+    .user-home .welcome p {
+        font-size: 1.2rem;
+        color: #555;
+    }
+
+/* Button styling */
+.action-button {
+    background: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+}
+
+    .action-button:hover {
+        background: #584ee3;
+    }
+
+/* Card Grid */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+
+/* Individual Cards */
+.card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    transition: transform 0.3s ease;
+}
+
+    .card:hover {
+        transform: translateY(-5px);
+    }
+
+    .card h3 {
+        margin-top: 0;
+        margin-bottom: 1rem;
+        color: #444;
+    }
+
+    .card p {
+        color: #666;
+        line-height: 1.5;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    .info-cards {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style >

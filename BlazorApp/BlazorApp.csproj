@@ -11,6 +11,7 @@
     <Content Remove="Client\Pages\Counter.razor" />
     <Content Remove="Client\Pages\Error.razor" />
     <Content Remove="Client\Pages\Weather.razor" />
+    <Content Remove="wwwroot\images\classroom.avif" />
   </ItemGroup>
 
   <ItemGroup>
