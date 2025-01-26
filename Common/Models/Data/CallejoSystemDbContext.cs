@@ -77,6 +77,9 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(12)
                 .IsUnicode(false)
                 .HasColumnName("zip_code");
+            entity.Property(e => e.RegistrationDocument)
+                .HasColumnType("varbinary(max)")
+                .HasColumnName("registration_document");
 
             entity.HasOne(d => d.FkRoleNavigation).WithMany(p => p.CallejoIncUsers)
                 .HasForeignKey(d => d.FkRole)
