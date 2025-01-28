@@ -1,15 +1,17 @@
-﻿public class UserSessionService
+﻿using System;
+
+public class UserSessionService
 {
     public bool UserIsLoggedIn { get; private set; }
-    public int? UserRole { get; private set; } // Store the user role
+    public int? UserRole { get; private set; }
+    public Guid? UserId { get; private set; }
 
-    public void SetUserLoggedIn(bool isLoggedIn)
-    {
-        UserIsLoggedIn = isLoggedIn;
-    }
-    public void SetUser(bool isLoggedIn, int? role = null)
+    public void SetUser(bool isLoggedIn, int? role = null, Guid? userId = null)
     {
         UserIsLoggedIn = isLoggedIn;
         UserRole = role;
+        UserId = userId;
+
+        Console.WriteLine($"DEBUG: User logged in → {isLoggedIn}, Role: {role}, User ID: {UserId?.ToString()}");
     }
 }

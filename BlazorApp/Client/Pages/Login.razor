@@ -7,8 +7,8 @@
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
 @inject UserSessionService UserSession
+
 @using System.Text.Json.Serialization;
 
 <PageTitle>Login</PageTitle>
@@ -17,7 +17,6 @@
     <div class="login-box">
         <h1>CALLEJO INC.</h1>
         <div class="login-form">
-            <!-- The EditForm calls HandleLogin on valid submit -->
             <EditForm Model="loginInfo" OnValidSubmit="HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -46,7 +45,7 @@
 </div>
 
 @code {
-    private LoginDTO loginInfo = new LoginDTO();
+    private LoginDTO loginInfo = new();
     private bool loginState = true;
     private string errorMessage = string.Empty;
 
@@ -66,12 +65,13 @@
 
                     if (user != null)
                     {
-                        UserSession.SetUser(true, user.Role); // Set user session
+                        Console.WriteLine($"DEBUG: User logged in ? {user.FirstName} {user.LastName}, ID: {user.Id}");
 
-                        // Redirect to the correct home page
+                        UserSession.SetUser(true, user.Role, user.Id); // Ensure GUID is correctly stored
+
                         if (user.Role == 1)
                         {
-                            Navigation.NavigateTo("/"); // This will use the if block for parent homepage
+                            Navigation.NavigateTo("/");
                         }
                         else
                         {
@@ -96,11 +96,10 @@
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
-            Console.WriteLine(ex.Message);
+            Console.WriteLine($"DEBUG: Login error ? {ex.Message}");
         }
     }
 
-    // Required for the form
     public class LoginDTO
     {
         [Required(ErrorMessage = "Email is required.")]
@@ -111,7 +110,6 @@
         public string Password { get; set; } = string.Empty;
     }
 
-    // Basic model for the JSON response
     public class APIResponse
     {
         public bool Success { get; set; }
@@ -121,7 +119,8 @@
 
     public class UserModel
     {
-        public Guid Id { get; set; }
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }  // Ensuring GUID is correctly stored
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;

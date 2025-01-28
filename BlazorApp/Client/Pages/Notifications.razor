@@ -1,8 +1,9 @@
 ﻿@page "/notifications"
 @using BlazorApp.Client.Services
 @using Common.Models.Data
-@rendermode InteractiveServer
 @inject NotificationService NotificationService
+@inject UserSessionService UserSession
+@rendermode InteractiveServer
 
 <h1 class="notifications-title">Notifications</h1>
 
@@ -47,19 +48,29 @@ else
     {
         try
         {
-            string parentId = "0C8F87FB-D4B9-40A1-920F-49EC92C3D132"; // Replace with your actual parentId
-            notifications = await NotificationService.GetNotificationsByParentId(parentId);
-            Console.WriteLine($"Loaded {notifications.Count} notifications.");
+            if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+            {
+                Guid parentId = UserSession.UserId.Value;
+                Console.WriteLine($"DEBUG: Fetching notifications for Parent ID: {parentId}");
+
+                notifications = await NotificationService.GetNotificationsByParentId(parentId);
+
+                Console.WriteLine($"DEBUG: Fetched {notifications.Count} notifications.");
+            }
+            else
+            {
+                Console.WriteLine("DEBUG: User is not logged in or UserId is missing.");
+            }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading notifications: {ex.Message}");
+            Console.WriteLine($"DEBUG: Error loading notifications → {ex.Message}");
         }
     }
 
     private async Task MarkAsRead(long id)
     {
-        Console.WriteLine($"Marking notification {id} as read...");
+        Console.WriteLine($"DEBUG: Marking notification {id} as read...");
         try
         {
             var success = await NotificationService.MarkAsRead(id);
@@ -69,18 +80,18 @@ else
                 if (notification != null)
                 {
                     notification.IsRead = true;
-                    StateHasChanged(); // Refresh the UI
+                    StateHasChanged();
                 }
-                Console.WriteLine($"Notification {id} marked as read.");
+                Console.WriteLine($"DEBUG: Notification {id} marked as read.");
             }
             else
             {
-                Console.WriteLine($"Failed to mark notification {id} as read.");
+                Console.WriteLine($"DEBUG: Failed to mark notification {id} as read.");
             }
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error marking notification as read: {ex.Message}");
+            Console.WriteLine($"DEBUG: Error marking notification as read → {ex.Message}");
         }
     }
 }
