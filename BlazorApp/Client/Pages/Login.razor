@@ -8,6 +8,7 @@
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject UserSessionService UserSession
 @using System.Text.Json.Serialization;
 
 <PageTitle>Login</PageTitle>
@@ -51,65 +52,51 @@
 
     private async Task HandleLogin()
     {
-        // Debug print to confirm this method is being called
-        Console.WriteLine("HandleLogin() was called in Blazor.");
-
         try
         {
-            // 1. POST to our login endpoint
             var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/login", loginInfo);
 
-            // 2. Check if the response is successful
             if (response.IsSuccessStatusCode)
             {
-                // 3. Deserialize the APIResponse
                 var result = await response.Content.ReadFromJsonAsync<APIResponse>();
                 if (result?.Success == true && result.Data is not null)
                 {
-                    // Convert 'result.Data' to JSON for debugging
                     var userJson = System.Text.Json.JsonSerializer.Serialize(result.Data);
-                    Console.WriteLine($"RAW JSON from server: {userJson}");
-
-                    // 4. Deserialize that JSON into UserModel
                     var user = System.Text.Json.JsonSerializer.Deserialize<UserModel>(userJson);
 
-                    // Print out the user's role for debugging
-                    Console.WriteLine($"Deserialized user.Role = {user?.Role}");
+                    if (user != null)
+                    {
+                        UserSession.SetUser(true, user.Role); // Set user session
 
-                    // 5. If role == 1 => /user/home; else => /admin
-                    if (user?.Role == 1)
-                    {
-                        Console.WriteLine("Navigating to /user/home (Role=1).");
-                        Navigation.NavigateTo("/user/home");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Navigating to /admin (Role={user?.Role}).");
-                        Navigation.NavigateTo("/admin");
+                        // Redirect to the correct home page
+                        if (user.Role == 1)
+                        {
+                            Navigation.NavigateTo("/"); // This will use the if block for parent homepage
+                        }
+                        else
+                        {
+                            Navigation.NavigateTo("/admin");
+                        }
                     }
                 }
                 else
                 {
-                    // The API might have returned Success=false or missing data
                     loginState = false;
                     errorMessage = result?.Message ?? "Login failed or no data returned.";
-                    Console.WriteLine($"Login failed. Message: {errorMessage}");
                 }
             }
             else
             {
-                // 4xx/5xx error
                 loginState = false;
                 var error = await response.Content.ReadFromJsonAsync<APIResponse>();
                 errorMessage = error?.Message ?? "Login failed.";
-                Console.WriteLine($"Response not success: {errorMessage}");
             }
         }
         catch (Exception ex)
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
-            Console.WriteLine(ex.Message); // Log error for debugging
+            Console.WriteLine(ex.Message);
         }
     }
 
