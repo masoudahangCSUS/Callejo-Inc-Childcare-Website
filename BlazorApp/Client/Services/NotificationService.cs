@@ -17,7 +17,7 @@ namespace BlazorApp.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Notification>> GetNotificationsByParentId(string parentId)
+        public async Task<List<Notification>> GetNotificationsByParentId(Guid parentId)
         {
             try
             {

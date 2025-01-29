@@ -7,7 +7,8 @@
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
+@inject UserSessionService UserSession
+
 @using System.Text.Json.Serialization;
 
 <PageTitle>Login</PageTitle>
@@ -16,7 +17,6 @@
     <div class="login-box">
         <h1>CALLEJO INC.</h1>
         <div class="login-form">
-            <!-- The EditForm calls HandleLogin on valid submit -->
             <EditForm Model="loginInfo" OnValidSubmit="HandleLogin">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -45,75 +45,61 @@
 </div>
 
 @code {
-    private LoginDTO loginInfo = new LoginDTO();
+    private LoginDTO loginInfo = new();
     private bool loginState = true;
     private string errorMessage = string.Empty;
 
     private async Task HandleLogin()
     {
-        // Debug print to confirm this method is being called
-        Console.WriteLine("HandleLogin() was called in Blazor.");
-
         try
         {
-            // 1. POST to our login endpoint
             var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/login", loginInfo);
 
-            // 2. Check if the response is successful
             if (response.IsSuccessStatusCode)
             {
-                // 3. Deserialize the APIResponse
                 var result = await response.Content.ReadFromJsonAsync<APIResponse>();
                 if (result?.Success == true && result.Data is not null)
                 {
-                    // Convert 'result.Data' to JSON for debugging
                     var userJson = System.Text.Json.JsonSerializer.Serialize(result.Data);
-                    Console.WriteLine($"RAW JSON from server: {userJson}");
-
-                    // 4. Deserialize that JSON into UserModel
                     var user = System.Text.Json.JsonSerializer.Deserialize<UserModel>(userJson);
 
-                    // Print out the user's role for debugging
-                    Console.WriteLine($"Deserialized user.Role = {user?.Role}");
+                    if (user != null)
+                    {
+                        Console.WriteLine($"DEBUG: User logged in ? {user.FirstName} {user.LastName}, ID: {user.Id}");
 
-                    // 5. If role == 1 => /user/home; else => /admin
-                    if (user?.Role == 1)
-                    {
-                        Console.WriteLine("Navigating to /user/home (Role=1).");
-                        Navigation.NavigateTo("/user/home");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"Navigating to /admin (Role={user?.Role}).");
-                        Navigation.NavigateTo("/admin");
+                        UserSession.SetUser(true, user.Role, user.Id); // Ensure GUID is correctly stored
+
+                        if (user.Role == 1)
+                        {
+                            Navigation.NavigateTo("/");
+                        }
+                        else
+                        {
+                            Navigation.NavigateTo("/admin");
+                        }
                     }
                 }
                 else
                 {
-                    // The API might have returned Success=false or missing data
                     loginState = false;
                     errorMessage = result?.Message ?? "Login failed or no data returned.";
-                    Console.WriteLine($"Login failed. Message: {errorMessage}");
                 }
             }
             else
             {
-                // 4xx/5xx error
                 loginState = false;
                 var error = await response.Content.ReadFromJsonAsync<APIResponse>();
                 errorMessage = error?.Message ?? "Login failed.";
-                Console.WriteLine($"Response not success: {errorMessage}");
             }
         }
         catch (Exception ex)
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
-            Console.WriteLine(ex.Message); // Log error for debugging
+            Console.WriteLine($"DEBUG: Login error ? {ex.Message}");
         }
     }
 
-    // Required for the form
     public class LoginDTO
     {
         [Required(ErrorMessage = "Email is required.")]
@@ -124,7 +110,6 @@
         public string Password { get; set; } = string.Empty;
     }
 
-    // Basic model for the JSON response
     public class APIResponse
     {
         public bool Success { get; set; }
@@ -134,7 +119,8 @@
 
     public class UserModel
     {
-        public Guid Id { get; set; }
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }  // Ensuring GUID is correctly stored
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
