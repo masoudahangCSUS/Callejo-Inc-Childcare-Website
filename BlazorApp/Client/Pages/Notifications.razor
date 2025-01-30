@@ -5,41 +5,52 @@
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
 
-<h1 class="notifications-title">Notifications</h1>
+<div class="notifications-page">
+    <h1 class="notifications-title">Notifications</h1>
 
-@if (notifications == null)
-{
-    <div class="loading-message">
-        <p>Loading notifications...</p>
-    </div>
-}
-else if (!notifications.Any())
-{
-    <div class="empty-message">
-        <p>No notifications found.</p>
-    </div>
-}
-else
-{
-    <div class="notifications-container">
-        @foreach (var notification in notifications)
-        {
-            <div class="notification-card @(notification.IsRead ? "" : "unread")">
-                <h3>@notification.Title</h3>
-                <p>@notification.Message</p>
-                <small>Sent on: @notification.SentOn.ToString("MMMM dd, yyyy hh:mm tt")</small>
-                @if (!notification.IsRead)
-                {
-                    <button class="mark-read-btn" @onclick="() => MarkAsRead(notification.Id)">Mark as Read</button>
-                }
-                else
-                {
-                    <span class="read-indicator">Read</span>
-                }
-            </div>
-        }
-    </div>
-}
+    @if (notifications == null)
+    {
+        <div class="loading-message">
+            <p>Loading notifications...</p>
+        </div>
+    }
+    else if (!notifications.Any())
+    {
+        <div class="empty-message">
+            <p>No notifications found.</p>
+        </div>
+    }
+    else
+    {
+        <div class="notifications-container">
+            @foreach (var notification in notifications)
+            {
+                <div class="notification-card @(notification.IsRead ? "read" : "unread")"
+                     @onclick="() => ToggleNotification(notification)">
+                    <h3>@notification.Title</h3>
+                    <small>Sent on: @notification.SentOn.ToString("MMMM dd, yyyy hh:mm tt")</small>
+
+                    @if (notification.IsExpanded)
+                    {
+                        <p>@notification.Message</p>
+                        <span class="read-indicator">Read</span>
+                    }
+                    else
+                    {
+                        @if (notification.IsRead)
+                        {
+                            <p class="read-label">Read</p>
+                        }
+                        else
+                        {
+                            <p class="click-to-read">Click to Read</p>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
     private List<Notification> notifications = new();
@@ -54,6 +65,7 @@ else
                 Console.WriteLine($"DEBUG: Fetching notifications for Parent ID: {parentId}");
 
                 notifications = await NotificationService.GetNotificationsByParentId(parentId);
+                notifications.ForEach(n => n.IsExpanded = false); // Ensure all notifications are collapsed initially
 
                 Console.WriteLine($"DEBUG: Fetched {notifications.Count} notifications.");
             }
@@ -68,30 +80,31 @@ else
         }
     }
 
-    private async Task MarkAsRead(long id)
+    private async Task ToggleNotification(Notification notification)
     {
-        Console.WriteLine($"DEBUG: Marking notification {id} as read...");
-        try
+        if (!notification.IsRead)
         {
-            var success = await NotificationService.MarkAsRead(id);
-            if (success)
+            Console.WriteLine($"DEBUG: Marking notification {notification.Id} as read...");
+            try
             {
-                var notification = notifications.FirstOrDefault(n => n.Id == id);
-                if (notification != null)
+                var success = await NotificationService.MarkAsRead(notification.Id);
+                if (success)
                 {
                     notification.IsRead = true;
-                    StateHasChanged();
                 }
-                Console.WriteLine($"DEBUG: Notification {id} marked as read.");
+                else
+                {
+                    Console.WriteLine($"DEBUG: Failed to mark notification {notification.Id} as read.");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine($"DEBUG: Failed to mark notification {id} as read.");
+                Console.WriteLine($"DEBUG: Error marking notification as read → {ex.Message}");
             }
         }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"DEBUG: Error marking notification as read → {ex.Message}");
-        }
+
+        // Toggle expand/collapse state
+        notification.IsExpanded = !notification.IsExpanded;
+        StateHasChanged();
     }
 }

@@ -19,6 +19,10 @@ namespace Common.Models.Data
         public DateTime SentOn { get; set; }
 
         public bool IsRead { get; set; }
+
+        // New property for expanding UI in Blazor
+        [NotMapped]
+        public bool IsExpanded { get; set; } = false;
     }
 
 
