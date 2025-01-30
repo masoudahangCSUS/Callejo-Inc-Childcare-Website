@@ -31,6 +31,8 @@ public partial class CallejoIncUser
 
     public virtual Role FkRoleNavigation { get; set; } = null!;
 
+    public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
     public virtual ICollection<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
 
     public virtual ICollection<Child> FkChildren { get; set; } = new List<Child>();
