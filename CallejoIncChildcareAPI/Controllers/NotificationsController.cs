@@ -39,5 +39,17 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             return Ok("Notification marked as read.");
         }
+
+        // POST: api/notifications/send-custom-notif/{parentId, message}
+        [HttpPost("send-custom-notif/{parentId}/{message}")]
+        public IActionResult SendCustomNotification(string parentId, string message)
+        {
+            var success = _sqlServices.SendCustomNotification(parentId, message);
+            if (!success)
+            {
+                return NotFound("Parent ID not found.");
+            }
+            return Ok("Notification sent.");
+        }
     }
 }
