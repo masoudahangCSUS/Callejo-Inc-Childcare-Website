@@ -1,0 +1,110 @@
+﻿@page "/notifications"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@inject NotificationService NotificationService
+@inject UserSessionService UserSession
+@rendermode InteractiveServer
+
+<div class="notifications-page">
+    <h1 class="notifications-title">Notifications</h1>
+
+    @if (notifications == null)
+    {
+        <div class="loading-message">
+            <p>Loading notifications...</p>
+        </div>
+    }
+    else if (!notifications.Any())
+    {
+        <div class="empty-message">
+            <p>No notifications found.</p>
+        </div>
+    }
+    else
+    {
+        <div class="notifications-container">
+            @foreach (var notification in notifications)
+            {
+                <div class="notification-card @(notification.IsRead ? "read" : "unread")"
+                     @onclick="() => ToggleNotification(notification)">
+                    <h3>@notification.Title</h3>
+                    <small>Sent on: @notification.SentOn.ToString("MMMM dd, yyyy hh:mm tt")</small>
+
+                    @if (notification.IsExpanded)
+                    {
+                        <p>@notification.Message</p>
+                        <span class="read-indicator">Read</span>
+                    }
+                    else
+                    {
+                        @if (notification.IsRead)
+                        {
+                            <p class="read-label">Read</p>
+                        }
+                        else
+                        {
+                            <p class="click-to-read">Click to Read</p>
+                        }
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Notification> notifications = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+            {
+                Guid parentId = UserSession.UserId.Value;
+                Console.WriteLine($"DEBUG: Fetching notifications for Parent ID: {parentId}");
+
+                notifications = await NotificationService.GetNotificationsByParentId(parentId);
+                notifications.ForEach(n => n.IsExpanded = false); // Ensure all notifications are collapsed initially
+
+                Console.WriteLine($"DEBUG: Fetched {notifications.Count} notifications.");
+            }
+            else
+            {
+                Console.WriteLine("DEBUG: User is not logged in or UserId is missing.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"DEBUG: Error loading notifications → {ex.Message}");
+        }
+    }
+
+    private async Task ToggleNotification(Notification notification)
+    {
+        if (!notification.IsRead)
+        {
+            Console.WriteLine($"DEBUG: Marking notification {notification.Id} as read...");
+            try
+            {
+                var success = await NotificationService.MarkAsRead(notification.Id);
+                if (success)
+                {
+                    notification.IsRead = true;
+                }
+                else
+                {
+                    Console.WriteLine($"DEBUG: Failed to mark notification {notification.Id} as read.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DEBUG: Error marking notification as read → {ex.Message}");
+            }
+        }
+
+        // Toggle expand/collapse state
+        notification.IsExpanded = !notification.IsExpanded;
+        StateHasChanged();
+    }
+}

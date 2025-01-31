@@ -3,7 +3,7 @@
 
 <!-- Main Navbar Section -->
 <div class="top-navbar">
-    @if (UserSession.UserIsLoggedIn)
+    @if (UserSession.UserIsLoggedIn && UserSession.UserRole == 1)
     {
         <ParentNavMenu />
     }

@@ -3,85 +3,118 @@
     padding: 0;
     width: 100%;
     box-sizing: border-box;
+    background-color: #00b7d7; /* Bright blue background */
+    font-family: 'Poppins', sans-serif;
 }
 
-.full-width-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 100%;
-    min-height: 70vh; 
-}
-
+/* 🌟 Improved Header Styling */
 .header {
-    text-align: left;
-    padding-bottom: 10%;
-    padding-top: 10%;
-    margin-left: 1%;
-    color:rgba(143, 54, 255, 1);
+    background: linear-gradient(135deg, #0099CC, #0077A9);
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
+    position: relative;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
 }
 
-.header h1{
+.overlay {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-radius: 15px;
+    display: inline-block;
+}
+
+.header h1 {
     font-size: 3rem;
-}
-.header h2{
-    font-style:italic;
-    font-size: 2rem;
-}
-.text-section {
-    margin-left:1%;
-    width: 50%; 
-    padding-right: 20px; 
-    font-size:1.2rem;
-    text-align:left;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
-.image-section {
-    width: 50%;
+.header p {
+    font-size: 1.4rem;
+    max-width: 700px;
+    margin: auto;
+}
+
+/* 📌 Main Content Styling */
+.page-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: #00B7D7;
+    padding: 60px 20px;
+    min-height: 75vh;
+}
+
+.text-box {
+    background-color: #ffffff;
+    border: 2px solid rgba(143, 54, 255, 0.3);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 1100px;
+    width: 100%;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+/* 🔥 Improved Layout */
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.text-info {
+    flex: 1;
+}
+
+/* 🖼️ Image Styling */
+.image-container {
+    width: 220px;
 }
 
 .jane-image {
-    width: 80%; 
-    height: auto; 
-    display: block;
-    padding-top:5%;
-    padding-bottom:5%;
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+    .jane-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    }
 
+/* 🖋️ Typography */
+.name-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: rgba(143, 54, 255, 1);
+}
+
+.position-title {
+    font-size: 1.8rem;
+    font-style: italic;
+    color: #61afff;
+}
+
+.description {
+    font-size: 1.4rem;
+    color: #333333;
+    line-height: 1.8;
+}
+
+/* 📱 Mobile Responsive */
 @media (max-width: 768px) {
-    .full-width-container{
-        display:flex;
-        flex-direction:column;
-    }
-    .text-section,
-    .image-section {
-        width: 100%; 
-        margin-left: 0; 
-        padding-right: 1%; 
-        padding-left: 1%;
-        text-align: left; 
-        font-size: .8rem;
+    .top-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
     }
 
-    .header {
-        margin: 2% 0; 
-        text-align:center;
-        padding-bottom:2%;
+    .image-container {
+        margin-top: 15px;
+        width: 150px;
     }
-
-        .header h1 {
-            font-size: 2rem; 
-        }
-
-        .header h2 {
-            font-size: 1.2rem; 
-        }
 }
-
-
-

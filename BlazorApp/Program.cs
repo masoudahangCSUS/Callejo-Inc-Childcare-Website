@@ -34,6 +34,7 @@ builder.Services.AddServerSideBlazor()
     });
 
 // Register any additional services
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IFileService, FileService>();
