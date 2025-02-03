@@ -111,6 +111,25 @@ namespace Common.Services.SQL
             return true;
         }
 
+        // New Method: Create custom notification from parent to owner
+        public bool SendCustomNotification(string parentId, string message)
+        {
+            // Create said notification
+            var newNotif = new Notification
+            {
+                FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
+                Title = "CUSTOM NOTIFICATION FROM: " + parentId,
+                Message = message,
+                SentOn = DateTime.Now,
+                IsRead = false,
+            };
+
+            // Add notification to db, save, and return
+            _context.Notifications.Add(newNotif);
+            _context.SaveChanges();
+            return true;
+        }
+
     }
 
 }
