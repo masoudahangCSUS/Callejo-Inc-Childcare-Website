@@ -1,4 +1,4 @@
-@page "/admin-contact"
+@page "/admin-contact/{Name}/{Email}"
 @layout BlazorApp.Client.Layout.AdminLayout
 
 <div class="header">
@@ -8,19 +8,17 @@
 
 <div class="info">
     <!------
-    Will be filled with binded from data...
+    Will be filled with binded form data...
 ------>
-    <h3>Name: Bob</h3>
-    <h4>Phone Number: (xxx-xxx-xxxx)</h4>
-    <h4>Email:</h4>
+    <h3>Name: @Name</h3>
+    <h4>Phone Number: @Phone</h4>
+    <h4>Email: @Email</h4>
     <h4>Reason:</h4>
-    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet officia optio sunt consectetur itaque error
-        esse
-        hic eius nemo, temporibus labore alias voluptatum veniam consequatur voluptate maiores ullam? Nisi, </p>
+    <p>@Reason</p>
 </div>
 <div class="info">
     <!------
-    Will be filled with binded from data...
+    Will be filled with binded form data...
 ------>
     <h3>Name: Sam</h3>
     <h4>Phone Number: (xxx-xxx-xxxx)</h4>
@@ -42,6 +40,19 @@
         esse
         hic eius nemo, temporibus labore alias voluptatum veniam consequatur voluptate maiores ullam? Nisi, </p>
 </div>
+
+@code
+{
+    [Parameter]
+    public string Name { get; set; }
+    [Parameter]
+    public string Email { get; set; }
+    [Parameter]
+    public string Phone { get; set; }
+    [Parameter]
+    public string Reason { get; set; }
+
+}
 
 <style>
     .info {
