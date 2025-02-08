@@ -24,14 +24,36 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
+    public virtual DbSet<Image> Images { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DataContext");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
+        => optionsBuilder.UseSqlServer("Server=.\\;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.ToTable("Images");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(1024)
+                .IsUnicode(false)
+                .HasColumnName("image_url");
+            entity.Property(e => e.IsPublished)
+                .HasColumnName("is_published");
+            entity.Property(e => e.UploadedAt)
+                .HasColumnName("uploaded_at")
+                .HasDefaultValueSql("GETUTCDATE()");
+        });
+
+
         modelBuilder.Entity<CallejoIncUser>(entity =>
         {
             entity.ToTable("Callejo_Inc_Users");
@@ -76,6 +98,9 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(12)
                 .IsUnicode(false)
                 .HasColumnName("zip_code");
+            entity.Property(e => e.RegistrationDocument)
+                .HasColumnType("varbinary(max)")
+                .HasColumnName("registration_document");
 
             entity.HasOne(d => d.FkRoleNavigation).WithMany(p => p.CallejoIncUsers)
                 .HasForeignKey(d => d.FkRole)
@@ -191,6 +216,8 @@ public partial class CallejoSystemDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("description");
         });
+
+
 
         OnModelCreatingPartial(modelBuilder);
     }

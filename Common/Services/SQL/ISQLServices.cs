@@ -12,6 +12,11 @@ namespace Common.Services.SQL
     {
         ListChildrenGuardianView GetListOfAllChildrenAndGuardians();
 
+        // New methods for Notifications
+        IEnumerable<Notification> GetNotificationsByParentId(Guid parentId);
+        bool MarkNotificationAsRead(long id);
+        bool SendCustomNotification(string parentId, string message);
+
     }
 
 }

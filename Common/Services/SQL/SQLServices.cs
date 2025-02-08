@@ -32,7 +32,7 @@ namespace Common.Services.SQL
                     connection.Open();
 
                     string query = @"
-               select 
+               select
                   c.id as childId,
                   ISNULL(c.first_name, '') as childFirstName,
                   ISNULL(c.middle_name, '') as childMiddleName,
@@ -87,6 +87,47 @@ namespace Common.Services.SQL
                 listChildren.Message = "Problems retrieving children and guardian records. Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
             }
             return listChildren;
+        }
+        // New Method: Fetch notifications by parent ID
+        public IEnumerable<Notification> GetNotificationsByParentId(Guid parentId)
+        {
+            return _context.Notifications
+                .Where(n => n.FkParentId == parentId)
+                .OrderByDescending(n => n.SentOn)
+                .ToList();
+        }
+
+        // New Method: Mark a notification as read
+        public bool MarkNotificationAsRead(long id)
+        {
+            var notification = _context.Notifications.FirstOrDefault(n => n.Id == id);
+            if (notification == null)
+            {
+                return false;
+            }
+
+            notification.IsRead = true;
+            _context.SaveChanges();
+            return true;
+        }
+
+        // New Method: Create custom notification from parent to owner
+        public bool SendCustomNotification(string parentId, string message)
+        {
+            // Create said notification
+            var newNotif = new Notification
+            {
+                FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
+                Title = "CUSTOM NOTIFICATION FROM: " + parentId,
+                Message = message,
+                SentOn = DateTime.Now,
+                IsRead = false,
+            };
+
+            // Add notification to db, save, and return
+            _context.Notifications.Add(newNotif);
+            _context.SaveChanges();
+            return true;
         }
 
     }

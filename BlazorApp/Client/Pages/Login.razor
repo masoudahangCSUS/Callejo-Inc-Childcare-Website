@@ -1,16 +1,15 @@
 @page "/login"
 
+@using System.ComponentModel.DataAnnotations
 @using BlazorApp.Server.Models
 @using Microsoft.AspNetCore.Mvc
 @rendermode InteractiveServer
-@inject UserSessionService UserSession
-@inject NavigationManager Navigation
-<PageTitle>LoginPage</PageTitle>
-@inject IJSRuntime JS
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
-@using System.ComponentModel.DataAnnotations
+@inject UserSessionService UserSession
+
+@using System.Text.Json.Serialization;
 
 <PageTitle>Login</PageTitle>
 
@@ -32,21 +31,21 @@
                 <div class="input-wrapper">
                     <i class="fa fa-lock"></i>
                     <InputText @bind-Value="loginInfo.Password" type="password" placeholder="Password" />
-
                 </div>
 
                 <button class="login-btn" type="submit">LOGIN</button>
             </EditForm>
+
             @if (!loginState)
             {
-                <p>@errorMessage</p>
+                <p style="color:red">@errorMessage</p>
             }
         </div>
     </div>
 </div>
 
 @code {
-    private LoginDTO loginInfo = new LoginDTO();
+    private LoginDTO loginInfo = new();
     private bool loginState = true;
     private string errorMessage = string.Empty;
 
@@ -54,14 +53,36 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync("api/admin/login", loginInfo);
+            var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/login", loginInfo);
 
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<APIResponse>();
-                if (result?.Success == true)
+                if (result?.Success == true && result.Data is not null)
                 {
-                    Navigation.NavigateTo("/admin-home"); // Redirect after successful login
+                    var userJson = System.Text.Json.JsonSerializer.Serialize(result.Data);
+                    var user = System.Text.Json.JsonSerializer.Deserialize<UserModel>(userJson);
+
+                    if (user != null)
+                    {
+                        Console.WriteLine($"DEBUG: User logged in ? {user.FirstName} {user.LastName}, ID: {user.Id}");
+
+                        UserSession.SetUser(true, user.Role, user.Id); // Ensure GUID is correctly stored
+
+                        if (user.Role == 1)
+                        {
+                            Navigation.NavigateTo("/");
+                        }
+                        else
+                        {
+                            Navigation.NavigateTo("/admin");
+                        }
+                    }
+                }
+                else
+                {
+                    loginState = false;
+                    errorMessage = result?.Message ?? "Login failed or no data returned.";
                 }
             }
             else
@@ -75,7 +96,7 @@
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
-            Console.WriteLine(ex.Message); // Log error for debugging
+            Console.WriteLine($"DEBUG: Login error ? {ex.Message}");
         }
     }
 
@@ -92,10 +113,19 @@
     public class APIResponse
     {
         public bool Success { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
         public object? Data { get; set; }
     }
+
+    public class UserModel
+    {
+        [JsonPropertyName("id")]
+        public Guid Id { get; set; }  // Ensuring GUID is correctly stored
+        public string Email { get; set; } = string.Empty;
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+
+        [JsonPropertyName("role")]
+        public int Role { get; set; }
+    }
 }
-
-
-

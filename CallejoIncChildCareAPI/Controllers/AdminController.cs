@@ -11,16 +11,18 @@ namespace CallejoIncChildcareAPI.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private IUserService _userService;
+        private readonly IUserService _userService;
 
-        public AdminController(IUserService userService)
+        private readonly ImageService _imageService;
+
+        public AdminController(IUserService userService, ImageService imageService)
         {
             _userService = userService;
+            _imageService = imageService;
         }
 
         // POST: api/admin/create-user
-        [HttpPost]
-        [Route("create-user")]
+        [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
             var result = _userService.InsertUser(userInfo);
@@ -32,8 +34,7 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // GET: api/admin/get-all-users
-        [HttpGet]
-        [Route("get-all-users")]
+        [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
             var result = _userService.GetAllUsers();
@@ -52,14 +53,24 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result.Message);
         }
 
+        // PUT: api/admin/update-user
+        [HttpPut("update-user")]
+        public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
+        {
+            var result = _userService.UpdateUser(userDTO);
+            Console.WriteLine("Does it reach here?");
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result.Message);
+        }
 
         // POST: api/admin/login
-        [HttpPost]
-        [Route("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
             var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
-
             if (user == null)
             {
                 return Unauthorized(new APIResponse
@@ -69,7 +80,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
 
-            // Verify password (you should hash passwords in production)
+            // Verify password (in production, use hashing + salted storage)
             if (user.Password != loginInfo.Password)
             {
                 return Unauthorized(new APIResponse
@@ -79,19 +90,37 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
 
+            // Create a DTO so we don't expose fields like Password, RegistrationDocument, etc.
+            var userDTO = new UserDTO
+            {
+                Id = user.Id,
+                Email = user.Email,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                // Cast from long to int if needed:
+                Role = (int)user.FkRole
+            };
+
             return Ok(new APIResponse
             {
                 Success = true,
                 Message = "Login successful.",
-                Data = new
-                {
-                    UserId = user.Id,
-                    Email = user.Email,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
-                    Role = user.FkRole
-                }
+                Data = userDTO
             });
         }
+        [HttpPost("upload-image")]
+        public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
+        {
+            try
+            {
+                await _imageService.SaveImageUrlAsync(imageData.ImageUrl);
+                return Ok(new APIResponse { Success = true, Message = "Image URL stored successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
+            }
+        }
+
     }
 }

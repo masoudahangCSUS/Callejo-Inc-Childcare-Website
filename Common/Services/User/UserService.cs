@@ -2,6 +2,7 @@
 using Common.Models.Data;
 using Common.View;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace Common.Services.User
         /// <summary>
         /// Creates a user record in user database
         /// </summary>
-        /// <param name="userInfo">Data to be saved.  Since the id field is an auto increment field we will not retrieve that value</param>
+        /// <param name="userDTO">Data to be saved.</param>
         /// <returns></returns>
         public APIResponse InsertUser(object userDTO)
         {
@@ -52,7 +53,7 @@ namespace Common.Services.User
                 }
                 else if (userDTO is CustomerUserCreationDTO customerDTO)
                 {
-                    Console.WriteLine("customer is creating an acconut");
+                    Console.WriteLine("customer is creating an account");
                     newUser.FirstName = customerDTO.FirstName;
                     newUser.MiddleName = customerDTO.MiddleName;
                     newUser.LastName = customerDTO.LastName;
@@ -111,6 +112,111 @@ namespace Common.Services.User
                     }
                 }
             }
+        }
+
+        public APIResponse UpdateUser(object userDTO)
+        {
+            APIResponse response = new APIResponse();
+
+            try
+            {
+                if (userDTO is AdminUserUpdateDTO adminDTO)
+                {
+                    var user = _context.CallejoIncUsers.Include(u => u.FkChildren).FirstOrDefault(u => u.Id == adminDTO.Id);
+
+                    if (user == null)
+                    {
+                        response.Success = false;
+                        response.Message = "User not found.";
+                        return response;
+                    }
+                    user.FirstName = adminDTO.FirstName;
+                    user.MiddleName = adminDTO.MiddleName;
+                    user.LastName = adminDTO.LastName;
+                    user.Address = adminDTO.Address;
+                    user.City = adminDTO.City;
+                    user.State = adminDTO.State;
+                    user.ZipCode = adminDTO.ZipCode;
+                    user.Email = adminDTO.Email;
+                    if (!string.IsNullOrEmpty(adminDTO.Password))
+                    {
+                        user.Password = adminDTO.Password;
+                    }
+                    user.FkRole = adminDTO.FkRole;
+                    if (adminDTO.Children != null)
+                    {
+                        var existingChildren = user.FkChildren.ToList();
+
+                        // Remove children not in the new list
+                        var childrenToRemove = existingChildren
+                            .Where(ec => !adminDTO.Children.Any(nc => nc.Id == ec.Id))
+                            .ToList();
+                        foreach (var childToRemove in childrenToRemove)
+                        {
+                            user.FkChildren.Remove(childToRemove);
+                        }
+
+                        // Add or update children in the new list
+                        foreach (var child in adminDTO.Children)
+                        {
+                            // new child
+                            if (child.Id == 0)
+                            {
+                                var checkIfChildExists = _context.Children.FirstOrDefault(c => c.FirstName == child.FirstName && c.MiddleName == child.MiddleName && c.LastName == child.LastName && c.Age == child.Age);
+                                
+                                if (checkIfChildExists == null)
+                                {
+                                    var newChild = new Child
+                                    {
+                                        FirstName = child.FirstName,
+                                        MiddleName = child.MiddleName,
+                                        LastName = child.LastName,
+                                        Age = child.Age
+                                    };
+                                    user.FkChildren.Add(newChild);
+                                    _context.Children.Add(newChild);
+                                }
+                                else
+                                {
+                                    user.FkChildren.Add(checkIfChildExists);
+                                }
+                            }
+                            else
+                            {
+                                // existing child, update it
+                                var childToUpdate = existingChildren.FirstOrDefault(c => c.Id == child.Id);
+                                if (childToUpdate != null)
+                                {
+                                    childToUpdate.FirstName = child.FirstName;
+                                    childToUpdate.MiddleName = child.MiddleName;
+                                    childToUpdate.LastName = child.LastName;
+                                    childToUpdate.Age = child.Age;
+                                }
+                            }
+                        }
+                    }
+
+                    _context.SaveChanges();
+                    response.Success = true;
+                    response.Message = $"Successfully updated info for {user.FirstName}";
+
+                }
+                else if (userDTO is CustomerUserUpdateDTO customerDTO)
+                {
+
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Invalid DTO type.";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = $"Error updating user: {ex.Message}";
+            }
+            return response;
         }
 
         public async Task<CallejoIncUser?> GetUserByEmailAsync(string email)
@@ -191,9 +297,9 @@ namespace Common.Services.User
 
             try
             {
-                var userRecs = _context.CallejoIncUsers.ToList();
+                var userRecs = _context.CallejoIncUsers.Include(u => u.FkChildren).ToList();
                 AdminUserCreationDTO userViewRec = null;
-                foreach (Models.Data.CallejoIncUser userRec in userRecs)
+                foreach (CallejoIncUser userRec in userRecs)
                 {
                     userViewRec = new AdminUserCreationDTO();
                     userViewRec.Id = userRec.Id;
@@ -205,6 +311,20 @@ namespace Common.Services.User
                     userViewRec.State = userRec.State;
                     userViewRec.ZipCode = userRec.ZipCode;
                     userViewRec.Email = userRec.Email;
+                    userViewRec.FkRole = userRec.FkRole;
+
+                    userViewRec.Children = new List<ChildView>();
+
+                    foreach (var child in userRec.FkChildren)
+                    {
+                        var childRec = new ChildView();
+                        childRec.Id = child.Id;
+                        childRec.FirstName = child.FirstName;
+                        childRec.MiddleName = child.MiddleName;
+                        childRec.LastName = child.LastName;
+                        childRec.Age = child.Age;
+                        userViewRec.Children.Add(childRec);
+                    }
 
                     listUsers.users.Add(userViewRec);
                 }
@@ -248,12 +368,12 @@ namespace Common.Services.User
                         _context.SaveChanges();
 
                         // Checks if child belongs to any other guardians, if not then delete child record.
-                        var otherGuardian = _context.CallejoIncUsers.Include(u => u.FkChildren).Where(u => u.FkChildren.Contains(child)).ToList();
-                        if (!otherGuardian.Any())
-                        {
-                            Console.WriteLine($"Child record {child.Id} has no other guardian on record, deleting record now.");
-                            _context.Children.Remove(child);
-                        }
+                        //var otherGuardian = _context.CallejoIncUsers.Include(u => u.FkChildren).Where(u => u.FkChildren.Contains(child)).ToList();
+                        //if (!otherGuardian.Any())
+                        //{
+                        //    Console.WriteLine($"Child record {child.Id} has no other guardian on record, deleting record now.");
+                        //    _context.Children.Remove(child);
+                        //}
                     }
 
                     response.Message = $"User record {userRecord.Id.ToString()} : {userRecord.FirstName} has been deleted.";

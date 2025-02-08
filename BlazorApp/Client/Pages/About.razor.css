@@ -1,96 +1,120 @@
-﻿.header {
-    background-color: #00B7D7;
-    text-align: center;
-    padding: 40px;
-    min-height: 400px;
+﻿body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #00b7d7; /* Bright blue background */
+    font-family: 'Poppins', sans-serif;
 }
 
-    .header h1 {
-        padding: 20px;
-        font-size: 3rem; /* Increased font size */
-        color: white;
-    }
-
-    .header p {
-        padding: 10px;
-        font-size: 1.5rem; /* Increased font size */
-        color: white;
-    }
-
-.jane-info, .sam-info {
-    display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    min-height: 550px;
+/* 🌟 Improved Header Styling */
+.header {
+    background: linear-gradient(135deg, #0099CC, #0077A9);
+    padding: 60px 20px;
+    text-align: center;
+    color: white;
     position: relative;
+    overflow: hidden;
+    border-radius: 0 0 20px 20px;
 }
 
-.sam-profile {
-    background-color: #00B7D7;
+.overlay {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 30px;
+    border-radius: 15px;
+    display: inline-block;
 }
 
-.sam-details h2 {
-    color: white;
-    font-size: 3rem; /* Increased font size */
-    margin-top: 150px;
-    margin-right: 400px;
-    position: absolute;
-    right: 2%;
+.header h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    text-transform: uppercase;
 }
 
-.sam-details h3 {
-    color: white;
-    font-size: 1.75rem; /* Increased font size */
-    margin-right: 400px;
-    margin-top: 200px;
-    position: absolute;
-    right: 2%;
+.header p {
+    font-size: 1.4rem;
+    max-width: 700px;
+    margin: auto;
 }
 
-.sam-details p {
-    color: white;
-    font-size: 1.5rem; /* Increased font size */
-    text-align: center;
-    margin-top: 250px;
-    padding-right: 400px;
+/* 📌 Main Content Styling */
+.page-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+    min-height: 75vh;
 }
 
-.sam-image {
-    border-radius: 50px;
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    margin-top: 100px;
-    position: absolute;
-    right: 2%;
+.text-box {
+    background-color: #ffffff;
+    border: 2px solid rgba(143, 54, 255, 0.3);
+    border-radius: 10px;
+    padding: 40px;
+    max-width: 1100px;
+    width: 100%;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
-.jane-details h2 {
-    color: #3D9FFA;
-    font-size: 3rem; /* Increased font size */
-    padding-left: 40px;
-    margin-top: 150px;
+/* 🔥 Improved Layout */
+.top-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
-.jane-details h3 {
-    font-size: 1.75rem; /* Increased font size */
-    color: #3D9FFA;
-    padding-left: 40px;
+.text-info {
+    flex: 1;
 }
 
-.jane-details p {
-    margin-top: 60px;
-    text-align: center;
-    font-size: 1.5rem; /* Increased font size */
-    color: #3D9FFA;
+/* 🖼️ Image Styling */
+.image-container {
+    width: 220px;
 }
 
 .jane-image {
-    border-color: #3D9FFA;
-    border-radius: 50px;
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-    margin-top: 100px;
-    margin-left: 40px;
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+    .jane-image:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+/* 🖋️ Typography */
+.name-title {
+    font-size: 3rem;
+    font-weight: bold;
+    color: rgba(143, 54, 255, 1);
+}
+
+.position-title {
+    font-size: 1.8rem;
+    font-style: italic;
+    color: #61afff;
+}
+
+.description {
+    font-size: 1.4rem;
+    color: #333333;
+    line-height: 1.8;
+}
+
+/* 📱 Mobile Responsive */
+@media (max-width: 768px) {
+    .top-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .image-container {
+        margin-top: 15px;
+        width: 150px;
+    }
 }

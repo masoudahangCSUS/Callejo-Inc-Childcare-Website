@@ -27,6 +27,8 @@ public partial class CallejoIncUser
 
     public string Password { get; set; } = null!;
 
+    public byte[]? RegistrationDocument { get; set; }
+
     public virtual Role FkRoleNavigation { get; set; } = null!;
 
     public virtual ICollection<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();

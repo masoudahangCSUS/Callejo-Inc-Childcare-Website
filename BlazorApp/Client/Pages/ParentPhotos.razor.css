@@ -1,0 +1,118 @@
+﻿/* Basic resets */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #fdfdfd;
+    color: #333;
+}
+
+/* 1) Purple header container at top */
+.purple-header-container {
+    padding: 50px 20px;
+    background-color: #7C56F9; /* Example purple */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    margin: 20px auto 40px; /* some spacing around */
+    text-align: center;
+    color: #ffffff;
+    max-width: 1200px;
+}
+
+    .purple-header-container h2 {
+        margin-bottom: 10px;
+        font-size: 2rem;
+    }
+
+    .purple-header-container p {
+        font-size: 1rem;
+    }
+
+/* 2) Teal container for the grid */
+.child-enrollment-page {
+    padding: 50px 20px;
+    background-color: #00B7D7; /* Teal color */
+    border-radius: 15px;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    margin: 0 auto 40px;
+    max-width: 1200px; /* center and limit width */
+    text-align: center;
+}
+
+    .child-enrollment-page h2 {
+        color: #ffffff;
+        font-size: 2rem;
+        margin-bottom: 20px;
+    }
+
+/* 3) Exact 4-column grid for 8 photos */
+.photo-grid {
+    /* 
+     Force exactly 4 equal-width columns 
+     so you'll get 4 photos in the first row and 4 in the second.
+  */
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    /* Center the grid within the teal container */
+    max-width: 1000px; /* tweak as desired */
+    margin: 30px auto 0;
+}
+
+/* 4) Individual photo items */
+.photo-item {
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    text-align: center;
+    padding: 10px; /* some interior spacing */
+}
+
+    .photo-item:hover {
+        transform: scale(1.02);
+    }
+
+    .photo-item img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+.photo-description {
+    font-size: 0.9rem;
+    color: #333;
+}
+
+/* 5) Footer styling (optional) */
+footer {
+    background-color: #0073C6;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+}
+
+
+   
+@media (max-width: 992px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 576px) {
+  .photo-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
