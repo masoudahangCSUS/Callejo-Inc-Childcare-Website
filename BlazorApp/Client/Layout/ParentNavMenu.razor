@@ -22,6 +22,7 @@
         <a class="nav-item-link" href="/notifications">
             <img src="images/Notifications.png" alt="Notifications Icon" class="nav-icon" /> Notifications
         </a>
+
         <div class="nav-right">
             <a class="nav-item-link" href="/profile">
                 <img src="images/myprofile.png" alt="My Profile Icon" class="nav-icon" /> Profile
@@ -31,6 +32,9 @@
             </a>
             <a class="nav-item-link" href="/settings">
                 <img src="images/settings.png" alt="Settings Icon" class="nav-icon" /> Settings
+            </a>
+            <a class="nav-item-link" href="/Photos">
+                <img src="images/camera1.png" alt="Photos Icon" class="nav-icon" /> Photos
             </a>
             <a class="nav-item-link" @onclick="LogoutUser">
                 <img src="images/logout.png" alt="Logout Icon" class="nav-icon" /> Logout
@@ -42,7 +46,7 @@
 @code {
     private void LogoutUser()
     {
-        UserSession.SetUserLoggedIn(false);
+        UserSession.SetUser(false);
         Navigation.NavigateTo("/");
     }
 }
