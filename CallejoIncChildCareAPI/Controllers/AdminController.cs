@@ -13,9 +13,12 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private readonly IUserService _userService;
 
-        public AdminController(IUserService userService)
+        private readonly ImageService _imageService;
+
+        public AdminController(IUserService userService, ImageService imageService)
         {
             _userService = userService;
+            _imageService = imageService;
         }
 
         // POST: api/admin/create-user
@@ -105,5 +108,19 @@ namespace CallejoIncChildcareAPI.Controllers
                 Data = userDTO
             });
         }
+        [HttpPost("upload-image")]
+        public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
+        {
+            try
+            {
+                await _imageService.SaveImageUrlAsync(imageData.ImageUrl);
+                return Ok(new APIResponse { Success = true, Message = "Image URL stored successfully." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
+            }
+        }
+
     }
 }
