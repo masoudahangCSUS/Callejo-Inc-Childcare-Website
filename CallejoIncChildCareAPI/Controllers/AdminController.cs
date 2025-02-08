@@ -15,11 +15,11 @@ namespace CallejoIncChildcareAPI.Controllers
 
         private readonly ImageService _imageService;
 
-        public AdminController(ImageService imageService)
+        public AdminController(IUserService userService, ImageService imageService)
         {
+            _userService = userService;
             _imageService = imageService;
         }
-
 
         // POST: api/admin/create-user
         [HttpPost("create-user")]
