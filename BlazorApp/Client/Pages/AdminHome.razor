@@ -27,6 +27,12 @@
                         Expenses
                     </button>
                 </li>
+                 <li>
+                <button @onclick='() => SetContent(typeof(AdminPhotos), "Admin-Photos")'
+                        class="btn-link @(ActivePage == "Admin-Photos" ? "active" : "")">
+                    Admin Photos
+                </button>
+                </li>
 
             </ul>
         </nav>

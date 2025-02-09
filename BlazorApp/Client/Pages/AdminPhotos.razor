@@ -29,11 +29,6 @@
     <p>Current Input: @photoModel.ImageUrl</p>
 </EditForm>
 
-@if (errorMessage is not null)
-{
-    <p style="color:red">@errorMessage</p>
-}
-
 @if (photos.Any())
 {
     <h4>Uploaded Images:</h4>
@@ -41,11 +36,28 @@
         @foreach (var photo in photos)
         {
             <li>
-                <img src="@photo" alt="Uploaded Photo" width="100" />
-                <p>@photo</p>
+                <a href="@photo" target="_blank">
+                    <img src="@photo" alt="Uploaded Photo" width="100" />
+                </a>
+          
+                
+                <button @onclick="() => AddToParentPhotos(photo)">Feature on ParentPhotos</button>
             </li>
         }
     </ul>
+}
+
+@if (parentPhotos.Any())
+{
+    <h4>Photos Featured on ParentPhotos Page:</h4>
+    <div class="photo-grid">
+        @foreach (var photo in parentPhotos)
+        {
+            <div class="photo-item">
+                <img src="@photo" alt="Parent Featured Photo" />
+            </div>
+        }
+    </div>
 }
 else
 {
@@ -53,9 +65,14 @@ else
 }
 
 @code {
+
     private PhotoModel photoModel = new();
     private List<string> photos = new();
     private string errorMessage = string.Empty;
+    private List<string> parentPhotos = BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos;
+    
+
+
    
 
     private void ForceUpdate(ChangeEventArgs e)
@@ -111,6 +128,23 @@ else
             Console.WriteLine($"DEBUG: [EXCEPTION] {ex.Message}");
         }
     }
+
+    private void AddToParentPhotos(string photoUrl)
+    {
+        if (!parentPhotos.Contains(photoUrl))
+        {
+            parentPhotos.Add(photoUrl);
+            Console.WriteLine($"DEBUG: Added {photoUrl} to local ParentPhotos.");
+        }
+
+        if (!BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Contains(photoUrl))
+        {
+            BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Add(photoUrl);
+            Console.WriteLine($"DEBUG: Added {photoUrl} to ParentPhotoStorage.");
+        }
+    }
+
+
 
     public class PhotoModel
     {
