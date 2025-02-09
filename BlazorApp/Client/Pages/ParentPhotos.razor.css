@@ -30,6 +30,13 @@ body {
     .purple-header-container p {
         font-size: 1rem;
     }
+button {
+    display: block !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+    z-index: 9999 !important;
+}
+
 
 /* 2) Teal container for the grid */
 .child-enrollment-page {
