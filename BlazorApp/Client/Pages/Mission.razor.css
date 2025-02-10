@@ -37,8 +37,14 @@
     padding: 10px;
 }
 
+.title {
+    font-size: 42px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
 /* Mission statement styling */
 .mission {
+    font-family: 'Poppins', sans-serif;
     background-color: #00A5C7;
     color: white;
     padding: 40px;

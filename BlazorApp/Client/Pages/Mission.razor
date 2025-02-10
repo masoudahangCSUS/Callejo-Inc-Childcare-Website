@@ -2,6 +2,7 @@
 
 <!-- Mission statement -->
     <div class="mission">
+        <h1 class="title">Mission Statement</h1>
         <p>
             At Callejo inc. Childcare, Our mission is to provide a safe, nurturing, and stimulating environment where children can
             learn and grow through play and exploration. We focus on
@@ -57,20 +58,6 @@
     </div>
 </div>
 
-<button class="fade-in" @onclick="ShowContent">Click me</button>
-
-@if (showContent == true)
-{
-    <div class="fade-in">
-        <p>This content will fade in when the button is clicked.</p>
-    </div>
-}
-
 @code {
-    private bool showContent;
-
-    private void ShowContent()
-    {
-        showContent = true;
-    }
+    
 }
