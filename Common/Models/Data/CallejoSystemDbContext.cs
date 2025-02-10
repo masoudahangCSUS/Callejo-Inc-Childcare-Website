@@ -21,8 +21,6 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<InterestedParent> InterestedParents { get; set; }
 
-    public virtual DbSet<Notification> Notifications { get; set; }
-
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
@@ -72,7 +70,6 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("password");
-            entity.Property(e => e.RegistrationDocument).HasColumnName("registration_document");
             entity.Property(e => e.State)
                 .HasMaxLength(120)
                 .IsUnicode(false)
@@ -81,6 +78,9 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(12)
                 .IsUnicode(false)
                 .HasColumnName("zip_code");
+            entity.Property(e => e.RegistrationDocument)
+                .HasColumnType("varbinary(max)")
+                .HasColumnName("registration_document");
 
             entity.HasOne(d => d.FkRoleNavigation).WithMany(p => p.CallejoIncUsers)
                 .HasForeignKey(d => d.FkRole)
@@ -144,17 +144,6 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("reason_for_inquiry");
-        });
-
-        modelBuilder.Entity<Notification>(entity =>
-        {
-            entity.Property(e => e.SentOn).HasColumnType("datetime");
-            entity.Property(e => e.Title).HasMaxLength(255);
-
-            entity.HasOne(d => d.FkParent).WithMany(p => p.Notifications)
-                .HasForeignKey(d => d.FkParentId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Notifications_Callejo_Inc_Users");
         });
 
         modelBuilder.Entity<PhoneNumber>(entity =>
