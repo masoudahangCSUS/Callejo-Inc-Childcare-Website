@@ -22,9 +22,11 @@ builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
 // Register services here
+builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -34,6 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 app.UseHttpsRedirection();
 

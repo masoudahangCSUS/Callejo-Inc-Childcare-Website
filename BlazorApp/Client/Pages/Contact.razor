@@ -1,5 +1,7 @@
 ﻿@page "/contact"
-
+@inject NavigationManager NavigationManager
+@inject HttpClient Http
+@rendermode InteractiveServer
 <PageTitle>About</PageTitle>
 <!--Move all styles attributes into separate css file later...-->
 <!--Inital Contact Us message-->
@@ -21,40 +23,76 @@
 <div class="contact-page">
     <h2>Get Started today!</h2>
     <div class="contact-form-container">
-        <form method="post">
-            <div class="form-group">
-                <label for="fname">Name:</label>
-                <input type="text" id="fname" name="fname" required>
-            </div>
+        <EditForm Model="@formData" OnValidSubmit="HandleValidSubmit" FormName="contact">
+            @if (showText)
+            {
+                <div class="form-group">
+                    <label for="fname">Name:</label>
+                    <input type="text" id="fname" name="fname" @bind="formData.Name" required>
+                </div>
 
-            <div class="form-group">
-                <label for="phone">Phone Number:</label>
-                <input type="text" id="phone" name="phone" required>
-            </div>
+                <div class="form-group">
+                    <label for="phone">Phone Number:</label>
+                    <input type="text" id="phone" name="phone" required>
+                </div>
 
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" @bind="formData.Email" required>
+                </div>
 
-            <div class="form-group">
-                <label for="reason">Reason for Inquiry:</label>
-                <textarea name="reason" id="reason" rows="10"></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="reason">Reason for Inquiry:</label>
+                    <textarea name="reason" id="reason" rows="10"></textarea>
+                </div>
 
 
-            <div class="info-links">
-                <a href="BlazorApp/Forms/Parent_Guardian_Contract_Daycare.pdf" class="info-link">Click here to read
-                    the
-                    Parent/Provider Contract.</a>
-                <a href="BlazorApp/Forms/Licensing_Agreement_Template.pdf" class="info-link">Click here to read
-                    the licensing
-                    agreement.</a>
-            </div>
+                <div class="info-links">
+                    <a href="BlazorApp/Forms/Parent_Guardian_Contract_Daycare.pdf" class="info-link">Click here to read
+                        the
+                        Parent/Provider Contract.</a>
+                    <a href="BlazorApp/Forms/Licensing_Agreement_Template.pdf" class="info-link">Click here to read
+                        the licensing
+                        agreement.</a>
+                </div>
 
-            <div class="button-group">
-                <input type="submit" class="submit-button" value="Submit">
-            </div>
-        </form>
+                <div class="button-group">
+                    <button type="submit" @onclick="ToggleText">Submit</button>
+                </div>
+            }
+            else
+            {
+                <div class="post-text">
+                <h1>Thank you for your interest!</h1>
+                <br>
+                <h1>We'll get back to you as soon as possible!</h1>
+                </div>
+            }
+        </EditForm>
     </div>
 </div>
+@code
+{
+    private FormData formData = new FormData();
+
+    private void HandleValidSubmit()
+    {
+        // NavigationManager.NavigateTo($"/admin-contact{formData.Name}/{formData.Email}");
+
+    }
+    public class FormData
+    {
+        public string Name { get; set; }
+
+        public string Phone { get; set; }
+        public string Email { get; set; }
+        public string Reason { get; set; }
+
+    }
+    private bool showText = true;
+    private void ToggleText()
+    {
+        showText = !showText;
+
+    }
+}

@@ -24,6 +24,7 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
+    public virtual DbSet<Image> Images { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
@@ -34,6 +35,25 @@ public partial class CallejoSystemDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.ToTable("Images");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(1024)
+                .IsUnicode(false)
+                .HasColumnName("image_url");
+            entity.Property(e => e.IsPublished)
+                .HasColumnName("is_published");
+            entity.Property(e => e.UploadedAt)
+                .HasColumnName("uploaded_at")
+                .HasDefaultValueSql("GETUTCDATE()");
+        });
+
+
         modelBuilder.Entity<CallejoIncUser>(entity =>
         {
             entity.ToTable("Callejo_Inc_Users");
@@ -196,6 +216,8 @@ public partial class CallejoSystemDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("description");
         });
+
+
 
         OnModelCreatingPartial(modelBuilder);
     }
