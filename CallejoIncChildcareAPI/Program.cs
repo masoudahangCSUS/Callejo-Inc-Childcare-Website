@@ -22,6 +22,8 @@ builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
 // Register services here
+// Register HttpClient for ImageService
+builder.Services.AddHttpClient<ImageService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();

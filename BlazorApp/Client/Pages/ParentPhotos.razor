@@ -1,6 +1,11 @@
 ﻿@page "/Photos"
 @using BlazorApp.Services
-
+@inject HttpClient Http
+@using Common.View;
+@using BlazorApp.Server.Models
+@using System.Text.Json.Serialization;
+@using System.Net.Http.Json
+@using System.Text.Json
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,39 +30,60 @@
         </p>
 
         <div class="photo-grid">
-            <div class="photo-item">
-                <img src="images/activity1.jpg" alt="Activity Photo 1" />
-                <div class="photo-description">Playing with Shapes</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity2.jpg" alt="Activity Photo 2" />
-                <div class="photo-description">Arts and Crafts</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity3.jpg" alt="Activity Photo 3" />
-                <div class="photo-description">Outdoor Fun</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity4.jpg" alt="Activity Photo 4" />
-                <div class="photo-description">Story Time</div>
-            </div>
-
-            <!-- ✅ Display Featured Images Added from Admin Page -->
-            @if (ParentPhotoStorage.FeaturedPhotos.Any())
+            @if (imageUrls.Any())
             {
-                @foreach (var photo in ParentPhotoStorage.FeaturedPhotos)
+                @foreach (var url in imageUrls)
                 {
                     <div class="photo-item">
-                        <img src="@photo" alt="Featured Parent Photo" />
+                        <p>DEBUG: <a href="@url" target="_blank">@url</a></p>
+                        <img src="@url" alt="Activity Photo" width="300" />
                     </div>
                 }
             }
         </div>
+
     </div>
 
 
 </body>
 </html>
 @code {
-    private List<string> parentPhotos = ParentPhotoStorage.FeaturedPhotos;
+    private List<string> imageUrls = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            string apiUrl = "https://localhost:7139/api/admin/get-all-photos";
+
+            var response = await Http.GetFromJsonAsync<APIResponse>(apiUrl);
+
+            if (response != null && response.Success && response.Data != null)
+            {
+                Console.WriteLine($"DEBUG: Raw API Data: {response.Data}");
+
+                imageUrls = JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(response.Data));
+
+                foreach (var url in imageUrls)
+                {
+                    Console.WriteLine($"DEBUG: Final Image URL used - {url}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No images found.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching images: {ex.Message}");
+        }
+    }
+
+    private string GetGoogleDriveDirectUrl(string fileId)
+    {
+        return $"https://drive.google.com/thumbnail?id={fileId}&sz=w1000";
+    }
+
+
 }
