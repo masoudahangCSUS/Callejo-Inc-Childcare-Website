@@ -1,4 +1,6 @@
-@page "/admin-contact/"
+@page "/inquiry"
+@inject HttpClient Http
+@rendermode InteractiveServer
 
 <div class="header">
     <h1>Inquiries</h1>
@@ -9,11 +11,8 @@
     <!------
     Will be filled with binded form data...
 ------>
-    <h3>Name: @Name</h3>
-    <h4>Phone Number: @Phone</h4>
-    <h4>Email: @Email</h4>
-    <h4>Reason:</h4>
-    <p>@Reason</p>
+
+
 </div>
 <div class="info">
     <!------
@@ -42,14 +41,22 @@
 
 @code
 {
-    [Parameter]
-    public string Name { get; set; }
-    [Parameter]
-    public string Email { get; set; }
-    [Parameter]
-    public string Phone { get; set; }
-    [Parameter]
-    public string Reason { get; set; }
+    private List<InterestedParent> submitData;
+
+    protected override async Task OnInitializedAsync()
+    {
+        submitData = await Http.GetFromJsonAsync<List<InterestedParent>>("https://localhost:7139/api/Submit/data");
+
+    }
+    public class InterestedParent
+    {
+        public Guid guid { get; set; }    
+        public string Name { get; set; }
+        public string Email { get; set; }
+        public string Reason { get; set; }
+
+    }
+
 
 }
 

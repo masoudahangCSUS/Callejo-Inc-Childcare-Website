@@ -27,7 +27,7 @@ namespace CallejoIncChildcareAPI.Controllers
         {
             _context.InterestedParents.Add(inquiry);
             await _context.SaveChangesAsync();
-            return Ok();
+            return Ok(inquiry);
         }
 
         // Retrieve data from DB
