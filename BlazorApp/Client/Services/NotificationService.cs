@@ -48,7 +48,7 @@ namespace BlazorApp.Client.Services
             }
         }
 
-        public async Task<bool> SendCustomNotification(string parentId, string message)
+        public async Task<bool> SendCustomNotification(string parentId, string rqTitle, string message)
         {
             try
             {
@@ -56,8 +56,9 @@ namespace BlazorApp.Client.Services
                 var notificationPayload = new
                 {
                     parentId = parentId,
+                    rqTitle = rqTitle,
                     Message = message,
-                    TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
+                    //TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
                 };
 
                 var response = await _httpClient.PostAsJsonAsync($"api/notifications/send-custom-notif", notificationPayload);

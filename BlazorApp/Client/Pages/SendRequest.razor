@@ -1,0 +1,85 @@
+﻿@page "/SendRequest"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@using Common.View
+@using Common.Services.User
+@inject NotificationService NotificationService
+@inject UserSessionService UserSession
+@inject SendRequestDTO SendRequest
+@rendermode InteractiveServer
+
+<h3>Send Notification</h3>
+<br><br>
+
+<div class="request-page">
+    <EditForm Model="@notifyModel" OnValidSubmit="HandleSubmit" />
+
+        <div class="noteTitle">
+            <label for="requestTitle">Request Title:</label><br>
+        </div>
+        <InputText id="requestTitle" @bind-Value="notifyModel.Title" /><br><br>
+
+        <div class="requestMsg">
+            <label for="requestMessage">Request:</label><br>
+        </div>
+        <InputTextArea type="text" id="requestMessage" @bind-Value="notifyModel.Message" rows="4" cols="50"></InputTextArea><br><br>
+
+        <div class="request-buttons">
+            <button class="rq-submit-btn" type="submit">Submit</button> <br>
+            <a href="/profile" class="rq-cancel-btn">Cancel</a> <br>
+        </div>
+</div>
+@code {
+    private List<Notification> notifications = new();
+    private bool? isSuccess;
+    private bool isLoading = false;
+
+    private async Task customNotificationInfo(Notification notification){
+
+    }
+
+    private readonly IUserService _userService;
+
+    public class notificationModel{
+        public string Title { get; set; }
+        public string Message { get; set; }
+    }
+
+    private async Task HandleSubmit(){
+        isLoading = true;
+        try
+        {
+            // Assuming UserSession provides the current user's ID
+            //var parentId = //UserSession.GetCurrentUserId(); // Replace with actual user ID fetching logic
+            var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
+            var userDTO = new userDTO { };
+            if (Guid.TryParse(parentId, out var parsedParentId))
+            {
+                // Call the NotificationService to send the custom notification
+                var result = await NotificationService.SendCustomNotification(parsedParentId.ToString(), notificationModel.Message);
+                isSuccess = result;
+            }
+            else
+            {
+                isSuccess = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            isSuccess = false;
+            Console.WriteLine($"Error sending notification: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    } 
+
+    public class SendRequestDTO
+    {
+        public string rqTitle { get; set; } = string.Empty;
+        public string rqMessage { get; set; } = string.Empty;
+    }
+
+    notificationModel notifyModel = new notificationModel();
+}
