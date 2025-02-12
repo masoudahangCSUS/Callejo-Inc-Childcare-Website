@@ -1,13 +1,18 @@
 @page "/login"
 
 @using System.ComponentModel.DataAnnotations
-@using BlazorApp.Server.Models
 @using Microsoft.AspNetCore.Mvc
+@using System.Security.Claims;
+@using System.Threading.Tasks;
+@using Microsoft.AspNetCore.Authentication;
+@using Microsoft.AspNetCore.Authentication.Cookies;
+@using Microsoft.AspNetCore.Authorization;
+@using System.Text.Json;
 @rendermode InteractiveServer
 
-@inject HttpClient Http
 @inject NavigationManager Navigation
 @inject UserSessionService UserSession
+@inject IJSRuntime JSRuntime
 
 @using System.Text.Json.Serialization;
 
@@ -53,50 +58,52 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/login", loginInfo);
+            string url = "https://localhost:7139/api/Admin/login";
 
-            if (response.IsSuccessStatusCode)
+            // Call the JS function "fetchLoginData" to perform a client-side fetch
+            string resultJson = await JSRuntime.InvokeAsync<string>("fetchLoginData", url, loginInfo);
+
+            // Deserialize the JSON response into an APIResponse object
+            var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true
+                };
+
+            var result = System.Text.Json.JsonSerializer.Deserialize<APIResponse>(resultJson, options);
+            if (result?.Success == true && result.Data is not null)
             {
-                var result = await response.Content.ReadFromJsonAsync<APIResponse>();
-                if (result?.Success == true && result.Data is not null)
-                {
-                    var userJson = System.Text.Json.JsonSerializer.Serialize(result.Data);
-                    var user = System.Text.Json.JsonSerializer.Deserialize<UserModel>(userJson);
+                var userJson = System.Text.Json.JsonSerializer.Serialize(result.Data);
+                var user = System.Text.Json.JsonSerializer.Deserialize<UserModel>(userJson);
 
-                    if (user != null)
+                if (user != null)
+                {
+                    Console.WriteLine($"DEBUG: User logged in? {user.FirstName} {user.LastName}, ID: {user.Id}");
+                    UserSession.SetUser(true, user.Role, user.Id); // Store user session information
+
+                    if (user.Role == 1)
                     {
-                        Console.WriteLine($"DEBUG: User logged in ? {user.FirstName} {user.LastName}, ID: {user.Id}");
+                        Console.WriteLine("DEBUG: Navigating to /admin");
+                        await InvokeAsync(() => Navigation.NavigateTo("/admin", forceLoad: true));
 
-                        UserSession.SetUser(true, user.Role, user.Id); // Ensure GUID is correctly stored
-
-                        if (user.Role == 1)
-                        {
-                            Navigation.NavigateTo("/");
-                        }
-                        else
-                        {
-                            Navigation.NavigateTo("/admin");
-                        }
                     }
-                }
-                else
-                {
-                    loginState = false;
-                    errorMessage = result?.Message ?? "Login failed or no data returned.";
+                    else
+                    {
+                        Console.WriteLine("DEBUG: Navigating to /");
+                        await InvokeAsync(() => Navigation.NavigateTo("/", forceLoad: true));
+                    }
                 }
             }
             else
             {
                 loginState = false;
-                var error = await response.Content.ReadFromJsonAsync<APIResponse>();
-                errorMessage = error?.Message ?? "Login failed.";
+                errorMessage = result?.Message ?? "Login failed or no data returned.";
             }
         }
         catch (Exception ex)
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
-            Console.WriteLine($"DEBUG: Login error ? {ex.Message}");
+            Console.WriteLine($"DEBUG: Login error? {ex.Message}");
         }
     }
 
