@@ -58,8 +58,18 @@ public class ImageService
             Console.WriteLine($"DEBUG: Found {googleDriveResponse.Files.Count} files in Google Drive.");
 
             var imageUrls = googleDriveResponse.Files
-                .Select(file => $"https://drive.google.com/uc?id={file.Id}")
+                .Where(file => !string.IsNullOrEmpty(file.Id))
+                .Select(file => $"https://lh3.googleusercontent.com/d/{file.Id}")
                 .ToList();
+
+
+
+            foreach (var url in imageUrls)
+            {
+                Console.WriteLine($"DEBUG: WebContentLink URL - {url}");
+            }
+
+
 
             Console.WriteLine($"DEBUG: Returning {imageUrls.Count} image URLs.");
             return imageUrls;

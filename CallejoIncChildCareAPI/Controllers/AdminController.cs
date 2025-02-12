@@ -96,7 +96,7 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 var imageUrls = await _imageService.GetGoogleDriveImagesAsync();
 
-                Console.WriteLine($"DEBUG: Retrieved {imageUrls.Count} images from Google Drive."); // Log number of images
+                Console.WriteLine($"DEBUG: Retrieved {imageUrls.Count} images from Google Drive.");
 
                 if (imageUrls != null && imageUrls.Any())
                 {

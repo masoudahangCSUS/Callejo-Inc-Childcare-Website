@@ -28,22 +28,19 @@
         <p style="text-align:center; color:#fff;">
             Check out what the kids have been up to!
         </p>
-
         <div class="photo-grid">
             @if (imageUrls.Any())
             {
                 @foreach (var url in imageUrls)
                 {
                     <div class="photo-item">
-                        <p>DEBUG: <a href="@url" target="_blank">@url</a></p>
-                        <img src="@url" alt="Activity Photo" width="300" />
+                        <a href="@url" target="_blank">@url</a>
+                        <img src="@url" alt="Photo" width="300" />
                     </div>
                 }
             }
         </div>
-
     </div>
-
 
 </body>
 </html>
