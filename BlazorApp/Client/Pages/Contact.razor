@@ -1,6 +1,7 @@
 ﻿@page "/contact"
 @inject NavigationManager NavigationManager
 @inject HttpClient Http
+@inject UserSessionService UserSession
 @rendermode InteractiveServer
 <PageTitle>About</PageTitle>
 <!--Move all styles attributes into separate css file later...-->
@@ -24,6 +25,8 @@
     <h2>Get Started today!</h2>
     <div class="contact-form-container">
         <EditForm Model="@inquiry" OnValidSubmit="HandleValidSubmit" FormName="contact">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
             @if (showText)
             {
                 <div class="form-group">
@@ -33,7 +36,7 @@
 
                 <div class="form-group">
                     <label for="phone">Phone Number:</label>
-                    <input type="text" id="phone" name="phone" @bind="inquiry.Phone" required>
+                    <input type="text" id="phone" name="phone" required>
                 </div>
 
                 <div class="form-group">
@@ -43,7 +46,7 @@
 
                 <div class="form-group">
                     <label for="reason">Reason for Inquiry:</label>
-                    <textarea name="reason" id="reason" rows="10" @bind=inquiry.Reason></textarea>
+                    <textarea name="reason" id="reason" rows="10" @bind=inquiry.ReasonForInquiry></textarea>
                 </div>
 
 
@@ -57,7 +60,7 @@
                 </div>
 
                 <div class="button-group">
-                    <button type="submit" @onclick="ToggleText">Submit</button>
+                    <button type="submit">Submit</button>
                 </div>
             }
             else
@@ -69,6 +72,14 @@
                 </div>
             }
         </EditForm>
+        <div class="status-message" style="color:red">
+            @if (!string.IsNullOrEmpty(statusMsg))
+            {
+                <p>@statusMsg</p>
+                <p>@statusCode</p>
+
+            }
+        </div>
     </div>
 </div>
 
@@ -76,43 +87,53 @@
 {
     // Initialize Interested Parent Object
     private InterestedParent inquiry = new InterestedParent();
+    private string statusMsg;
+    private string statusCode;
 
     private async Task HandleValidSubmit()
     {
-        // NavigationManager.NavigateTo($"/admin-contact{formData.Name}/{formData.Email}");
         try
         {
+            inquiry.guid = Guid.NewGuid();
             var response = await Http.PostAsJsonAsync("https://localhost:7139/api/Submit/submit", inquiry);
+            Console.WriteLine($"Response Status Code: {(int)response.StatusCode} - {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
+                statusMsg = "Successfully Submitted inquiry!";
                 Console.WriteLine("Successfully submitted inquiry!");
+                showText = false;
+
+                inquiry = new InterestedParent();
             }
             else
             {
+                statusMsg = "Failed to submit Inquiry. Please try again later.";
+                statusCode = $"Response Status Code: {(int)response.StatusCode} - {response.StatusCode}";
                 Console.WriteLine("Failed to submit Inquiry...");    
             }
         }
         catch (Exception ex)
         {
+            statusMsg = $"Error submitting inquiry: {ex.Message}";
             Console.WriteLine($"Error submitting inquiry: {ex.Message}"); 
         }
     }
     public class InterestedParent
     {
         public string Name { get; set; }
-
-        public string Phone { get; set; }
+        public Guid guid{ get; set; }
         public string Email { get; set; }
-        public string Reason { get; set; }
+        public string ReasonForInquiry { get; set; }
 
     }
     private bool showText = true;
 
     // Hide text after pressing submit.
 
-    private void ToggleText()
+    /*private void ToggleText()
     {
         showText = !showText;
 
     }
+    */
 }
