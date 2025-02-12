@@ -81,4 +81,26 @@ public class ImageService
             }
         }
     }
+
+    public async Task<string> GetLatestImageUrlAsync()
+    {
+        using (var conn = new SqlConnection(_connectionString))
+        {
+            await conn.OpenAsync();
+            var query = "SELECT TOP 1 image_url FROM Images ORDER BY uploaded_at DESC";  // Fetch latest uploaded image
+            using var cmd = new SqlCommand(query, conn);
+
+            try
+            {
+                var result = await cmd.ExecuteScalarAsync();
+                return result?.ToString();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+                return null;
+            }
+        }
+    }
+
 }

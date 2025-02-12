@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <Content Remove="Client\Pages\About.razor.razor" />
+    <Content Remove="Client\Pages\AdminPhotos.razor.razor" />
     <Content Remove="Client\Pages\Component.razor" />
     <Content Remove="Client\Pages\Counter.razor" />
     <Content Remove="Client\Pages\Error.razor" />
