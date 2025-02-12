@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace BlazorApp.Server.Controllers
 {
+    [RequireHttps]
     [ApiController]
     [Route("api/[controller]")]
     public class EmailController : ControllerBase

@@ -7,6 +7,7 @@ using Common.View;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class CustomerController : ControllerBase

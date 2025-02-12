@@ -1,0 +1,44 @@
+﻿@page "/debugclaims"
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+
+<h3>User Claims Debug Information</h3>
+
+@if (authState == null)
+{
+    <p>Loading authentication state...</p>
+}
+else if (CurrentUser == null || !CurrentUser.Identity.IsAuthenticated)
+{
+    <p>No user is logged in.</p>
+}
+else
+{
+    <p><strong>Username:</strong> @CurrentUser.Identity.Name</p>
+    <ul>
+        @foreach (var claim in CurrentUser.Claims)
+        {
+            <li>
+                <strong>@claim.Type:</strong> @claim.Value
+            </li>
+        }
+    </ul>
+}
+
+@code {
+    // Obtain the current AuthenticationState as a cascading parameter.
+    [CascadingParameter]
+    public Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    private AuthenticationState authState;
+
+    // Helper property to access the ClaimsPrincipal.
+    private ClaimsPrincipal CurrentUser => authState?.User;
+
+    protected override async Task OnInitializedAsync()
+    {
+        authState = await AuthenticationStateTask;
+    }
+}

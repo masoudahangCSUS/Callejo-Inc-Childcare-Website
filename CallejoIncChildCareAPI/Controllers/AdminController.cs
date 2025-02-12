@@ -6,9 +6,13 @@ using Common.Models.Data;
 using Common.View;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -79,6 +83,21 @@ namespace CallejoIncChildcareAPI.Controllers
                 LastName = user.LastName,
                 Role = (int)user.FkRole
             };
+
+            // Create the user claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.FkRole == 1 ? "Admin" : "User")
+            };
+
+            // Create the identity and principal
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            // Sign in the user and issue the cookie
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                                          claimsPrincipal);
 
             return Ok(new APIResponse
             {
