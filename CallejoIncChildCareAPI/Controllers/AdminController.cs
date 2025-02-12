@@ -24,7 +24,7 @@ namespace CallejoIncChildcareAPI.Controllers
             _configuration = configuration;
         }
 
-        // ✅ POST: api/admin/create-user
+        //  POST: api/admin/create-user
         [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
@@ -32,7 +32,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        // ✅ GET: api/admin/get-all-users
+        //  GET: api/admin/get-all-users
         [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
@@ -40,7 +40,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
-        // ✅ DELETE: api/admin/delete-user
+        //  DELETE: api/admin/delete-user
         [HttpDelete("delete-user")]
         public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
         {
@@ -48,7 +48,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // ✅ PUT: api/admin/update-user
+        //  PUT: api/admin/update-user
         [HttpPut("update-user")]
         public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
         {
@@ -57,7 +57,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // ✅ POST: api/admin/login
+        // POST: api/admin/login
         [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
@@ -88,7 +88,7 @@ namespace CallejoIncChildcareAPI.Controllers
             });
         }
 
-        // ✅ POST: api/admin/upload-image
+        // POST: api/admin/upload-image
         [HttpPost("upload-image")]
         public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
         {
@@ -115,7 +115,7 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
-        // ✅ GET: api/admin/get-latest-image
+        //  GET: api/admin/get-latest-image
         [HttpGet("get-latest-image")]
         public async Task<ActionResult<APIResponse>> GetLatestImage()
         {
@@ -136,7 +136,7 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
-        // ✅ Direct SQL insert method (if _imageService is unavailable)
+        //  Direct SQL insert method (if _imageService is unavailable)
         private async Task SaveImageUrlAsync(string imageUrl)
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnection");
