@@ -1,6 +1,7 @@
 using Common.Models.Data;
 using Common.Services.Role;
 using Common.Services.SQL;
+using Common.Services.Submit;
 using Common.Services.User;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +28,9 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ISubmitService, SubmitService>();
+
+
 builder.Services.AddAuthentication(options =>
 {
     // Set the default schemes for authentication, challenge, and sign in.
@@ -60,6 +64,7 @@ builder.Services.AddCors(options =>
               .AllowCredentials();
     });
 });
+
 
 
 

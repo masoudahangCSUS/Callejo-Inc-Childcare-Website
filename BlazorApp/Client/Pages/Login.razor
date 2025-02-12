@@ -99,7 +99,7 @@
                 errorMessage = result?.Message ?? "Login failed or no data returned.";
             }
         }
-        catch (Exception ex)
+        catch (Exception ex) // Exception usually occurs if backend is not running
         {
             loginState = false;
             errorMessage = "An error occurred. Please try again.";
