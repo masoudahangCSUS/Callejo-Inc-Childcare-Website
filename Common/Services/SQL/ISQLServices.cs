@@ -17,6 +17,9 @@ namespace Common.Services.SQL
         bool MarkNotificationAsRead(long id);
         bool SendCustomNotification(string parentId, string message);
 
+        // New method for Holidays & Vacations
+        IEnumerable<HolidaysVacations> GetHolidaysVacations();
+
     }
 
 }

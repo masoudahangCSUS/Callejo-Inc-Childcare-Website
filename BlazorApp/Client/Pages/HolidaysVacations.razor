@@ -1,0 +1,61 @@
+﻿@page "/holidays-vacations"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@inject HolidaysVacationsService HolidaysVacationsService
+@inject UserSessionService UserSession
+@rendermode InteractiveServer
+
+<h1 class="page-title">Observed Holidays & Childcare Vacations</h1>
+
+@if (holidaysVacations == null)
+{
+    <p class="loading-text">Loading...</p>
+}
+else if (!holidaysVacations.Any())
+{
+    <p class="no-holidays">No holidays or vacations found.</p>
+}
+else
+{
+    <div class="holidays-container">
+        @foreach (var item in holidaysVacations)
+        {
+            <div class="holiday-card">
+                <h3 class="holiday-title">@item.Title</h3>
+                <p><strong>Type:</strong> @item.Type</p>
+                <p><strong>Start Date:</strong> @item.StartDate.ToString("MMMM dd, yyyy")</p>
+                <p><strong>End Date:</strong> @item.EndDate.ToString("MMMM dd, yyyy")</p>
+
+                <button class="expand-btn" @onclick="() => ToggleDescription(item.Id)">
+                    @(expandedHolidayId == item.Id ? "Hide Details" : "View Details")
+                </button>
+
+                @if (expandedHolidayId == item.Id)
+                {
+                    <div class="holiday-details">
+                        <p><strong>Description:</strong> @(string.IsNullOrEmpty(item.Description) ? "No description available" : item.Description)</p>
+                        <p><strong>Created At:</strong> @(item.CreatedAt.HasValue ? item.CreatedAt.Value.ToString("MMMM dd, yyyy HH:mm") : "N/A")</p>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Common.Models.Data.HolidaysVacations> holidaysVacations = new();
+    private long? expandedHolidayId = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
+    }
+
+    private void ToggleDescription(long holidayId)
+    {
+        if (expandedHolidayId == holidayId)
+            expandedHolidayId = null; // Collapse if already expanded
+        else
+            expandedHolidayId = holidayId; // Expand new item
+    }
+}
