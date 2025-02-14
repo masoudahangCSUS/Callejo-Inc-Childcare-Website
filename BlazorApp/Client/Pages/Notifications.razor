@@ -59,7 +59,7 @@
     {
         try
         {
-            if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+            if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 3)
             {
                 Guid parentId = UserSession.UserId.Value;
                 Console.WriteLine($"DEBUG: Fetching notifications for Parent ID: {parentId}");

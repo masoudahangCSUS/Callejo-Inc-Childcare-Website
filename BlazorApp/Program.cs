@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Common.Services.SQL;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,8 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<ISQLServices, SQLServices>();
+builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IFileService, FileService>();
