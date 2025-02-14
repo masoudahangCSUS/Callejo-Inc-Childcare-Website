@@ -4,33 +4,39 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
 using Common.View;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly ImageService _imageService;
+        private readonly IConfiguration _configuration;
 
-        public AdminController(IUserService userService)
+        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration)
         {
             _userService = userService;
+            _imageService = imageService;
+            _configuration = configuration;
         }
 
-        // POST: api/admin/create-user
+        // ✅ POST: api/admin/create-user
         [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
             var result = _userService.InsertUser(userInfo);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
+            return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        // GET: api/admin/get-all-users
+        // ✅ GET: api/admin/get-all-users
         [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
@@ -38,37 +44,29 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
-        // DELETE: api/admin/delete-user
+        // ✅ DELETE: api/admin/delete-user
         [HttpDelete("delete-user")]
         public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
         {
             var result = _userService.DeleteUser(userId);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result.Message);
+            return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // PUT: api/admin/update-user
+        // ✅ PUT: api/admin/update-user
         [HttpPut("update-user")]
         public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
         {
             var result = _userService.UpdateUser(userDTO);
-            Console.WriteLine("Does it reach here?");
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result.Message);
+            Console.WriteLine("DEBUG: Reached UpdateUser method");
+            return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // POST: api/admin/login
+        // ✅ POST: api/admin/login
         [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
             var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
-            if (user == null)
+            if (user == null || user.Password != loginInfo.Password)
             {
                 return Unauthorized(new APIResponse
                 {
@@ -77,26 +75,29 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
 
-            // Verify password (in production, use hashing + salted storage)
-            if (user.Password != loginInfo.Password)
-            {
-                return Unauthorized(new APIResponse
-                {
-                    Success = false,
-                    Message = "Invalid email or password."
-                });
-            }
-
-            // Create a DTO so we don't expose fields like Password, RegistrationDocument, etc.
             var userDTO = new UserDTO
             {
                 Id = user.Id,
                 Email = user.Email,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                // Cast from long to int if needed:
                 Role = (int)user.FkRole
             };
+
+            // Create the user claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.FkRole == 1 ? "Admin" : "User")
+            };
+
+            // Create the identity and principal
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            // Sign in the user and issue the cookie
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                                          claimsPrincipal);
 
             return Ok(new APIResponse
             {
@@ -104,6 +105,70 @@ namespace CallejoIncChildcareAPI.Controllers
                 Message = "Login successful.",
                 Data = userDTO
             });
+        }
+
+        // ✅ POST: api/admin/upload-image
+        [HttpPost("upload-image")]
+        public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
+        {
+            try
+            {
+                Console.WriteLine($"DEBUG: Received image upload request: {imageData?.ImageUrl}");
+
+                if (string.IsNullOrWhiteSpace(imageData?.ImageUrl))
+                {
+                    Console.WriteLine("DEBUG: [FAILURE] Empty image URL received.");
+                    return BadRequest(new APIResponse { Success = false, Message = "Image URL is empty." });
+                }
+
+                // Store Image URL using ImageService
+                await _imageService.SaveImageUrlAsync(imageData.ImageUrl);
+
+                Console.WriteLine($"DEBUG: Image URL {imageData.ImageUrl} successfully saved to DB.");
+                return Ok(new APIResponse { Success = true, Message = "Image URL stored successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"DEBUG: [EXCEPTION] Error saving image URL. {ex.Message}");
+                return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
+            }
+        }
+
+        // ✅ GET: api/admin/get-latest-image
+        [HttpGet("get-latest-image")]
+        public async Task<ActionResult<APIResponse>> GetLatestImage()
+        {
+            try
+            {
+                var imageUrl = await _imageService.GetLatestImageUrlAsync();
+
+                if (string.IsNullOrEmpty(imageUrl))
+                {
+                    return NotFound(new APIResponse { Success = false, Message = "No image found." });
+                }
+
+                return Ok(new APIResponse { Success = true, Data = imageUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
+            }
+        }
+
+        // ✅ Direct SQL insert method (if _imageService is unavailable)
+        private async Task SaveImageUrlAsync(string imageUrl)
+        {
+            var connectionString = _configuration.GetConnectionString("DefaultConnection");
+
+            using (var conn = new SqlConnection(connectionString))
+            {
+                await conn.OpenAsync();
+                var query = "INSERT INTO Images (image_url, uploaded_at) VALUES (@ImageUrl, GETUTCDATE())";
+
+                using var cmd = new SqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("@ImageUrl", imageUrl);
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
     }
 }

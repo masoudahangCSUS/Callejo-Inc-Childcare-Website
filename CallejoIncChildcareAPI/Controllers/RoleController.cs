@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class RoleController : ControllerBase
