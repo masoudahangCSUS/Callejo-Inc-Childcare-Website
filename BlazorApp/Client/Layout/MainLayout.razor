@@ -3,7 +3,7 @@
 
 <!-- Main Navbar Section -->
 <div class="top-navbar">
-    @if (UserSession.UserIsLoggedIn && UserSession.UserRole == 1)
+    @if (UserSession.UserIsLoggedIn && UserSession.UserRole >0)
     {
         <ParentNavMenu />
     }
@@ -13,10 +13,15 @@
     }
 </div>
 
+
+
 <!-- Main Content Area -->
 <main class="full-width-container">
     @Body
 </main>
+
+<script src="/JavaScript/CookieHelper.js"></script>
+
 
 <!-- Footer Section -->
 <footer class="footer full-width-container">

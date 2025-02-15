@@ -130,6 +130,14 @@ namespace Common.Services.SQL
             return true;
         }
 
+        // New Method: Fetch all holidays & vacations
+        public IEnumerable<HolidaysVacations> GetHolidaysVacations()
+        {
+            return _context.HolidaysVacations
+                .OrderBy(h => h.StartDate)
+                .ToList();
+        }
+
     }
 
 }

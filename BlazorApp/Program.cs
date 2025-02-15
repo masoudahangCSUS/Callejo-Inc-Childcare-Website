@@ -5,6 +5,8 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Common.Services.SQL;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -35,11 +37,31 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<ISQLServices, SQLServices>();
+builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=DESKTOP-49NHJ9N;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
+builder.Services.AddAuthentication(options =>
+{
+    // Set the default schemes for authentication, challenge, and sign in.
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    // Configure cookie settings as needed.
+    options.Cookie.Name = "MyAppAuthCookie";
+    options.LoginPath = "/Login";
+    options.AccessDeniedPath = "/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
 // Load environment variables
 Env.Load();
 
@@ -51,6 +73,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+else
+{
+}
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

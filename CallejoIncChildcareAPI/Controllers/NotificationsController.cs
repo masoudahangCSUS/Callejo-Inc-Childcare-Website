@@ -5,6 +5,7 @@ using System.Linq;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class NotificationsController : ControllerBase
