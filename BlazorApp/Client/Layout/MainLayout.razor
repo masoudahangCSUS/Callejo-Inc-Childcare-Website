@@ -1,19 +1,30 @@
 ﻿@inherits LayoutComponentBase
 @inject UserSessionService UserSession
 
+
 <!-- Main Navbar Section -->
-<div class="top-navbar">
-    @if (UserSession.UserIsLoggedIn && UserSession.UserRole >0)
+@if (UserSession.UserIsLoggedIn)
+{
+    @if (UserSession.UserRole == 3 || UserSession.UserRole == 2)
     {
-        <ParentNavMenu />
+        <!-- Show Parent Navigation Menu -->
+        <div class="top-navbar">
+            <ParentNavMenu />
+        </div>
     }
-    else
+    else if (UserSession.UserRole == 1) 
     {
+        <!-- Show Admin Sidebar -->
+        <AdminHome />
+    }
+}
+else
+{
+    <!-- Show Default Navbar for Unauthenticated Users -->
+    <div class="top-navbar">
         <MainNavMenu />
-    }
-</div>
-
-
+    </div>
+}
 
 <!-- Main Content Area -->
 <main class="full-width-container">
@@ -21,7 +32,6 @@
 </main>
 
 <script src="/JavaScript/CookieHelper.js"></script>
-
 
 <!-- Footer Section -->
 <footer class="footer full-width-container">
