@@ -1,51 +1,65 @@
 ﻿@page "/admin"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
-
+@inject NavigationManager Navigation
+@inject UserSessionService UserSession
 
 <div class="admin-dashboard">
     <!-- Sidebar -->
     <div class="sidebar">
+        <!-- Callejo Inc Logo -->
+        <div class="admin-logo">
+            <img src="images/companyicon.png" alt="Callejo Inc." class="admin-logo-img" />
+            <h3 class="admin-logo-text">Callejo Inc.</h3>
+        </div>
+
+        <!-- Profile Section -->
         <div class="profile">
             <h4>Jane C.</h4>
         </div>
+
+        <!-- Navigation Menu -->
         <nav>
             <ul>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminOverview), "Overview")'
                             class="btn-link @(ActivePage == "Overview" ? "active" : "")">
-                        Overview
+                        <img src="images/OverviewIcon.png" alt="Overview" class="nav-icon" /> Overview
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminAccountManagement), "Accounts")'
                             class="btn-link @(ActivePage == "Accounts" ? "active" : "")">
-                        Accounts
+                        <img src="images/accountIcon.png" alt="Accounts" class="nav-icon" /> Accounts
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminExpenses), "Expenses")'
                             class="btn-link @(ActivePage == "Expenses" ? "active" : "")">
-                        Expenses
+                        <img src="images/expensesIcon.png" alt="Expenses" class="nav-icon" /> Expenses
                     </button>
                 </li>
-
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminContact), "Inquiries")'
                             class="btn-link @(ActivePage == "Inquiries" ? "active" : "")">
-                        Inquiries
+                        <img src="images/inquiriesIcon.png" alt="Inquiries" class="nav-icon" /> Inquiries
                     </button>
                 </li>
-
-                 <li>
-                <button @onclick='() => SetContent(typeof(AdminPhotos), "Admin-Photos")'
-                        class="btn-link @(ActivePage == "Admin-Photos" ? "active" : "")">
-                    Admin Photos
-                </button>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminPhotos), "Admin-Photos")'
+                            class="btn-link @(ActivePage == "Admin-Photos" ? "active" : "")">
+                        <img src="images/camera1.png" alt="Admin Photos" class="nav-icon" /> Admin Photos
+                    </button>
                 </li>
-
             </ul>
         </nav>
+
+        <!-- Logout Button at the Bottom -->
+        <div class="logout-container">
+            <button class="logout-btn" @onclick="LogoutUser">
+                <img src="images/logout.png" alt="Logout Icon" class="logout-icon" /> Logout
+            </button>
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -68,5 +82,11 @@
     protected override void OnInitialized()
     {
         SetContent(typeof(AdminOverview), "Overview");
+    }
+
+    private void LogoutUser()
+    {
+        UserSession.SetUser(false);
+        Navigation.NavigateTo("/");
     }
 }
