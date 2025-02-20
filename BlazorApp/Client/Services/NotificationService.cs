@@ -80,5 +80,65 @@ namespace BlazorApp.Client.Services
             }
 
         }
+
+        public async Task<bool> CreateNotification(Notification newNotification)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("api/notifications/admin-create", newNotification);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating notification: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateNotification(long id, Notification updatedNotification)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"api/notifications/admin-update/{id}", updatedNotification);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating notification: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteNotification(long id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"api/notifications/admin-delete/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting notification: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<List<Notification>> GetAllNotifications()
+        {
+            try
+            {
+                Console.WriteLine("Fetching all notifications for admin...");
+                var notifications = await _httpClient.GetFromJsonAsync<List<Notification>>("api/notifications/get-all");
+                return notifications ?? new List<Notification>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error fetching notifications: {ex.Message}");
+                return new List<Notification>();
+            }
+        }
+
+
+
     }
 }

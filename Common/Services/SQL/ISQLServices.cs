@@ -12,14 +12,21 @@ namespace Common.Services.SQL
     {
         ListChildrenGuardianView GetListOfAllChildrenAndGuardians();
 
-        // New methods for Notifications
+        // Parent Notifications
         IEnumerable<Notification> GetNotificationsByParentId(Guid parentId);
         bool MarkNotificationAsRead(long id);
         bool SendCustomNotification(string parentId, string message);
 
-        // New method for Holidays & Vacations
-        IEnumerable<HolidaysVacations> GetHolidaysVacations();
+        // Admin Notifications
+        IEnumerable<Notification> GetAllNotifications();  // <-- New method
+        bool CreateNotification(Notification notification);
+        bool UpdateNotification(long id, Notification updatedNotification);
+        bool DeleteNotification(long id);
 
+        // Holidays & Vacations
+        IEnumerable<HolidaysVacations> GetHolidaysVacations();
     }
+
+
 
 }
