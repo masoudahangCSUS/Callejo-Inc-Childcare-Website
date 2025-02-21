@@ -1,0 +1,213 @@
+﻿/* Page Layout - Added top and bottom padding */
+.page-container {
+    padding-top: 50px;
+    padding-bottom: 50px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Header container */
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+
+/* Page Title */
+.page-title {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #007bff;
+    text-align: left;
+}
+
+/* Create Notification Button */
+.create-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+    margin-left: auto;
+}
+
+    .create-btn:hover {
+        background-color: #218838;
+    }
+
+/* Notifications Container */
+.notifications-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Notifications Table */
+.notifications-table {
+    width: 90%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 20px;
+}
+
+    .notifications-table th,
+    .notifications-table td {
+        padding: 12px 16px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .notifications-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+    }
+
+    .notifications-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+/* Actions Column */
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Edit Button */
+.edit-btn {
+    background-color: #ffc107;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .edit-btn:hover {
+        background-color: #e0a800;
+    }
+
+/* Delete Button */
+.delete-btn {
+    background-color: #dc3545;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .delete-btn:hover {
+        background-color: #c82333;
+    }
+
+/* Loading & No Notifications Text */
+.loading-text, .no-notifications {
+    font-size: 1.2rem;
+    text-align: center;
+    margin-top: 20px;
+    color: #555;
+}
+
+/* Modal Styles */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+    /* Modal Title */
+    .modal-content h4 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    /* Modal Inputs */
+    .modal-content label {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .modal-content textarea {
+        height: 80px;
+        resize: none;
+    }
+
+/* Modal Buttons */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+/* Save button */
+.save-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .save-btn:hover {
+        background-color: #218838;
+    }
+
+/* Cancel button */
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .cancel-btn:hover {
+        background-color: #c82333;
+    }

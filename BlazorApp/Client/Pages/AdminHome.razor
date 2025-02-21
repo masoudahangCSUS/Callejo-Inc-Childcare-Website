@@ -51,10 +51,16 @@
                         <img src="images/camera1.png" alt="Admin Photos" class="nav-icon" /> Admin Photos
                     </button>
                 </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminNotifications), "Admin-Notifications")'
+                            class="btn-link @(ActivePage == "Admin-Notifications" ? "active" : "")">
+                        <img src="images/notificationManagementIcon.png" alt="Notifications" class="nav-icon" /> Notification Management
+                    </button>
+                </li>
             </ul>
         </nav>
 
-        <!-- Logout Button at the Bottom -->
+        <!-- Logout Button -->
         <div class="logout-container">
             <button class="logout-btn" @onclick="LogoutUser">
                 <img src="images/logout.png" alt="Logout Icon" class="logout-icon" /> Logout
