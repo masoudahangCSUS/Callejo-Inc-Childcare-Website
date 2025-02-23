@@ -16,7 +16,10 @@ namespace Common.Services.User
         APIResponse DeleteUser(Guid userId);
         ListUsers GetAllUsers();
         //ListRoles GetUser(long id);
+        ListChildren GetAllChildren(); 
         Task<CallejoIncUser?> GetUserByEmailAsync(string email);
+
+
 
     }
 }
