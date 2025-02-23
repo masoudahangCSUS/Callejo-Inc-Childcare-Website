@@ -1,0 +1,52 @@
+﻿@page "/admin-child-roster"
+@inject HttpClient Http
+@using Common.Models.Data
+@using Common.View
+
+
+@inject AdminService AdminService
+@rendermode InteractiveServer
+
+<h1>Child Information Overview</h1>
+
+@if (children == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    @foreach (var child in children)
+    {
+        <div class="child-overview">
+            <div class="child-photo-container">
+                <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
+            </div>
+            <div class="child-details">
+                <p><strong>First Name:</strong> @child.FirstName</p>
+                <p><strong>Middle Name:</strong> @child.MiddleName</p>
+                <p><strong>Last Name:</strong> @child.LastName</p>
+                <p><strong>Age:</strong> @child.Age</p>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    private List<ChildView> children = new List<ChildView>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var apiUrl = "https://localhost:7139/api/Admin/children";
+
+        // Deserialize the response as an object, then extract the children list
+        var response = await Http.GetFromJsonAsync<ListChildren>(apiUrl);
+        if (response != null && response.children != null)
+        {
+            children = response.children;
+        }
+    }
+}
+
+
+}
