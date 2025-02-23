@@ -41,7 +41,6 @@ builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
 builder.Services.AddAuthentication(options =>
