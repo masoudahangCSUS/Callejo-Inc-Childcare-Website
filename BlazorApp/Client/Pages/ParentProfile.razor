@@ -1,13 +1,12 @@
 ﻿@page "/profile"
-@inject IFileService FileService
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
 @rendermode InteractiveServer
 
 @code {
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
-    //    private Guid CurrentUserId = Guid.NewGuid();
     Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
 
     void ShowFileUploadDialog()
@@ -29,12 +28,36 @@
     {
         if (selectedFile is not null)
         {
-            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 1048576); // 1 MB
-            byte[] fileData = new byte[stream.Length];
-            await stream.ReadAsync(fileData);
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880); // 5MB
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            byte[] fileData = memoryStream.ToArray();
 
-            // Save file to user
-            await FileService.UploadFileAsync(CurrentUserId, fileData);
+            // Set up payloads, specifying the filetype as PDF
+            var content = new MultipartFormDataContent();
+            var fileContent = new ByteArrayContent(fileData);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            // Declare API URL
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={CurrentUserId}";
+            Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
+
+            // Call API
+            var response = await Http.PostAsync(apiUrl, content);
+
+            Console.WriteLine($"[Blazor] Response Status: {response.StatusCode}");
+            Console.WriteLine($"[Blazor] Response Content: {await response.Content.ReadAsStringAsync()}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("[Blazor] File uploaded successfully");
+            }
+            else
+            {
+                Console.WriteLine("[Blazor] File upload failed");
+            }
+
             showUploadDialog = false;
         }
     }
@@ -86,7 +109,7 @@
 
     <div class="button-group">
         <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
-        <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
+        <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
     </div>
 
     @if (showUploadDialog)

@@ -1,5 +1,7 @@
 ﻿@using Common.View
 @inject AdminService AdminService
+@inject HttpClient Http
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <div>
@@ -25,6 +27,7 @@ else
                 <th>Address</th>
                 <th>City</th>
                 <th>ZIP</th>
+                <th>Registration</th>
             </tr>
         </thead>
         <tbody>
@@ -36,6 +39,16 @@ else
                     <td>@user.Address</td>
                     <td>@user.City</td>
                     <td>@user.ZipCode</td>
+                    <td>
+                        @if (user.RegistrationDocument != null) {
+                            <button @onclick = "() => DownloadFile(user.Id)">Download</button>
+                            <button @onclick = "() => DeleteFile(user.Id)">Delete</button>
+                        }
+                        else{
+                            <InputFile OnChange="e => HandleFileSelected(e, user.Id)" />
+                            <button @onclick="() => UploadFile(user.Id)">Upload</button>
+                        }
+                    </td>
                     <td>
                         <button @onclick = "() => EditUser(user)">Edit</button> 
                         <button @onclick = "() => DeleteUser(user.Id)">Delete</button>
@@ -103,6 +116,122 @@ else
         if (response.IsSuccessStatusCode)
         {
             await LoadUsers();
+        }
+    }
+
+    // Download registration file
+    private bool isJsLoaded = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isJsLoaded)
+        {
+            // Dynamically start RegDownloadHelper.js
+            await JS.InvokeVoidAsync("eval", @"
+                window.downloadFile = (fileName, byteBase64) => {
+                    const link = document.createElement('a');
+                    link.href = 'data:application/pdf;base64,' + byteBase64;
+                    link.download = fileName;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                };
+            ");
+            isJsLoaded = true;
+        }
+    }
+
+    async Task DownloadFile(Guid userId)
+    {
+        var response = await Http.GetAsync($"https://localhost:7139/api/Registration/Download?userId={userId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            var fileData = await response.Content.ReadAsByteArrayAsync();
+            var base64File = Convert.ToBase64String(fileData);
+            var fileName = "RegistrationDocument.pdf";
+
+            /* Using JavaScript instead
+            // Create Blob and download in browser
+            var file = new Blob(new[] { fileData });
+            var url = URL.CreateObjectURL(file);
+            var anchor = new ElementReference();
+            anchor.SetAttribute("href", url);
+            anchor.SetAttribute("download", fileName);
+            anchor.Click();
+            URL.RevokeObjectURL(url);
+            */
+
+            await JS.InvokeVoidAsync("downloadFile", fileName, base64File);
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] File not found or could not be downloaded");
+        }
+    }
+
+    // Delete registration file
+    async Task DeleteFile(Guid userId)
+    {
+        var response = await Http.DeleteAsync($"https://localhost:7139/api/Registration/Delete?userId={userId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("[Blazor] File deleted successfully");
+            await LoadUsers();  // Refresh list
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] File deletion failed");
+        }
+    }
+
+    // Upload registration file
+    private IBrowserFile? selectedFile;
+    private Dictionary<Guid, IBrowserFile> fileUploads = new();
+
+    void HandleFileSelected(InputFileChangeEventArgs e, Guid userId)
+    {
+        fileUploads[userId] = e.File;
+    }
+
+    async Task UploadFile(Guid userId)
+    {
+        if (!fileUploads.ContainsKey(userId))
+        {
+            Console.WriteLine("[Blazor] No file selected.");
+            return;
+        }
+
+        var selectedFile = fileUploads[userId];
+        using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880); // 5MB
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+        byte[] fileData = memoryStream.ToArray();
+
+        // Set up payloads, specifying the filetype as PDF
+        var content = new MultipartFormDataContent();
+        var fileContent = new ByteArrayContent(fileData);
+        fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+        content.Add(fileContent, "file", selectedFile.Name);
+
+        // Declare API URL
+        string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={userId}";
+        Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
+
+        // Call API
+        var response = await Http.PostAsync(apiUrl, content);
+
+        Console.WriteLine($"[Blazor] Response Status: {response.StatusCode}");
+        Console.WriteLine($"[Blazor] Response Content: {await response.Content.ReadAsStringAsync()}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("[Blazor] File uploaded successfully");
+            await LoadUsers();  // Refresh list
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] File upload failed");
         }
     }
 }

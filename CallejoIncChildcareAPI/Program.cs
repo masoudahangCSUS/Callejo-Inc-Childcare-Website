@@ -1,4 +1,5 @@
 using Common.Models.Data;
+using Common.Services.Registration;
 using Common.Services.Role;
 using Common.Services.SQL;
 using Common.Services.Submit;
@@ -29,7 +30,7 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
-
+builder.Services.AddScoped<IRegService, RegService>();
 
 builder.Services.AddAuthentication(options =>
 {

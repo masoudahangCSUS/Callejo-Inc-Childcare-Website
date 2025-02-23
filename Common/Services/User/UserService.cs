@@ -312,6 +312,7 @@ namespace Common.Services.User
                     userViewRec.ZipCode = userRec.ZipCode;
                     userViewRec.Email = userRec.Email;
                     userViewRec.FkRole = userRec.FkRole;
+                    userViewRec.RegistrationDocument = userRec.RegistrationDocument;
 
                     userViewRec.Children = new List<ChildView>();
 
