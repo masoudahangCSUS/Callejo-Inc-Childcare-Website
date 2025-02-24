@@ -88,7 +88,7 @@ namespace CallejoIncChildcareAPI.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.FkRole == 1 ? "Admin" : "User")
+                new Claim(ClaimTypes.Role, (int)user.FkRole == 1 ? "Admin" : "User")
             };
 
             // Create the identity and principal

@@ -1,14 +1,26 @@
 ﻿@page "/profile"
-@inject IFileService FileService
+
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
+@using Common.View
+@using Common.Services.User
+@using Common.Models.Data
+@using Common.Services.SQL
+
 @rendermode InteractiveServer
+
+@inject IFileService FileService
+@inject IUserService userService
+@inject UserSessionService UserSession
+@inject ISQLServices sqlService
+
 
 @code {
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
     //    private Guid CurrentUserId = Guid.NewGuid();
     Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
+    private CustomerUserViewDTO? userViewDTO;
 
     void ShowFileUploadDialog()
     {
@@ -38,64 +50,95 @@
             showUploadDialog = false;
         }
     }
-}
 
-<div class="parent-profile-page">
-    <h1>Profile</h1>
-    <div class="profile-overview">
-        <div class="profile-photo-container">
-            <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
-        </div>
-        <div class="profile-details-box">
-            <div class="profile-details">
-                <div class="profile-info">
-                    <div class="profile-column">
-                        <p><strong>First Name:</strong> John</p>
-                        <p><strong>Last Name:</strong> Doe</p>
-                        <p><strong>Email Address:</strong> johndoe@example.com</p>
-                        <p><strong>Phone Number:</strong> (555) 123-4567</p>
-                    </div>
-                    <div class="profile-column">
-                        <p><strong>Street Address:</strong> 123 Elm Street</p>
-                        <p><strong>City:</strong> Springfield</p>
-                        <p><strong>State:</strong> IL</p>
-                        <p><strong>ZIP:</strong> 62704</p>
-                        <p><strong>Relationship to Child:</strong> Parent</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Emergency Contact Section -->
-    <div class="emergency-contact-section">
-        <h2>Emergency Contact</h2>
-        <div class="emergency-details-box">
-            <div class="emergency-details">
-                <div class="emergency-info">
-                    <div class="emergency-column">
-                        <p><strong>First Name:</strong> Jane</p>
-                        <p><strong>Last Name:</strong> Doe</p>
-                        <p><strong>Phone Number:</strong> (555) 765-4321</p>
-                        <p><strong>Relationship to Child:</strong> Aunt</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="button-group">
-        <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
-        <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
-    </div>
-
-    @if (showUploadDialog)
+    protected override async Task OnInitializedAsync()
     {
-        <div>
-            <InputFile OnChange="HandleFileSelected" />
-            <button class="btn-upload" @onclick="UploadFile">Upload</button>
-            <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
-        </div>
+        await GetUserView();
     }
 
-</div>
+    async Task GetUserView(){
+        var user = await userService.GetUserByID(UserSession.UserId);
+        var PhoneNumbers = await sqlService.GetPhoneNumberById(UserSession.UserId);
+
+        userViewDTO = new CustomerUserViewDTO
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PhoneNumber = PhoneNumbers.FirstOrDefault(),
+            Address = user.Address,
+            City = user.City,
+            State = user.State,
+            ZipCode = user.ZipCode,
+
+        };
+        StateHasChanged();
+    }
+
+    
+}
+@if(userViewDTO == null){
+    <p>Loading profile...</p>
+}
+else{
+    <div class="parent-profile-page">
+        <h1>Profile</h1>
+        <div class="profile-overview">
+            <div class="profile-photo-container">
+                <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
+            </div>
+            <div class="profile-details-box">
+                <div class="profile-details">
+                    <div class="profile-info">
+                        <div class="profile-column">
+                            <p><strong>First Name:</strong> @userViewDTO?.FirstName</p>
+                            <p><strong>Last Name:</strong> @userViewDTO.LastName</p>
+                            <p><strong>Email Address:</strong> @userViewDTO.Email</p>
+                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PhoneNumber.AreaCode) @userViewDTO.PhoneNumber.Prefix - @userViewDTO.PhoneNumber.LastFour</p>
+                        </div>
+                        <div class="profile-column">
+                            <p><strong>Street Address:</strong> @userViewDTO.Address</p>
+                            <p><strong>City:</strong> @userViewDTO.City</p>
+                            <p><strong>State:</strong> @userViewDTO.State</p>
+                            <p><strong>ZIP:</strong> @userViewDTO.ZipCode</p>
+                            <p><strong>Relationship to Child:</strong> Parent</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact Section -->
+        <div class="emergency-contact-section">
+            <h2>Emergency Contact</h2>
+            <div class="emergency-details-box">
+                <div class="emergency-details">
+                    <div class="emergency-info">
+                        <div class="emergency-column">
+                            <p><strong>First Name:</strong> Jane</p>
+                            <p><strong>Last Name:</strong> Doe</p>
+                            <p><strong>Phone Number:</strong> (555) 765-4321</p>
+                            <p><strong>Relationship to Child:</strong> Aunt</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
+            <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
+        </div>
+
+        @if (showUploadDialog)
+        {
+            <div>
+                <InputFile OnChange="HandleFileSelected" />
+                <button class="btn-upload" @onclick="UploadFile">Upload</button>
+                <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
+            </div>
+        }
+
+    </div>
+
+}

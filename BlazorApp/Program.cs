@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
+using Common.Services.User;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,7 @@ builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
 builder.Services.AddAuthentication(options =>

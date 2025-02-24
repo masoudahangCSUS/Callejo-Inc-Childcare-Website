@@ -97,6 +97,15 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+        // New Method: Fetch a users Phone Number by their ID
+        public async Task<IEnumerable<PhoneNumber>> GetPhoneNumberById(Guid? ID)
+        {
+            return await _context.PhoneNumbers
+                .Where(n => n.FkUsers == ID)
+                .ToListAsync();
+
+        }
+
         // New Method: Mark a notification as read
         public bool MarkNotificationAsRead(long id)
         {
@@ -139,6 +148,7 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+<<<<<<< Updated upstream
         public bool CreateNotification(Notification notification)
         {
             if (notification == null)
@@ -215,6 +225,9 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+=======
+        
+>>>>>>> Stashed changes
 
     }
 

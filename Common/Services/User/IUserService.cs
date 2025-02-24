@@ -18,5 +18,7 @@ namespace Common.Services.User
         //ListRoles GetUser(long id);
         Task<CallejoIncUser?> GetUserByEmailAsync(string email);
 
+        Task<CallejoIncUser?> GetUserByID(Guid? ID);
+        //Returns user by ID
     }
 }
