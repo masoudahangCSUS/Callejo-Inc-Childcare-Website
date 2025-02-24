@@ -94,8 +94,12 @@
     {
         try
         {
+            
+            // Generates new GUID for each submission.
             inquiry.guid = Guid.NewGuid();
             var response = await Http.PostAsJsonAsync("https://localhost:7139/api/Submit/submit", inquiry);
+
+            // Displays status code and message on UI.
             Console.WriteLine($"Response Status Code: {(int)response.StatusCode} - {response.StatusCode}");
             if (response.IsSuccessStatusCode)
             {
@@ -103,7 +107,8 @@
                 Console.WriteLine("Successfully submitted inquiry!");
                 showText = false;
 
-                inquiry = new InterestedParent();
+                ResetForm();
+
             }
             else
             {
@@ -117,6 +122,13 @@
             statusMsg = $"Error submitting inquiry: {ex.Message}";
             Console.WriteLine($"Error submitting inquiry: {ex.Message}"); 
         }
+    }
+    private void ResetForm()
+    {
+        inquiry = new InterestedParent
+            {
+                guid = Guid.NewGuid()  // Generate a new GUID for the new form
+            };
     }
     public class InterestedParent
     {
