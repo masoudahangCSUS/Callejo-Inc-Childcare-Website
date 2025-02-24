@@ -24,9 +24,12 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
+    public virtual DbSet<Image> Images { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Notification> Notifications { get; set; }
+    public virtual DbSet<HolidaysVacations> HolidaysVacations { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -34,6 +37,25 @@ public partial class CallejoSystemDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.ToTable("Images");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImageUrl)
+                .IsRequired()
+                .HasMaxLength(1024)
+                .IsUnicode(false)
+                .HasColumnName("image_url");
+            entity.Property(e => e.IsPublished)
+                .HasColumnName("is_published");
+            entity.Property(e => e.UploadedAt)
+                .HasColumnName("uploaded_at")
+                .HasDefaultValueSql("GETUTCDATE()");
+        });
+
+
         modelBuilder.Entity<CallejoIncUser>(entity =>
         {
             entity.ToTable("Callejo_Inc_Users");
@@ -196,6 +218,36 @@ public partial class CallejoSystemDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("description");
         });
+
+        modelBuilder.Entity<HolidaysVacations>(entity =>
+        {
+            entity.ToTable("Holidays_Vacations");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Title)
+                  .IsRequired()
+                  .HasColumnName("title");
+
+            entity.Property(e => e.Description)
+                  .HasColumnName("description");
+
+            entity.Property(e => e.StartDate)
+                  .IsRequired()
+                  .HasColumnName("start_date");
+
+            entity.Property(e => e.EndDate)
+                  .IsRequired()
+                  .HasColumnName("end_date");
+
+            entity.Property(e => e.Type)
+                  .IsRequired()
+                  .HasColumnName("type");
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnName("created_at")
+                  .HasDefaultValueSql("GETUTCDATE()");
+        });
+
 
         OnModelCreatingPartial(modelBuilder);
     }

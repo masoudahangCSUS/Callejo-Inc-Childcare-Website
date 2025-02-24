@@ -1,4 +1,6 @@
 ﻿@page "/Photos"
+@using BlazorApp.Services
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,9 +24,7 @@
             Check out what the kids have been up to!
         </p>
 
-        <!-- Fixed 4 columns: 8 total items => 4 in first row, 4 in second row -->
         <div class="photo-grid">
-            <!-- Row 1 -->
             <div class="photo-item">
                 <img src="images/activity1.jpg" alt="Activity Photo 1" />
                 <div class="photo-description">Playing with Shapes</div>
@@ -42,26 +42,22 @@
                 <div class="photo-description">Story Time</div>
             </div>
 
-            <!-- Row 2 -->
-            <div class="photo-item">
-                <img src="images/activity5.jpg" alt="Activity Photo 5" />
-                <div class="photo-description">Learning Letters</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity6.jpg" alt="Activity Photo 6" />
-                <div class="photo-description">Music &amp; Dance</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity7.jpg" alt="Activity Photo 7" />
-                <div class="photo-description">Indoor Games</div>
-            </div>
-            <div class="photo-item">
-                <img src="images/activity8.jpg" alt="Activity Photo 8" />
-                <div class="photo-description">Birthday Celebration</div>
-            </div>
+            <!-- ✅ Display Featured Images Added from Admin Page -->
+            @if (ParentPhotoStorage.FeaturedPhotos.Any())
+            {
+                @foreach (var photo in ParentPhotoStorage.FeaturedPhotos)
+                {
+                    <div class="photo-item">
+                        <img src="@photo" alt="Featured Parent Photo" />
+                    </div>
+                }
+            }
         </div>
     </div>
 
 
 </body>
 </html>
+@code {
+    private List<string> parentPhotos = ParentPhotoStorage.FeaturedPhotos;
+}

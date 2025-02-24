@@ -1,4 +1,14 @@
-﻿body, html {
+﻿@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+body, html {
     margin: 0;
     padding: 0;
     width: 100%;
@@ -23,6 +33,7 @@
     padding: 30px;
     border-radius: 15px;
     display: inline-block;
+    animation: fadeIn 1s ease-in-out;
 }
 
 .header h1 {
@@ -44,6 +55,7 @@
     align-items: center;
     padding: 60px 20px;
     min-height: 75vh;
+    animation: fadeIn 1s ease-in-out;
 }
 
 .text-box {
@@ -72,6 +84,7 @@
 /* 🖼️ Image Styling */
 .image-container {
     width: 220px;
+    animation: fadeIn 5s ease-in-out;
 }
 
 .jane-image {
