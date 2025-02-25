@@ -42,7 +42,6 @@ builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ProfileService>();
 

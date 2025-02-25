@@ -1,4 +1,4 @@
-﻿namespace BlazorApp.Services
+﻿namespace BlazorApp.Client.Services
 {
     public static class ParentPhotoStorage
     {
