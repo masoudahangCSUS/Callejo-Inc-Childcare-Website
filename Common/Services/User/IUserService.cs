@@ -1,4 +1,4 @@
-﻿using Common.Models.Data;
+using Common.Models.Data;
 using Common.View;
 using System;
 using System.Collections.Generic;
@@ -16,8 +16,8 @@ namespace Common.Services.User
         APIResponse DeleteUser(Guid userId);
         ListUsers GetAllUsers();
         //ListRoles GetUser(long id);
+        ListChildren GetAllChildren(); 
         Task<CallejoIncUser?> GetUserByEmailAsync(string email);
-
         Task<CallejoIncUser?> GetUserByID(Guid? ID);
         //Returns user by ID
         Task<EmergencyContact?> GetEmergencyContactAsync(Guid id);

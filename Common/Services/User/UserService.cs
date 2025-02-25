@@ -325,6 +325,7 @@ namespace Common.Services.User
                     userViewRec.ZipCode = userRec.ZipCode;
                     userViewRec.Email = userRec.Email;
                     userViewRec.FkRole = userRec.FkRole;
+                    userViewRec.RegistrationDocument = userRec.RegistrationDocument;
 
                     userViewRec.Children = new List<ChildView>();
 
@@ -352,6 +353,42 @@ namespace Common.Services.User
 
             return listUsers;
         }
+
+        /// <summary>
+        /// Get all children from the Children table.
+        /// </summary>
+        /// <returns>A list of children.</returns>
+        public ListChildren GetAllChildren()
+        {
+            ListChildren listChildren = new ListChildren();
+
+            try
+            {
+                listChildren.children = _context.Children
+                    .Select(child => new ChildView
+                    {
+                        Id = child.Id,
+                        FirstName = child.FirstName,
+                        MiddleName = child.MiddleName,
+                        LastName = child.LastName,
+                        Age = child.Age
+                    })
+                    .ToList();
+
+                listChildren.Success = true;
+                listChildren.Message = $"Retrieved {listChildren.children.Count} child records.";
+            }
+            catch (Exception ex)
+            {
+                listChildren.Success = false;
+                listChildren.Message = $"Error retrieving child records. Error: {ex.Message}";
+            }
+
+            return listChildren;
+        }
+
+
+
 
         /// <summary>
         /// Deletes user record from database
@@ -408,6 +445,11 @@ namespace Common.Services.User
             }
 
             return response;
+        }
+
+        public async Task<List<Child>> GetAllChildrenAsync()
+        {
+            return await _context.Children.ToListAsync();
         }
 
     }

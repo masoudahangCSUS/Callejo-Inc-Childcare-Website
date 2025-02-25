@@ -3,12 +3,18 @@ using Common.Services.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
+
+using Microsoft.EntityFrameworkCore;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Common.View;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -20,6 +26,10 @@ namespace CallejoIncChildcareAPI.Controllers
         private readonly IUserService _userService;
         private readonly ImageService _imageService;
         private readonly IConfiguration _configuration;
+        private readonly ISQLServices _sqlService;
+        private readonly CallejoSystemDbContext _context;
+
+   
 
         public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration)
         {
@@ -36,6 +46,8 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
+
+
         //  GET: api/admin/get-all-users
         [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
@@ -43,6 +55,17 @@ namespace CallejoIncChildcareAPI.Controllers
             var result = _userService.GetAllUsers();
             return Ok(result);
         }
+
+        //  GET: api/admin/get-all-users
+        [HttpGet("children")]
+        public ActionResult<ListChildren> GetAllChildren()
+        {
+            var result = _userService.GetAllChildren();
+            return Ok(result);
+        }
+
+
+
 
         //  DELETE: api/admin/delete-user
         [HttpDelete("delete-user")]
@@ -61,7 +84,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // POST: api/admin/login
+        // ✅ POST: api/admin/login
         [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
@@ -154,6 +177,8 @@ namespace CallejoIncChildcareAPI.Controllers
                 return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
             }
         }
+
+    
 
         //  Direct SQL insert method (if _imageService is unavailable)
         private async Task SaveImageUrlAsync(string imageUrl)

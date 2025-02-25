@@ -57,6 +57,12 @@
                         <img src="images/notificationManagementIcon.png" alt="Notifications" class="nav-icon" /> Notification Management
                     </button>
                 </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(ChildRoster), "Child-Roster")'
+                            class="btn-link @(ActivePage == "Admin-Child-Roster" ? "active" : "")">
+                        <img src="images/baby.jpg" alt="Notifications" class="nav-icon" /> Child Roster 
+                    </button>
+                </li>
             </ul>
         </nav>
 
