@@ -1,18 +1,37 @@
-﻿@page "/profile"
-@inject IFileService FileService
+@page "/profile"
+
+
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
+@using Common.View
+@using Common.Services.User
+@using Common.Models.Data
+@using Common.Services.SQL
+
+
+@using BlazorApp.Client.Services
+@using Microsoft.AspNetCore.Components.Forms
+@inject HttpClient Http
+
+@rendermode InteractiveServer
+
+@inject IFileService FileService
+@inject IUserService userService
+@inject UserSessionService UserSession
+@inject ISQLServices sqlService
+@inject ProfileService profileService;
+
 
 @code {
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
-    //    private Guid CurrentUserId = Guid.NewGuid();
-    Guid CurrentUserId = new Guid("0C8F87FB-D4B9-40A1-920F-49EC92C3D132");      // Temporary testing parameter ~ delete once file upload is working
+    Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
+    private CustomerUserViewDTO? userViewDTO;
+    private EmergencyContactDTO? emergencyDTO;
 
     void ShowFileUploadDialog()
     {
         showUploadDialog = true;
-        Console.WriteLine("TEST");          // Test input to confirm function is being called
     }
 
     void CancelUpload()
@@ -29,73 +48,168 @@
     {
         if (selectedFile is not null)
         {
-            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 1048576); // 1 MB
-            byte[] fileData = new byte[stream.Length];
-            await stream.ReadAsync(fileData);
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880); // 5MB
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            byte[] fileData = memoryStream.ToArray();
 
-            // Save file to user
-            await FileService.UploadFileAsync(CurrentUserId, fileData);
+            // Set up payloads, specifying the filetype as PDF
+            var content = new MultipartFormDataContent();
+            var fileContent = new ByteArrayContent(fileData);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            // Declare API URL
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={CurrentUserId}";
+            Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
+
+            // Call API
+            var response = await Http.PostAsync(apiUrl, content);
+
+            Console.WriteLine($"[Blazor] Response Status: {response.StatusCode}");
+            Console.WriteLine($"[Blazor] Response Content: {await response.Content.ReadAsStringAsync()}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("[Blazor] File uploaded successfully");
+            }
+            else
+            {
+                Console.WriteLine("[Blazor] File upload failed");
+            }
+
             showUploadDialog = false;
         }
     }
-}
 
-<div class="parent-profile-page">
-    <h1>Profile</h1>
-    <div class="profile-overview">
-        <div class="profile-photo-container">
-            <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
-        </div>
-        <div class="profile-details-box">
-            <div class="profile-details">
-                <div class="profile-info">
-                    <div class="profile-column">
-                        <p><strong>First Name:</strong> John</p>
-                        <p><strong>Last Name:</strong> Doe</p>
-                        <p><strong>Email Address:</strong> johndoe@example.com</p>
-                        <p><strong>Phone Number:</strong> (555) 123-4567</p>
-                    </div>
-                    <div class="profile-column">
-                        <p><strong>Street Address:</strong> 123 Elm Street</p>
-                        <p><strong>City:</strong> Springfield</p>
-                        <p><strong>State:</strong> IL</p>
-                        <p><strong>ZIP:</strong> 62704</p>
-                        <p><strong>Relationship to Child:</strong> Parent</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Emergency Contact Section -->
-    <div class="emergency-contact-section">
-        <h2>Emergency Contact</h2>
-        <div class="emergency-details-box">
-            <div class="emergency-details">
-                <div class="emergency-info">
-                    <div class="emergency-column">
-                        <p><strong>First Name:</strong> Jane</p>
-                        <p><strong>Last Name:</strong> Doe</p>
-                        <p><strong>Phone Number:</strong> (555) 765-4321</p>
-                        <p><strong>Relationship to Child:</strong> Aunt</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="button-group">
-        <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
-        <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
-    </div>
-
-    @if (showUploadDialog)
+    protected override async Task OnInitializedAsync()
     {
-        <div>
-            <InputFile OnChange="HandleFileSelected" />
-            <button class="btn-upload" @onclick="UploadFile">Upload</button>
-            <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
-        </div>
+        await GetUserView();
     }
 
-</div>
+
+    async Task GetUserView(){
+
+        // Get user information
+        var user = await profileService.GetUserByID(UserSession.UserId);
+        PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
+        PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+
+        // Get ermgency contact information
+        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
+        PhoneNumber EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
+        PhoneNumber EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+
+        userViewDTO = new CustomerUserViewDTO
+        {
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            Email = user.Email,
+            PrimaryPhoneNumber = PrimaryPhoneNumber,
+            SecondaryPhoneNumber = SecondaryPhoneNumber,
+            Address = user.Address,
+            City = user.City,
+            State = user.State,
+            ZipCode = user.ZipCode,
+
+        };
+
+        emergencyDTO = new EmergencyContactDTO
+        {
+            FirstName = emergencyContact.FirstName,
+            LastName = emergencyContact.LastName,
+            PrimaryPhoneNumber = EmergencyPrimary,
+            SecondaryPhoneNumber = EmergencySecondary,
+            Relationship = emergencyContact.Relationship
+        };
+        StateHasChanged();
+    }
+
+
+}
+@if(userViewDTO == null || emergencyDTO == null){
+    <p>Loading profile...</p>
+}
+else{
+    <div class="parent-profile-page">
+        <h1>Profile</h1>
+        <div class="profile-overview">
+            <div class="profile-photo-container">
+                <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
+            </div>
+            <div class="profile-details-box">
+                <div class="profile-details">
+                    <div class="profile-info">
+                        <div class="profile-column">
+                            <p><strong>First Name:</strong> @userViewDTO?.FirstName</p>
+                            <p><strong>Last Name:</strong> @userViewDTO.LastName</p>
+                            <p><strong>Email Address:</strong> @userViewDTO.Email</p>
+                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PrimaryPhoneNumber.AreaCode) @userViewDTO.PrimaryPhoneNumber.Prefix - @userViewDTO.PrimaryPhoneNumber.LastFour</p> 
+                            <p><strong>Secondary Phone Number: </strong>
+                                @if (userViewDTO.SecondaryPhoneNumber != null)
+                                {
+                                    @($"({userViewDTO.SecondaryPhoneNumber.AreaCode}) {userViewDTO.SecondaryPhoneNumber.Prefix} - {userViewDTO.SecondaryPhoneNumber.LastFour}")
+                                }
+                                else
+                                {
+                                    <em> </em>
+                                }
+                                
+                            </p> 
+                        </div>
+                        <div class="profile-column">
+                            <p><strong>Street Address:</strong> @userViewDTO.Address</p>
+                            <p><strong>City:</strong> @userViewDTO.City</p>
+                            <p><strong>State:</strong> @userViewDTO.State</p>
+                            <p><strong>ZIP:</strong> @userViewDTO.ZipCode</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Emergency Contact Section -->
+        <div class="emergency-contact-section">
+            <h2>Emergency Contact</h2>
+            <div class="emergency-details-box">
+                <div class="emergency-details">
+                    <div class="emergency-info">
+                        <div class="emergency-column">
+                            <p><strong>First Name:</strong> @emergencyDTO.FirstName</p>
+                            <p><strong>Last Name:</strong> @emergencyDTO.LastName</p>
+                            <p><strong>Primary Phone Number:</strong>(@emergencyDTO.PrimaryPhoneNumber.AreaCode) @emergencyDTO.PrimaryPhoneNumber.Prefix - @emergencyDTO.PrimaryPhoneNumber.LastFour</p>
+                            <p><strong> Secondary Phone Number: </strong>
+                                @if (emergencyDTO.SecondaryPhoneNumber != null)
+                                {
+                                    @($"({emergencyDTO.SecondaryPhoneNumber.AreaCode}) {emergencyDTO.SecondaryPhoneNumber.Prefix} - {emergencyDTO.SecondaryPhoneNumber.LastFour}")
+                                }
+                                else{
+                                    <em> </em>
+                                }
+                            </p>
+
+                            <p><strong>Relationship to Child:</strong> @emergencyDTO.Relationship</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="button-group">
+            <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
+            <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
+        </div>
+
+        @if (showUploadDialog)
+        {
+            <div>
+                <InputFile OnChange="HandleFileSelected" />
+                <button class="btn-upload" @onclick="UploadFile">Upload</button>
+                <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
+            </div>
+        }
+
+    </div>
+
+}

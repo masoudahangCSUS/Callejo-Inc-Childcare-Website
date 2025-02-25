@@ -23,8 +23,16 @@ namespace Common.Services.SQL
         bool UpdateNotification(long id, Notification updatedNotification);
         bool DeleteNotification(long id);
 
-        // Holidays & Vacations
+        // New method for Holidays & Vacations
         IEnumerable<HolidaysVacations> GetHolidaysVacations();
+        // New method for retrieving phone numbers
+        public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
+        public Task<Child> getChildById(long id);
+
+        public Task<IEnumerable<long>> GetChildren(Guid? id);
+
+
+
     }
 
 
