@@ -58,7 +58,7 @@
     {
         try
         {
-            string url = "https://localhost:7139/api/Admin/login";
+            string url = "https://localhost:7139/api/admin/login";
 
             // Call the JS function "fetchLoginData" to perform a client-side fetch
             string resultJson = await JSRuntime.InvokeAsync<string>("fetchLoginData", url, loginInfo);
