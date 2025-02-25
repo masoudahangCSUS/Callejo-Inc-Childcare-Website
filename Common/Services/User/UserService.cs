@@ -225,6 +225,19 @@ namespace Common.Services.User
                 .FirstOrDefaultAsync(user => user.Email == email);
         }
 
+        public async Task<EmergencyContact?> GetEmergencyContactAsync(Guid id)
+        {
+            return await _context.EmergencyContact
+                   .FirstOrDefaultAsync (user => user.fk_user == id);
+        }
+
+        public async Task<CallejoIncUser?> GetUserByID(Guid? ID)
+        {
+            return await _context.CallejoIncUsers.FirstOrDefaultAsync(user => user.Id == ID);
+        }
+
+      
+
 
         public APIResponse InsertChild(ChildView childInfo, CustomerUserViewDTO userInfo)
         {

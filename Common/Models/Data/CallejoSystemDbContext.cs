@@ -30,6 +30,10 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<Notification> Notifications { get; set; }
     public virtual DbSet<HolidaysVacations> HolidaysVacations { get; set; }
 
+    public virtual DbSet<EmergencyContact> EmergencyContact { get; set; }
+
+    public virtual DbSet<Guardian> Guardians { get; set; }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -109,28 +113,33 @@ public partial class CallejoSystemDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Callejo_Inc_Users_Role");
 
-            entity.HasMany(d => d.FkChildren).WithMany(p => p.FkParents)
-                .UsingEntity<Dictionary<string, object>>(
-                    "Guardian",
-                    r => r.HasOne<Child>().WithMany()
-                        .HasForeignKey("FkChildren")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_Guardians_Children"),
-                    l => l.HasOne<CallejoIncUser>().WithMany()
-                        .HasForeignKey("FkParent")
-                        .OnDelete(DeleteBehavior.ClientSetNull)
-                        .HasConstraintName("FK_Guardians_Callejo_Inc_Users"),
-                    j =>
-                    {
-                        j.HasKey("FkParent", "FkChildren");
-                        j.ToTable("Guardians");
-                        j.IndexerProperty<Guid>("FkParent").HasColumnName("fk_parent");
-                        j.IndexerProperty<long>("FkChildren").HasColumnName("fk_children");
-                    });
+            entity.HasMany(d => d.FkChildren)
+                .WithMany(p => p.FkParents)
+                .UsingEntity<Guardian>(
+            r => r.HasOne<Child>()
+                .WithMany()
+                .HasForeignKey(g => g.fk_child)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Guardians_Children"),
+            l => l.HasOne<CallejoIncUser>()
+                .WithMany()
+                .HasForeignKey(g => g.fk_parent)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Guardians_Callejo_Inc_Users"),
+            j =>
+            {
+                j.ToTable("Guardians");
+                j.HasKey(e => new { e.fk_parent, e.fk_child });
+                j.Property(e => e.fk_parent).HasColumnName("fk_parent");
+                j.Property(e => e.fk_child).HasColumnName("fk_children");
+            });
+
         });
 
         modelBuilder.Entity<Child>(entity =>
         {
+            entity.ToTable("Children");
+
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Age).HasColumnName("age");
             entity.Property(e => e.FirstName)
@@ -248,6 +257,25 @@ public partial class CallejoSystemDbContext : DbContext
                   .HasDefaultValueSql("GETUTCDATE()");
         });
 
+        modelBuilder.Entity<EmergencyContact>(entity =>
+        {
+            entity.ToTable("Emergency_Contact");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.fk_user).HasColumnName("fk_users");
+            entity.Property(e => e.FirstName).HasColumnName("first_name");
+            entity.Property(e => e.LastName).HasColumnName("last_name");
+            entity.Property(e => e.Relationship).HasColumnName("relationship");
+        });
+
+        modelBuilder.Entity<Guardian>(entity =>
+        {
+            entity.ToTable("Guardians");
+            entity.HasKey(e => new { e.fk_parent, e.fk_child });
+
+            entity.Property(e => e.fk_parent).HasColumnName("fk_parent");
+            entity.Property(e => e.fk_child).HasColumnName("fk_children");
+        });
 
         OnModelCreatingPartial(modelBuilder);
     }
