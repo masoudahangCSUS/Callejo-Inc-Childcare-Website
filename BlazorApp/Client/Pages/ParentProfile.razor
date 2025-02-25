@@ -13,6 +13,7 @@
 @inject IUserService userService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
+@inject ProfileService profileService;
 
 
 @code {
@@ -21,6 +22,7 @@
     //    private Guid CurrentUserId = Guid.NewGuid();
     Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
     private CustomerUserViewDTO? userViewDTO;
+    private EmergencyContactDTO? emergencyDTO;
 
     void ShowFileUploadDialog()
     {
@@ -56,28 +58,47 @@
         await GetUserView();
     }
 
+
     async Task GetUserView(){
-        var user = await userService.GetUserByID(UserSession.UserId);
-        var PhoneNumbers = await sqlService.GetPhoneNumberById(UserSession.UserId);
+
+        // Get user information
+        var user = await profileService.GetUserByID(UserSession.UserId);
+        PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
+        PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+
+        // Get ermgency contact information
+        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
+        PhoneNumber EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
+        PhoneNumber EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
 
         userViewDTO = new CustomerUserViewDTO
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            PhoneNumber = PhoneNumbers.FirstOrDefault(),
+            PrimaryPhoneNumber = PrimaryPhoneNumber,
+            SecondaryPhoneNumber = SecondaryPhoneNumber,
             Address = user.Address,
             City = user.City,
             State = user.State,
             ZipCode = user.ZipCode,
 
         };
+
+        emergencyDTO = new EmergencyContactDTO
+        {
+            FirstName = emergencyContact.FirstName,
+            LastName = emergencyContact.LastName,
+            PrimaryPhoneNumber = EmergencyPrimary,
+            SecondaryPhoneNumber = EmergencySecondary,
+            Relationship = emergencyContact.Relationship
+        };
         StateHasChanged();
     }
 
-    
+
 }
-@if(userViewDTO == null){
+@if(userViewDTO == null || emergencyDTO == null){
     <p>Loading profile...</p>
 }
 else{
@@ -94,14 +115,24 @@ else{
                             <p><strong>First Name:</strong> @userViewDTO?.FirstName</p>
                             <p><strong>Last Name:</strong> @userViewDTO.LastName</p>
                             <p><strong>Email Address:</strong> @userViewDTO.Email</p>
-                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PhoneNumber.AreaCode) @userViewDTO.PhoneNumber.Prefix - @userViewDTO.PhoneNumber.LastFour</p>
+                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PrimaryPhoneNumber.AreaCode) @userViewDTO.PrimaryPhoneNumber.Prefix - @userViewDTO.PrimaryPhoneNumber.LastFour</p> 
+                            <p><strong>Secondary Phone Number: </strong>
+                                @if (userViewDTO.SecondaryPhoneNumber != null)
+                                {
+                                    @($"({userViewDTO.SecondaryPhoneNumber.AreaCode}) {userViewDTO.SecondaryPhoneNumber.Prefix} - {userViewDTO.SecondaryPhoneNumber.LastFour}")
+                                }
+                                else
+                                {
+                                    <em> </em>
+                                }
+                                
+                            </p> 
                         </div>
                         <div class="profile-column">
                             <p><strong>Street Address:</strong> @userViewDTO.Address</p>
                             <p><strong>City:</strong> @userViewDTO.City</p>
                             <p><strong>State:</strong> @userViewDTO.State</p>
                             <p><strong>ZIP:</strong> @userViewDTO.ZipCode</p>
-                            <p><strong>Relationship to Child:</strong> Parent</p>
                         </div>
                     </div>
                 </div>
@@ -115,10 +146,20 @@ else{
                 <div class="emergency-details">
                     <div class="emergency-info">
                         <div class="emergency-column">
-                            <p><strong>First Name:</strong> Jane</p>
-                            <p><strong>Last Name:</strong> Doe</p>
-                            <p><strong>Phone Number:</strong> (555) 765-4321</p>
-                            <p><strong>Relationship to Child:</strong> Aunt</p>
+                            <p><strong>First Name:</strong> @emergencyDTO.FirstName</p>
+                            <p><strong>Last Name:</strong> @emergencyDTO.LastName</p>
+                            <p><strong>Primary Phone Number:</strong>(@emergencyDTO.PrimaryPhoneNumber.AreaCode) @emergencyDTO.PrimaryPhoneNumber.Prefix - @emergencyDTO.PrimaryPhoneNumber.LastFour</p>
+                            <p><strong> Secondary Phone Number: </strong>
+                                @if (emergencyDTO.SecondaryPhoneNumber != null)
+                                {
+                                    @($"({emergencyDTO.SecondaryPhoneNumber.AreaCode}) {emergencyDTO.SecondaryPhoneNumber.Prefix} - {emergencyDTO.SecondaryPhoneNumber.LastFour}")
+                                }
+                                else{
+                                    <em> </em>
+                                }
+                            </p>
+
+                            <p><strong>Relationship to Child:</strong> @emergencyDTO.Relationship</p>
                         </div>
                     </div>
                 </div>

@@ -17,21 +17,22 @@ namespace Common.Services.SQL
         bool MarkNotificationAsRead(long id);
         bool SendCustomNotification(string parentId, string message);
 
-<<<<<<< Updated upstream
         // Admin Notifications
         IEnumerable<Notification> GetAllNotifications();  // <-- New method
         bool CreateNotification(Notification notification);
         bool UpdateNotification(long id, Notification updatedNotification);
         bool DeleteNotification(long id);
-=======
+
         // New method for Holidays & Vacations
         IEnumerable<HolidaysVacations> GetHolidaysVacations();
         // New method for retrieving phone numbers
-        public Task<IEnumerable<PhoneNumber>> GetPhoneNumberById(Guid? ID);
->>>>>>> Stashed changes
+        public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
+        public Task<Child> getChildById(long id);
 
-        // Holidays & Vacations
-        IEnumerable<HolidaysVacations> GetHolidaysVacations();
+        public Task<IEnumerable<long>> GetChildren(Guid? id);
+
+
+
     }
 
 

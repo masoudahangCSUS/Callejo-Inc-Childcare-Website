@@ -20,5 +20,8 @@ namespace Common.Services.User
 
         Task<CallejoIncUser?> GetUserByID(Guid? ID);
         //Returns user by ID
+        Task<EmergencyContact?> GetEmergencyContactAsync(Guid id);
+        //return a users emergency contact information
+
     }
 }

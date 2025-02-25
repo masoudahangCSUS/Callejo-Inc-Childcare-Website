@@ -19,7 +19,8 @@ namespace Common.View
         public string ZipCode { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public PhoneNumber? PhoneNumber { get; set; }
+        public PhoneNumber? PrimaryPhoneNumber { get; set; }
+        public PhoneNumber? SecondaryPhoneNumber { get; set; }
 
         public List<ChildView> Children { get; set; } = new List<ChildView>();
 
