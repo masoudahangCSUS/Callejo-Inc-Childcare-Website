@@ -29,7 +29,7 @@ builder.Services.AddScoped(sp =>
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
 
-// Add Blazor Server with SignalR configuration
+// Add Blazor Server with SignalR configurationvar app
 builder.Services.AddServerSideBlazor()
     .AddCircuitOptions(options =>
     {
@@ -45,6 +45,27 @@ builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ProfileService>();builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
+
+builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
+builder.Services.AddAuthentication(options =>
+{
+    // Set the default schemes for authentication, challenge, and sign in.
+    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(options =>
+{
+    // Configure cookie settings as needed.
+    options.Cookie.Name = "MyAppAuthCookie";
+    options.LoginPath = "/Login";
+    options.AccessDeniedPath = "/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
 // Load environment variables
 Env.Load();
 
