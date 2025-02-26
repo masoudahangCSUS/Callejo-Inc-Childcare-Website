@@ -133,6 +133,10 @@ public partial class CallejoSystemDbContext : DbContext
                 j.Property(e => e.fk_parent).HasColumnName("fk_parent");
                 j.Property(e => e.fk_child).HasColumnName("fk_children");
             });
+            entity.HasMany(u => u.Notifications)
+                .WithOne()  // No navigation property defined in Notification
+                 .HasForeignKey(n => n.FkParentId)
+                 .OnDelete(DeleteBehavior.ClientSetNull);
 
         });
 
