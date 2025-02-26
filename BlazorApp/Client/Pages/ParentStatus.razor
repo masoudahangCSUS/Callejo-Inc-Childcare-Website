@@ -1,43 +1,73 @@
 ﻿@page "/parent_status"
 @inject HttpClient Http
+@rendermode InteractiveServer
 
 <h3>Check Your Registration Status</h3>
 
 <div>
-    <label>Enter Your Tracking ID:</label>
-    <InputText @bind-Value="trackingId" />
-    <button @onclick="CheckStatus">Check Status</button>
+    <label>Enter Your User ID:</label>
+    <InputText @bind-Value="userId" />
 </div>
 
-@if (!string.IsNullOrEmpty(statusMessage))
+<button @onclick="CheckStatus">Check Status</button>
+
+@if (statusInfo != null)
 {
-    <div class="message">
-    <p><strong>Status:</strong> @statusMessage</p>
-    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Submission Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@statusInfo.Name</td>
+                <td>@statusInfo.Status</td>
+                <td>@statusInfo.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+            </tr>
+        </tbody>
+    </table>
+}
+else if (!string.IsNullOrEmpty(statusMessage))
+{
+    <p style="color:red">@statusMessage</p>
 }
 
 @code {
-    private string trackingId;
+    private string userId;
+    private RegistrationDTO statusInfo;
     private string statusMessage;
 
     private async Task CheckStatus()
     {
-        if (string.IsNullOrWhiteSpace(trackingId))
+        // Validate User ID format
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out Guid userGuid))
         {
-            statusMessage = "Please enter a tracking ID.";
+            statusMessage = "Please enter a valid User ID.";
             return;
         }
 
-        var response = await Http.GetAsync($"https://localhost:7139/api/Registration/status/{trackingId}");
+        var response = await Http.GetAsync($"https://localhost:7139/api/Registration/status/{userGuid}");
 
         if (response.IsSuccessStatusCode)
         {
-            var result = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
-            statusMessage = $"Status: {result["Status"]}, Submitted on: {result["DateTime"]}";
+            statusInfo = await response.Content.ReadFromJsonAsync<RegistrationDTO>();
+            statusMessage = ""; // Clear previous error message
         }
         else
         {
-            statusMessage = "Tracking ID not found.";
+            statusInfo = null;
+            statusMessage = "No registration found for this user.";
         }
+    }
+
+    public class RegistrationDTO
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public string Status { get; set; }
+        public DateTime Datetime { get; set; }
     }
 }

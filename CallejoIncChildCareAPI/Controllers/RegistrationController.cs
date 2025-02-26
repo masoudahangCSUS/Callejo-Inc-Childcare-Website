@@ -12,8 +12,6 @@ namespace CallejoIncChildcareAPI.Controllers
     public class RegistrationController : ControllerBase
     {
         private IRegService _regService;
-
-        // Initialize a list of a Registration object
         private static List<Registration> reg = new List<Registration>();
 
         public RegistrationController(IRegService regService)
@@ -55,10 +53,27 @@ namespace CallejoIncChildcareAPI.Controllers
 
             // Save file
             var result = await _regService.UploadFileAsync(userId, fileBytes, fileType, fileSize);
-            
+
             if (!result)
             {
                 return StatusCode(500, "File upload failed.");
+            }
+            var existingRegistration = reg.FirstOrDefault(r => r.UserID == userId);
+            if (existingRegistration == null)
+            {
+                reg.Add(new Registration
+                {
+                    Id = Guid.NewGuid(),
+                    UserID = userId, //  Store User ID properly
+                    Name = $"User_{userId}",
+                    Status = "Pending",
+                    Datetime = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                existingRegistration.Status = "Pending";
+                existingRegistration.Datetime = DateTime.UtcNow;
             }
 
             return Ok("File uploaded successfully.");
@@ -90,22 +105,33 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return NotFound("No file found/Deletion failed");
             }
+            //  Update registration status if deleted
+            var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            if (registration != null)
+            {
+                registration.Status = "Deleted";
+                registration.Datetime = DateTime.UtcNow;
+            }
+
             return Ok("File deleted successfully");
         }
-        //GET api/Registration/status
-        [HttpGet("status/{id}")]
-        public async Task<IActionResult> GetRegistrationStatus(Guid id)
-        {
-            var registration = reg.FirstOrDefault(s => s.Id == id);
-            if (registration == null)
-                return NotFound("Tracking ID not found.");
 
-            // Manually map entity to DTO
+        //GET api/Registration/status/{userId}
+        [HttpGet("status/{userId}")]
+        public async Task<IActionResult> GetRegistrationStatus(Guid userId)
+        {
+            var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            if (registration == null)
+                return NotFound("No registration found for this user.");
+
+            var fileData = await _regService.GetFileAsync(userId);
+            bool fileExists = fileData != null;
+
             var dto = new RegistrationDTO
             {
                 Id = registration.Id,
                 Name = registration.Name,
-                Status = registration.Status,
+                Status = registration.Status == "Pending" && !fileExists ? "No File Submitted" : registration.Status,
                 DateTime = registration.Datetime
             };
 

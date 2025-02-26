@@ -5,8 +5,9 @@ namespace Common.Models.Data;
 
 public partial class Registration
 {
-    // Unique ID for reigstration tracking.
+    // Unique ID for regstration tracking.
     public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid UserID { get; set; }
     // Name of uploader.
     public string Name { get; set; } = null!;
 
