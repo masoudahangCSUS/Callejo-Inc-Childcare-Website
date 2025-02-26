@@ -8,6 +8,7 @@ using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
 using Common.Services.User;
+using Syncfusion.Blazor;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +29,7 @@ builder.Services.AddScoped(sp =>
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
 
-// Add Blazor Server with SignalR configuration
+// Add Blazor Server with SignalR configurationvar app
 builder.Services.AddServerSideBlazor()
     .AddCircuitOptions(options =>
     {
@@ -42,12 +43,10 @@ builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<ProfileService>();builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
-
 builder.Services.AddAuthentication(options =>
 {
     // Set the default schemes for authentication, challenge, and sign in.
@@ -66,6 +65,7 @@ builder.Services.AddAuthentication(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
+
 // Load environment variables
 Env.Load();
 

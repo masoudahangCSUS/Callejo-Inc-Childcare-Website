@@ -69,7 +69,7 @@ else
     private PhotoModel photoModel = new();
     private List<string> photos = new();
     private string errorMessage = string.Empty;
-    private List<string> parentPhotos = BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos;
+    private List<string> parentPhotos = BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos;
     
 
 
@@ -137,9 +137,9 @@ else
             Console.WriteLine($"DEBUG: Added {photoUrl} to local ParentPhotos.");
         }
 
-        if (!BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Contains(photoUrl))
+        if (!BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos.Contains(photoUrl))
         {
-            BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Add(photoUrl);
+            BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos.Add(photoUrl);
             Console.WriteLine($"DEBUG: Added {photoUrl} to ParentPhotoStorage.");
         }
     }
