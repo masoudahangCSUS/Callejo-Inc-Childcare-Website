@@ -1,0 +1,18 @@
+﻿.title {
+    text-align: center;
+    font-weight: bold;
+}
+
+.calendar-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start; /* Align items at the top */
+    text-align: center;
+    height: 50vh; /* Ensure the container takes up full viewport height */
+}
+
+.events-container {
+    text-align: left;
+    margin-left: 20px;
+}
