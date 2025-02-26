@@ -6,148 +6,60 @@
 @using System.Data.SqlClient
 @using Microsoft.Data.SqlClient
 @using System.Text.Json.Serialization;
+@using System.Text.Json
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-
-
 <h3>Admin Photo Management</h3>
 
-<EditForm Model="photoModel" OnValidSubmit="SubmitPhotoUrl">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    <div class="input-header">Image URL</div>
-    <div class="input-wrapper">
-        <InputText @bind-Value="photoModel.ImageUrl" placeholder="Enter image URL..." @oninput="ForceUpdate" />
-
-    </div>
-
-    <button type="submit">Submit Photo</button>
-
-    <!-- Debugging Output -->
-    <p>Current Input: @photoModel.ImageUrl</p>
-</EditForm>
-
-@if (photos.Any())
+@if (imageUrls.Any())
 {
     <h4>Uploaded Images:</h4>
-    <ul>
-        @foreach (var photo in photos)
-        {
-            <li>
-                <a href="@photo" target="_blank">
-                    <img src="@photo" alt="Uploaded Photo" width="100" />
-                </a>
-          
-                
-                <button @onclick="() => AddToParentPhotos(photo)">Feature on ParentPhotos</button>
-            </li>
-        }
-    </ul>
-}
-
-@if (parentPhotos.Any())
-{
-    <h4>Photos Featured on ParentPhotos Page:</h4>
     <div class="photo-grid">
-        @foreach (var photo in parentPhotos)
+        @foreach (var url in imageUrls)
         {
             <div class="photo-item">
-                <img src="@photo" alt="Parent Featured Photo" />
+                <a href="@url" target="_blank">@url</a>
+                <img src="@url" alt="Uploaded Photo" width="100" />
             </div>
         }
     </div>
 }
 else
 {
-    <p>No images uploaded yet.</p>
+    <p>No images found.</p>
 }
 
 @code {
+    private List<string> imageUrls = new();
 
-    private PhotoModel photoModel = new();
-    private List<string> photos = new();
-    private string errorMessage = string.Empty;
-    private List<string> parentPhotos = BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos;
-    
-
-
-   
-
-    private void ForceUpdate(ChangeEventArgs e)
+    protected override async Task OnInitializedAsync()
     {
-        photoModel.ImageUrl = e.Value.ToString();
-        Console.WriteLine($"DEBUG: Manual Input Binding = {photoModel.ImageUrl}");
-        StateHasChanged();
-    }
-
-
-    private async Task SubmitPhotoUrl()
-    {
-        Console.WriteLine($"DEBUG: Before submit, ImageUrl = '{photoModel.ImageUrl}'");
-
-        if (string.IsNullOrWhiteSpace(photoModel.ImageUrl))
-        {
-            errorMessage = "Image URL cannot be empty.";
-            Console.WriteLine("DEBUG: Image URL is empty.");
-            return;
-        }
-
         try
         {
-            Console.WriteLine($"DEBUG: Sending request to API with Image URL: {photoModel.ImageUrl}");
+            string apiUrl = "https://localhost:7139/api/admin/get-all-photos";
 
-            var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/upload-image", photoModel);
+            var response = await Http.GetFromJsonAsync<APIResponse>(apiUrl);
 
-            if (response.IsSuccessStatusCode)
+            if (response != null && response.Success && response.Data != null)
             {
-                var result = await response.Content.ReadFromJsonAsync<APIResponse>();
+                Console.WriteLine($"DEBUG: Raw API Data: {response.Data}");
 
-                if (result?.Success == true)
+                imageUrls = JsonSerializer.Deserialize<List<string>>(JsonSerializer.Serialize(response.Data));
+
+                foreach (var url in imageUrls)
                 {
-                    Console.WriteLine($"DEBUG: [SUCCESS] Image URL stored. Message: {result.Message}");
-                    photos.Add(photoModel.ImageUrl);
-                    photoModel.ImageUrl = ""; // Clear input field
-                }
-                else
-                {
-                    errorMessage = result?.Message ?? "Upload failed.";
-                    Console.WriteLine($"DEBUG: [FAILURE] API returned success but failed. Message: {errorMessage}");
+                    Console.WriteLine($"DEBUG: Final Image URL used - {url}");
                 }
             }
             else
             {
-                errorMessage = $"API returned error: {response.StatusCode}";
-                Console.WriteLine($"DEBUG: [ERROR] Non-200 status. Status = {response.StatusCode}");
+                Console.WriteLine("No images found.");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = "An error occurred during upload.";
-            Console.WriteLine($"DEBUG: [EXCEPTION] {ex.Message}");
+            Console.WriteLine($"Error fetching images: {ex.Message}");
         }
-    }
-
-    private void AddToParentPhotos(string photoUrl)
-    {
-        if (!parentPhotos.Contains(photoUrl))
-        {
-            parentPhotos.Add(photoUrl);
-            Console.WriteLine($"DEBUG: Added {photoUrl} to local ParentPhotos.");
-        }
-
-        if (!BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Contains(photoUrl))
-        {
-            BlazorApp.Services.ParentPhotoStorage.FeaturedPhotos.Add(photoUrl);
-            Console.WriteLine($"DEBUG: Added {photoUrl} to ParentPhotoStorage.");
-        }
-    }
-
-
-
-    public class PhotoModel
-    {
-        public string ImageUrl { get; set; } = "";
     }
 }
