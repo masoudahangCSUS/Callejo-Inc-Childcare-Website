@@ -15,7 +15,7 @@ namespace Common.Services.SQL
         // Parent Notifications
         IEnumerable<Notification> GetNotificationsByParentId(Guid parentId);
         bool MarkNotificationAsRead(long id);
-        bool SendCustomNotification(string parentId, string message);
+        bool SendCustomNotification(Notification notification);
 
         // Admin Notifications
         IEnumerable<Notification> GetAllNotifications();  // <-- New method
