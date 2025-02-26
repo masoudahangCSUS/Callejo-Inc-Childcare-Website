@@ -1,0 +1,56 @@
+﻿@page "/schedule"
+@rendermode InteractiveServer
+
+<h1 class="title">Daily Schedule</h1>
+
+<p>Calendar value is: @DateValue</p>
+
+<div class="calendar-container">
+    <SfCalendar TValue="DateTime" @bind-Value="selectedDate"></SfCalendar>
+    <div class="events-container">
+        <h3>Events on @selectedDate.ToShortDateString()</h3>
+        <ul>
+            @foreach (var eventItem in events)
+            {
+                <li>@eventItem</li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    public DateTime? DateValue { get; set; } = DateTime.Now;
+    private DateTime selectedDate = DateTime.Today;
+    private List<string> events = new List<string>();
+
+    private void onChange(Syncfusion.Blazor.Calendars.ChangedEventArgs<DateTime?> args)
+    {
+        DateValue = args.Value;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadEventsForDate(selectedDate);
+    }
+
+    public void LoadEventsForDate(DateTime date)
+    {
+        // Dummy events for demonstration purposes
+        events = new List<string>
+        {
+            $"Event 1 on {date.ToShortDateString()}",
+            $"Event 2 on {date.ToShortDateString()}",
+            $"Event 3 on {date.ToShortDateString()}"
+        };
+    }
+
+    private void OnDateChanged(DateTime? date)
+    {
+        if (date.HasValue)
+        {
+            selectedDate = date.Value;
+            LoadEventsForDate(selectedDate);
+        }
+    }
+}

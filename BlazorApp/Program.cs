@@ -5,6 +5,7 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
+using Syncfusion.Blazor;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,6 +40,9 @@ builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=DESKTOP-49NHJ9N;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
+
+// Adds Syncfusion Blazor Service
+builder.Services.AddSyncfusionBlazor();
 
 // Load environment variables
 Env.Load();

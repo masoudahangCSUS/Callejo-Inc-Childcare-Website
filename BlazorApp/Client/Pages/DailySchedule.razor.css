@@ -1,0 +1,13 @@
+﻿.table {
+    
+}
+
+.calendar-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.events-container {
+    text-align: center;
+    /*margin-left: 20px;*/
+}
