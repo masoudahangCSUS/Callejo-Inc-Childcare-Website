@@ -3,14 +3,19 @@
 
 <h1 class="title">Daily Schedule</h1>
 
-<p>Calendar value is: @DateValue</p>
-
 <div class="calendar-container">
-    <SfCalendar TValue="DateTime" @bind-Value="selectedDate"></SfCalendar>
+    <SfCalendar TValue="DateTime" @bind-Value="selectedDate" Min="@DateTime.Today"></SfCalendar>
     <div class="events-container">
-        <h3>Events on @selectedDate.ToShortDateString()</h3>
+        <h3>Daily schedule on @selectedDate.ToShortDateString()</h3>
         <ul>
-            @foreach (var eventItem in events)
+            @foreach (var eventItem in dailyRoster)
+            {
+                <li>@eventItem</li>
+            }
+        </ul>
+        <h3>Special Events</h3>
+        <ul>
+            @foreach (var eventItem in specialEvents)
             {
                 <li>@eventItem</li>
             }
@@ -21,7 +26,8 @@
 @code {
     public DateTime? DateValue { get; set; } = DateTime.Now;
     private DateTime selectedDate = DateTime.Today;
-    private List<string> events = new List<string>();
+    private List<string> dailyRoster = new List<string>();
+    private List<string> specialEvents = new List<string>();
 
     private void onChange(Syncfusion.Blazor.Calendars.ChangedEventArgs<DateTime?> args)
     {
@@ -31,26 +37,40 @@
 
     protected override void OnInitialized()
     {
-        LoadEventsForDate(selectedDate);
+        LoadRosterForDate(selectedDate);
+        LoadSpecialEventsForDate(selectedDate);
     }
 
-    public void LoadEventsForDate(DateTime date)
+    public void LoadRosterForDate(DateTime date)
     {
         // Dummy events for demonstration purposes
-        events = new List<string>
+        dailyRoster = new List<string>
         {
-            $"Event 1 on {date.ToShortDateString()}",
-            $"Event 2 on {date.ToShortDateString()}",
-            $"Event 3 on {date.ToShortDateString()}"
+            $"8:30 AM - 9:00 AM: Children are dropped off; playtime inside",
+            $"9:00 AM - 9:30 AM: Breakfest ",
+            $"11:00 AM - 12:00 PM: Playtime outside",
+            $"12:00 PM - 12:30 PM: Lunch",
+            $"12:30 PM - 2:30 PM: Nap time", 
+            $"2:30 PM - 3:00 PM: Circle time",
+            $"3:00 PM - 5:00 PM: Playtime inside until parents arrive"
         };
     }
 
-    private void OnDateChanged(DateTime? date)
+    public void LoadSpecialEventsForDate(DateTime date)
+    {
+        // Dummy events for demonstration purposes
+        specialEvents = new List<string>
+        {
+            $"Bring your parents to Childcare day! (6:00 PM)"
+        };
+    }
+
+    private void OnDateChanged(DateTime? date, ChangedEventArgs<DateTime?> args)
     {
         if (date.HasValue)
         {
             selectedDate = date.Value;
-            LoadEventsForDate(selectedDate);
+            LoadRosterForDate(selectedDate);
         }
     }
 }
