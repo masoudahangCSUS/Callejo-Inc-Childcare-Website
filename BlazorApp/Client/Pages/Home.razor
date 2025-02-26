@@ -2,7 +2,7 @@
 @inject UserSessionService UserSession
 @inject NavigationManager Navigation
 
-@if (UserSession.UserIsLoggedIn && UserSession.UserRole == 1)
+@if (UserSession.UserIsLoggedIn && UserSession.UserRole > 1)
 {
     <!-- Main Container with Bright Blue Background -->
     <div class="full-width-container" style="background-color: #00B7D7; padding: 150px 0;">

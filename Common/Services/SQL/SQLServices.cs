@@ -97,6 +97,18 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+        // New Method: Fetch a users Phone Number by their ID
+        public async Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? userID, long type)
+        {
+            return await _context.PhoneNumbers
+                .Where(n => n.FkUsers == userID)
+                .Where(n => n.FkType == type)
+                .ToListAsync();
+
+        }
+
+        
+
         // New Method: Mark a notification as read
         public bool MarkNotificationAsRead(long id)
         {
@@ -117,6 +129,7 @@ namespace Common.Services.SQL
             // Create said notification
             var newNotif = new Notification
             {
+        
                 FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
                 Title = "CUSTOM NOTIFICATION FROM: " + parentId,
                 Message = message,
@@ -130,6 +143,104 @@ namespace Common.Services.SQL
             return true;
         }
 
+        // New Method: Fetch all holidays & vacations
+        public IEnumerable<HolidaysVacations> GetHolidaysVacations()
+        {
+            return _context.HolidaysVacations
+                .OrderBy(h => h.StartDate)
+                .ToList();
+        }
+
+
+        public bool CreateNotification(Notification notification)
+        {
+            if (notification == null)
+            {
+                return false;
+            }
+
+            // Ensure IsRead is always false by default
+            notification.IsRead = false;
+
+            try
+            {
+                _context.Notifications.Add(notification);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating notification: {ex.Message}");
+                return false;
+            }
+        }
+
+
+        public bool UpdateNotification(long id, Notification updatedNotification)
+        {
+            try
+            {
+                using var dbContext = new CallejoSystemDbContext();
+                var notification = dbContext.Notifications.FirstOrDefault(n => n.Id == id);
+
+                if (notification == null) return false;
+
+                notification.Title = updatedNotification.Title;
+                notification.Message = updatedNotification.Message;
+                notification.SentOn = updatedNotification.SentOn;
+                notification.IsRead = updatedNotification.IsRead;
+
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating notification: {ex.Message}");
+                return false;
+            }
+        }
+
+        public bool DeleteNotification(long id)
+        {
+            try
+            {
+                using var dbContext = new CallejoSystemDbContext();
+                var notification = dbContext.Notifications.FirstOrDefault(n => n.Id == id);
+
+                if (notification == null) return false;
+
+                dbContext.Notifications.Remove(notification);
+                dbContext.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting notification: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Fetch all notifications for admin
+        public IEnumerable<Notification> GetAllNotifications()
+        {
+            return _context.Notifications
+                .OrderByDescending(n => n.SentOn)
+                .ToList();
+        }
+
+        public async Task<IEnumerable<long>> GetChildren(Guid? id)
+        {
+            return await _context.Guardians
+                            .Where(g => g.fk_parent == id)
+                            .Select(g => g.fk_child)
+                            .ToListAsync();
+        }
+
+        public async Task<Child> getChildById(long id)
+        {
+            return await _context.Children
+                           .FirstOrDefaultAsync(g => g.Id == id);
+        }
     }
 
 }

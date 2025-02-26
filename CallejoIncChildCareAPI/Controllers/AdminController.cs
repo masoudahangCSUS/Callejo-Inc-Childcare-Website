@@ -3,12 +3,22 @@ using Common.Services.User;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
+
+using Microsoft.EntityFrameworkCore;
+
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Common.View;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+
 
 namespace CallejoIncChildcareAPI.Controllers
 {
+    [RequireHttps]
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -16,6 +26,10 @@ namespace CallejoIncChildcareAPI.Controllers
         private readonly IUserService _userService;
         private readonly ImageService _imageService;
         private readonly IConfiguration _configuration;
+        private readonly ISQLServices _sqlService;
+        private readonly CallejoSystemDbContext _context;
+
+   
 
         public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration)
         {
@@ -24,7 +38,7 @@ namespace CallejoIncChildcareAPI.Controllers
             _configuration = configuration;
         }
 
-        // ✅ POST: api/admin/create-user
+        //  POST: api/admin/create-user
         [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
@@ -32,7 +46,9 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result);
         }
 
-        // ✅ GET: api/admin/get-all-users
+
+
+        //  GET: api/admin/get-all-users
         [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
@@ -40,7 +56,18 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
-        // ✅ DELETE: api/admin/delete-user
+        //  GET: api/admin/get-all-users
+        [HttpGet("children")]
+        public ActionResult<ListChildren> GetAllChildren()
+        {
+            var result = _userService.GetAllChildren();
+            return Ok(result);
+        }
+
+
+
+
+        //  DELETE: api/admin/delete-user
         [HttpDelete("delete-user")]
         public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
         {
@@ -48,7 +75,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
-        // ✅ PUT: api/admin/update-user
+        //  PUT: api/admin/update-user
         [HttpPut("update-user")]
         public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
         {
@@ -80,6 +107,21 @@ namespace CallejoIncChildcareAPI.Controllers
                 Role = (int)user.FkRole
             };
 
+            // Create the user claims
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, (int)user.FkRole == 1 ? "Admin" : "User")
+            };
+
+            // Create the identity and principal
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+            // Sign in the user and issue the cookie
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                                          claimsPrincipal);
+
             return Ok(new APIResponse
             {
                 Success = true,
@@ -88,7 +130,7 @@ namespace CallejoIncChildcareAPI.Controllers
             });
         }
 
-        // ✅ POST: api/admin/upload-image
+        // POST: api/admin/upload-image
         [HttpPost("upload-image")]
         public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
         {
@@ -115,7 +157,7 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
-        // ✅ GET: api/admin/get-latest-image
+        //  GET: api/admin/get-latest-image
         [HttpGet("get-latest-image")]
         public async Task<ActionResult<APIResponse>> GetLatestImage()
         {
@@ -136,7 +178,9 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
-        // ✅ Direct SQL insert method (if _imageService is unavailable)
+    
+
+        //  Direct SQL insert method (if _imageService is unavailable)
         private async Task SaveImageUrlAsync(string imageUrl)
         {
             var connectionString = _configuration.GetConnectionString("DefaultConnection");

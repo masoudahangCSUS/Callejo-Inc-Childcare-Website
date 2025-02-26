@@ -1,0 +1,229 @@
+﻿@page "/admin-notifications"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@inject NotificationService NotificationService
+@inject UserSessionService UserSession
+@rendermode InteractiveServer
+
+@if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+{
+    <div class="page-container">
+        <div class="header-container">
+            <h3 class="page-title">Admin Notifications Management</h3>
+            <button @onclick="OpenCreateModal" class="create-btn">Create Notification</button>
+        </div>
+
+        @if (notifications == null)
+        {
+            <p class="loading-text">Loading notifications...</p>
+        }
+        else if (notifications.Count == 0)
+        {
+            <p class="no-notifications">No notifications found.</p>
+        }
+        else
+        {
+            <div class="notifications-container">
+                <table class="notifications-table">
+                    <thead>
+                        <tr>
+                            <th>Parent ID</th>
+                            <th>Title</th>
+                            <th>Message</th>
+                            <th>Sent On</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var notif in notifications)
+                        {
+                            <tr>
+                                <td>@notif.FkParentId</td>
+                                <td>@notif.Title</td>
+                                <td>@notif.Message</td>
+                                <td>@notif.SentOn.ToString("yyyy-MM-dd HH:mm")</td>
+                                <td class="actions">
+                                    <button @onclick="() => OpenEditModal(notif)" class="edit-btn">Edit</button>
+                                    <button @onclick="() => DeleteNotification(notif.Id)" class="delete-btn">Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+
+    @if (isEditModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>Edit Notification</h4>
+
+                <label>Parent ID:</label>
+                <input type="text" value="@editingNotification.FkParentId" disabled />
+
+                <label>Title:</label>
+                <input type="text" @bind="editingNotification.Title" />
+
+                <label>Message:</label>
+                <textarea @bind="editingNotification.Message"></textarea>
+
+                <label>Sent On:</label>
+                <input type="datetime-local" @bind="formattedSentOn" />
+
+                <div class="modal-actions">
+                    <button @onclick="SaveUpdatedNotification" class="save-btn">Save</button>
+                    <button @onclick="CloseEditModal" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isCreateModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>Create Notification</h4>
+
+                <label>Parent ID:</label>
+                <input type="text" @bind="newNotification.FkParentId" />
+
+                <label>Title:</label>
+                <input type="text" @bind="newNotification.Title" />
+
+                <label>Message:</label>
+                <textarea @bind="newNotification.Message"></textarea>
+
+                <label>Sent On:</label>
+                <input type="datetime-local" @bind="newFormattedSentOn" />
+
+                <div class="modal-actions">
+                    <button @onclick="CreateNotification" class="save-btn">Create</button>
+                    <button @onclick="CloseCreateModal" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p class="access-denied">Access Denied. You do not have permission to view this page.</p>
+    <RedirectToHome />
+}
+
+@code {
+    private List<Notification> notifications = new();
+    private bool isEditModalOpen = false;
+    private bool isCreateModalOpen = false;
+    private Notification editingNotification = new();
+    private Notification newNotification = new();
+    private DateTime? formattedSentOn = null;
+    private DateTime? newFormattedSentOn = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+        {
+            await LoadNotifications();
+        }
+    }
+
+    private async Task LoadNotifications()
+    {
+        notifications = await NotificationService.GetAllNotifications();
+    }
+
+    private void OpenEditModal(Notification notification)
+    {
+        if (notification == null) return;
+
+        editingNotification = new Notification
+            {
+                Id = notification.Id,
+                FkParentId = notification.FkParentId,
+                Title = notification.Title,
+                Message = notification.Message,
+                SentOn = notification.SentOn,
+                IsRead = notification.IsRead
+            };
+
+        formattedSentOn = notification.SentOn;
+        isEditModalOpen = true;
+    }
+
+    private async Task SaveUpdatedNotification()
+    {
+        if (editingNotification == null || formattedSentOn == null) return;
+
+        try
+        {
+            editingNotification.SentOn = formattedSentOn.Value;
+
+            var success = await NotificationService.UpdateNotification(editingNotification.Id, editingNotification);
+
+            if (success)
+            {
+                await LoadNotifications();
+                CloseEditModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error saving notification: {ex.Message}");
+        }
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalOpen = false;
+        editingNotification = new Notification();
+        formattedSentOn = null;
+    }
+
+    private async Task DeleteNotification(long id)
+    {
+        var success = await NotificationService.DeleteNotification(id);
+        if (success)
+        {
+            await LoadNotifications();
+        }
+    }
+
+    private void OpenCreateModal()
+    {
+        newNotification = new Notification();
+        newFormattedSentOn = DateTime.Now;
+        isCreateModalOpen = true;
+    }
+
+    private async Task CreateNotification()
+    {
+        if (newNotification == null || newFormattedSentOn == null) return;
+
+        try
+        {
+            newNotification.SentOn = newFormattedSentOn.Value;
+            newNotification.IsRead = false;
+
+            var success = await NotificationService.CreateNotification(newNotification);
+
+            if (success)
+            {
+                await LoadNotifications();
+                CloseCreateModal();
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating notification: {ex.Message}");
+        }
+    }
+
+    private void CloseCreateModal()
+    {
+        isCreateModalOpen = false;
+        newNotification = new Notification();
+        newFormattedSentOn = null;
+    }
+}

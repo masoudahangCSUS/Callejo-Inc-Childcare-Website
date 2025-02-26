@@ -20,6 +20,7 @@ namespace Common.View
         public string Password { get; set; }
         public long FkRole { get; set; }
         public string PhoneNumber { get; set; }
+        public byte[]? RegistrationDocument { get; set; }
 
         public List<ChildView> Children { get; set; } = new List<ChildView>();
 

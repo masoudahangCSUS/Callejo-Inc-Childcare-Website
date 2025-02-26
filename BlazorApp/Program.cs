@@ -5,6 +5,9 @@ using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Common.Services.SQL;
+using Common.Services.User;
 using Syncfusion.Blazor;
 
 
@@ -36,14 +39,12 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<ISQLServices, SQLServices>();
+builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IFileService, FileService>();
-builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=DESKTOP-49NHJ9N;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
-
-// Adds Syncfusion Blazor Service
-builder.Services.AddSyncfusionBlazor();
-
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ProfileService>();builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 // Load environment variables
 Env.Load();
 
@@ -55,6 +56,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
     app.UseHsts();
 }
+else
+{
+}
+
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
