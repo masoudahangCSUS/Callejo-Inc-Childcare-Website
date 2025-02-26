@@ -48,23 +48,24 @@ namespace BlazorApp.Client.Services
             }
         }
 
-        public async Task<bool> SendCustomNotification(string parentId, string message)
+        public async Task<bool> SendCustomNotification(Notification newRequest)
         {
             try
             {
-                Console.WriteLine($"Sending new notification from: {parentId}");
-                var notificationPayload = new
+                Console.WriteLine($"Sending new notification from: ");//{parentId}
+                /*var notificationPayload = new
                 {
                     parentId = parentId,
+                    rqTitle = rqTitle,
                     Message = message,
-                    TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
-                };
+                    //TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
+                };*/
 
-                var response = await _httpClient.PostAsJsonAsync($"api/notifications/send-custom-notif", notificationPayload);
+                var response = await _httpClient.PostAsJsonAsync($"api/notifications/send-custom-notif", newRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"Notification sent successfully from {parentId}");
+                    Console.WriteLine($"Notification sent successfully from ");//{parentId}
                     return true;
                 }
                 else
