@@ -1,18 +1,15 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
-namespace Common.Models.Data
+namespace Common.Models.Data;
+
+public partial class Image
 {
-    public class Image
-    {
-        [Key]
-        public int Id { get; set; }
+    public int Id { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; } // Stores Google Drive direct link
+    public string ImageUrl { get; set; } = null!;
 
-        public bool IsPublished { get; set; } // Determines if the image is live
+    public bool? IsPublished { get; set; }
 
-        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
-    }
+    public DateTime? UploadedAt { get; set; }
 }

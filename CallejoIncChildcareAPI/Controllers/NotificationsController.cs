@@ -43,15 +43,31 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //  Parent sending notification to the admin (DO NOT REMOVE)
-        [HttpPost("send-custom-notif/{parentId}/{message}")]
-        public IActionResult SendCustomNotification(string parentId, string message)
+        [HttpPost("send-custom-notif")]
+        public IActionResult SendCustomNotification([FromBody] Notification newRequest)
         {
-            var success = _sqlServices.SendCustomNotification(parentId, message);
+            if (newRequest == null || string.IsNullOrWhiteSpace(newRequest.Message))
+            {
+                return BadRequest("Invalid notification data.");
+            }
+
+            // Ensure IsRead is false for new requests
+            newRequest.IsRead = false;
+            newRequest.SentOn = DateTime.UtcNow;
+
+            var success = _sqlServices.SendCustomNotification(newRequest);
+            if (!success)
+            {
+                return StatusCode(500, "Failed to save the notification.");
+            }
+            return Ok("Notification sent successfully.");
+
+            /*var success = _sqlServices.SendCustomNotification(newRequest);
             if (!success)
             {
                 return NotFound("Parent ID not found.");
             }
-            return Ok("Notification sent.");
+            return Ok("Notification sent.");*/
         }
 
         // POST: api/Notifications/admin-create

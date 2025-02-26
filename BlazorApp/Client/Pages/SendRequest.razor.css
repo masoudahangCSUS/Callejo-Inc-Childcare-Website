@@ -1,0 +1,54 @@
+﻿h3 {
+    text-align: center;
+}
+
+.request-page {
+    text-align: center;
+}
+
+.noteTitle {
+    text-align: center;
+    font-size: 1rem;
+    color: #333;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.requestTitle{
+    text-align: center;
+}
+
+.request-buttons {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+}
+
+.rq-submit-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+a.rq-cancel-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}

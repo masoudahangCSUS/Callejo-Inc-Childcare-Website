@@ -14,6 +14,7 @@
 @inject HttpClient Http
 
 @rendermode InteractiveServer
+@inject NavigationManager Navigation
 
 @inject IUserService userService
 @inject UserSessionService UserSession
@@ -27,6 +28,7 @@
     Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
     private CustomerUserViewDTO? userViewDTO;
     private EmergencyContactDTO? emergencyDTO;
+
 
     void ShowFileUploadDialog()
     {
@@ -194,11 +196,23 @@ else{
             </div>
         </div>
 
+    <div class="button-group">
+        <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
+        <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
+        <button class="btn-regupload" @onclick ="Navigate"> Registration Status</button>
+    </div>
 
-        <div class="button-group">
-            <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
-            <button class="btn-regupload" @onclick="() => ShowFileUploadDialog()">Upload Registration</button>
-        </div>
+
+</div>
+
+@code
+{
+    private void Navigate()
+    {
+        Navigation.NavigateTo("/parent_status");
+
+    }
+}
 
         @if (showUploadDialog)
         {
@@ -209,6 +223,5 @@ else{
             </div>
         }
 
-    </div>
 
 }
