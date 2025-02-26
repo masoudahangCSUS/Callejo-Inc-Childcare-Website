@@ -1,6 +1,8 @@
 ﻿@rendermode InteractiveServer
 @inject UserSessionService UserSession
 @inject NavigationManager Navigation
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
 
 <!-- ParentNavMenu.razor -->
 <div class="container">
@@ -47,9 +49,16 @@
 </div>
 
 @code {
-    private void LogoutUser()
+    private readonly HttpClient _httpClient;
+
+    private async Task LogoutUser()
     {
+        var result = await JSRuntime.InvokeAsync<object>("logoutApi", Array.Empty<object>());
+        // Optionally, you can inspect result if needed.
+
+        // Update the session and navigate once logout completes.
         UserSession.SetUser(false);
         Navigation.NavigateTo("/");
     }
 }
+    

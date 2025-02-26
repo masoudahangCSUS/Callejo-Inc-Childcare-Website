@@ -2,7 +2,7 @@
 
 public class UserSessionService
 {
-    public bool UserIsLoggedIn { get; private set; }
+    public bool UserIsLoggedIn { get;  set; }
     public int? UserRole { get; private set; }
     public Guid? UserId { get; private set; }
 

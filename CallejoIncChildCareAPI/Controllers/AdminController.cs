@@ -118,9 +118,18 @@ namespace CallejoIncChildcareAPI.Controllers
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
+            //Configures some properties for the cookies
+            // Allows the Cookie to be persistent across browser sessions
+            var authProperties = new AuthenticationProperties
+            {
+                IsPersistent = true, 
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) 
+            };
             // Sign in the user and issue the cookie
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                                          claimsPrincipal);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrincipal,
+                authProperties);
 
             return Ok(new APIResponse
             {
@@ -128,6 +137,15 @@ namespace CallejoIncChildcareAPI.Controllers
                 Message = "Login successful.",
                 Data = userDTO
             });
+        }
+
+        //Post: api/admin/logout
+        [HttpPost("logout")]
+        public async Task<IActionResult> logoout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Response.Cookies.Delete("MyAppAuthCookie");
+            return Ok(new { Success = true, Message = "Logged Out Successfully" });
         }
 
         // POST: api/admin/upload-image

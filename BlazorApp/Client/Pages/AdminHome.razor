@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
 @inject UserSessionService UserSession
+@attribute [Authorize(Roles = "Admin")]
+
 
 <div class="admin-dashboard">
     <!-- Sidebar -->

@@ -1,30 +1,31 @@
 ﻿@inherits LayoutComponentBase
 @inject UserSessionService UserSession
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+
+
 
 
 <!-- Main Navbar Section -->
-@if (UserSession.UserIsLoggedIn)
-{
-    @if (UserSession.UserRole == 3 || UserSession.UserRole == 2)
-    {
-        <!-- Show Parent Navigation Menu -->
+<AuthorizeView>
+    <Authorized>
+        @if (UserSession.UserRole == 3 || UserSession.UserRole == 2)
+        {
+            <div class="top-navbar">
+                <ParentNavMenu />
+            </div>
+        }
+        else if (UserSession.UserRole == 1)
+        {
+            <AdminHome />
+        }
+    </Authorized>
+    <NotAuthorized>
         <div class="top-navbar">
-            <ParentNavMenu />
+            <MainNavMenu />
         </div>
-    }
-    else if (UserSession.UserRole == 1) 
-    {
-        <!-- Show Admin Sidebar -->
-        <AdminHome />
-    }
-}
-else
-{
-    <!-- Show Default Navbar for Unauthenticated Users -->
-    <div class="top-navbar">
-        <MainNavMenu />
-    </div>
-}
+    </NotAuthorized>
+</AuthorizeView>
 
 <!-- Main Content Area -->
 <main class="full-width-container">
@@ -32,6 +33,7 @@ else
 </main>
 
 <script src="/JavaScript/CookieHelper.js"></script>
+<script src="~/JavaScript/LogoutHelper.js"></script>
 
 <!-- Footer Section -->
 <footer class="footer full-width-container">
@@ -64,3 +66,51 @@ else
         <p>&copy; 2024 Callejo Inc. All rights reserved.</p>
     </div>
 </footer>
+
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Wait for the authentication state to load.
+        var authState = await AuthenticationStateTask;
+        var user = authState.User;
+
+        if (user?.Identity?.IsAuthenticated == true)
+        {
+            // Retrieve the role claim. (Make sure you add a "UserId" claim if you need it.)
+            var roleClaim = user.FindFirst(ClaimTypes.Role)?.Value;
+            int? role = null;
+            if (!string.IsNullOrEmpty(roleClaim))
+            {
+                // Map the role string to an integer if needed.
+                if (roleClaim.Equals("Admin", StringComparison.OrdinalIgnoreCase))
+                {
+                    role = 1;
+                }
+                else if (roleClaim.Equals("User", StringComparison.OrdinalIgnoreCase))
+                {
+                    role = 3;
+                }
+            }
+
+            // Optionally, if you stored a user id as a claim, retrieve it.
+            var userIdClaim = user.FindFirst("UserId")?.Value;
+            Guid? userId = null;
+            if (Guid.TryParse(userIdClaim, out Guid parsedId))
+            {
+                userId = parsedId;
+            }
+
+            // Update the UserSessionService based on the current authentication state.
+            UserSession.SetUser(true, role, userId);
+        }
+        else
+        {
+            // If not authenticated, ensure the session service is in a logged-out state.
+            UserSession.SetUser(false);
+        }
+    }
+}
