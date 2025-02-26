@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @inject HttpClient Http
 @rendermode InteractiveServer
+@inject NavigationManager Navigation
 
 @code {
     private bool showUploadDialog = false;
@@ -110,6 +111,7 @@
     <div class="button-group">
         <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
         <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
+        <button class="btn-regupload" @onclick ="Navigate"> Registration Status</button>
     </div>
 
     @if (showUploadDialog)
@@ -122,3 +124,12 @@
     }
 
 </div>
+
+@code
+{
+    private void Navigate()
+    {
+        Navigation.NavigateTo("/parent_status");
+
+    }
+}

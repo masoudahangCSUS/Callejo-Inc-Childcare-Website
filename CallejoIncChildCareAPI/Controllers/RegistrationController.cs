@@ -1,6 +1,8 @@
 ﻿using Common.Services.Registration;
 using Common.View;
 using Microsoft.AspNetCore.Mvc;
+using Common.Models.Data;
+using System.Collections.Generic;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -10,6 +12,9 @@ namespace CallejoIncChildcareAPI.Controllers
     public class RegistrationController : ControllerBase
     {
         private IRegService _regService;
+
+        // Initialize a list of a Registration object
+        private static List<Registration> reg = new List<Registration>();
 
         public RegistrationController(IRegService regService)
         {
@@ -50,7 +55,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
             // Save file
             var result = await _regService.UploadFileAsync(userId, fileBytes, fileType, fileSize);
-
+            
             if (!result)
             {
                 return StatusCode(500, "File upload failed.");
@@ -86,6 +91,25 @@ namespace CallejoIncChildcareAPI.Controllers
                 return NotFound("No file found/Deletion failed");
             }
             return Ok("File deleted successfully");
+        }
+        //GET api/Registration/status
+        [HttpGet("status/{id}")]
+        public async Task<IActionResult> GetRegistrationStatus(Guid id)
+        {
+            var registration = reg.FirstOrDefault(s => s.Id == id);
+            if (registration == null)
+                return NotFound("Tracking ID not found.");
+
+            // Manually map entity to DTO
+            var dto = new RegistrationDTO
+            {
+                Id = registration.Id,
+                Name = registration.Name,
+                Status = registration.Status,
+                DateTime = registration.Datetime
+            };
+
+            return Ok(dto);
         }
     }
 }
