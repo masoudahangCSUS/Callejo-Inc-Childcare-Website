@@ -97,6 +97,18 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+        // New Method: Fetch a users Phone Number by their ID
+        public async Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? userID, long type)
+        {
+            return await _context.PhoneNumbers
+                .Where(n => n.FkUsers == userID)
+                .Where(n => n.FkType == type)
+                .ToListAsync();
+
+        }
+
+        
+
         // New Method: Mark a notification as read
         public bool MarkNotificationAsRead(long id)
         {
@@ -165,6 +177,7 @@ namespace Common.Services.SQL
                 .OrderBy(h => h.StartDate)
                 .ToList();
         }
+
 
         public bool CreateNotification(Notification notification)
         {
@@ -242,7 +255,19 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+        public async Task<IEnumerable<long>> GetChildren(Guid? id)
+        {
+            return await _context.Guardians
+                            .Where(g => g.fk_parent == id)
+                            .Select(g => g.fk_child)
+                            .ToListAsync();
+        }
 
+        public async Task<Child> getChildById(long id)
+        {
+            return await _context.Children
+                           .FirstOrDefaultAsync(g => g.Id == id);
+        }
     }
 
 }

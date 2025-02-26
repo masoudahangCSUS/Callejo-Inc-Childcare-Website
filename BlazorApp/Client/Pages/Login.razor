@@ -58,7 +58,7 @@
     {
         try
         {
-            string url = "https://localhost:7139/api/Admin/login";
+            string url = "https://localhost:7139/api/admin/login";
 
             // Call the JS function "fetchLoginData" to perform a client-side fetch
             string resultJson = await JSRuntime.InvokeAsync<string>("fetchLoginData", url, loginInfo);
@@ -127,7 +127,7 @@
     public class UserModel
     {
         [JsonPropertyName("id")]
-        public Guid Id { get; set; }  // Ensuring GUID is correctly stored
+        public Guid Id { get; set; }  //Ensuring GUID is correctly stored
         public string Email { get; set; } = string.Empty;
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
