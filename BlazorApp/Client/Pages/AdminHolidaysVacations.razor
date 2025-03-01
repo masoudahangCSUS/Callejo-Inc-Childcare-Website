@@ -1,0 +1,186 @@
+﻿@page "/admin-holidays-vacations"
+@using BlazorApp.Client.Services
+@using Common.Models.Data
+@using System.Globalization
+@inject HolidaysVacationsService HolidaysVacationsService
+@inject UserSessionService UserSession
+@rendermode InteractiveServer
+
+@if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+{
+
+    <div class="admin-container">
+        <h3 class="page-title">Admin Holidays & Vacations Management</h3>
+
+        <button class="create-btn" @onclick="OpenCreateModal">Create Holiday/Vacation</button>
+
+        @if (holidaysVacations == null)
+        {
+            <p>Loading...</p>
+        }
+        else if (!holidaysVacations.Any())
+        {
+            <p>No holidays or vacations available.</p>
+        }
+        else
+        {
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var holiday in holidaysVacations)
+                    {
+                        <tr>
+                            <td>@holiday.Title</td>
+                            <td>@holiday.Type</td>
+                            <td>@holiday.StartDate.ToString("yyyy-MM-dd")</td>
+                            <td>@holiday.EndDate.ToString("yyyy-MM-dd")</td>
+                            <td>@(string.IsNullOrEmpty(holiday.Description) ? "N/A" : holiday.Description)</td>
+                            <td>@(holiday.CreatedAt.HasValue ? holiday.CreatedAt.Value.ToString("yyyy-MM-dd HH:mm") : "N/A")</td>
+                            <td>
+                                <button class="edit-btn" @onclick="() => OpenEditModal(holiday)">Edit</button>
+                                <button class="delete-btn" @onclick="() => DeleteHolidayVacation(holiday.Id)">Delete</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        @if (isModalOpen)
+        {
+            <div class="modal">
+                <div class="modal-content">
+                    <h4>@(isEditing ? "Edit Holiday/Vacation" : "Create Holiday/Vacation")</h4>
+
+                    <label>Title:</label>
+                    <input type="text" @bind="editingHoliday.Title" />
+
+                    <label>Type:</label>
+                    <select @bind="editingHoliday.Type">
+                        <option value="Holiday">Holiday</option>
+                        <option value="Vacation">Vacation</option>
+                    </select>
+
+                    <label>Start Date:</label>
+                    <input type="date" @bind="editingHoliday.StartDate" />
+
+                    <label>End Date:</label>
+                    <input type="date" @bind="editingHoliday.EndDate" />
+
+                    <label>Description:</label>
+                    <textarea @bind="editingHoliday.Description"></textarea>
+
+                    <div class="modal-actions">
+                        <button class="save-btn" @onclick="SaveHolidayVacation">@(isEditing ? "Update" : "Create")</button>
+                        <button class="cancel-btn" @onclick="CloseModal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+}
+else
+{
+    <p class="access-denied">Access Denied. You do not have permission to view this page.</p>
+    <RedirectToHome />
+}
+
+@code {
+    private List<Common.Models.Data.HolidaysVacations> holidaysVacations = new();
+    private bool isModalOpen = false;
+    private bool isEditing = false;
+    private Common.Models.Data.HolidaysVacations editingHoliday = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadHolidaysVacations();
+    }
+
+    private async Task LoadHolidaysVacations()
+    {
+        holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
+    }
+
+    private void OpenCreateModal()
+    {
+        editingHoliday = new Common.Models.Data.HolidaysVacations
+            {
+                Type = "Holiday", // Default to Holiday
+                StartDate = DateTime.UtcNow,
+                EndDate = DateTime.UtcNow.AddDays(1),
+                CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
+            };
+        isEditing = false;
+        isModalOpen = true;
+    }
+
+    private void OpenEditModal(Common.Models.Data.HolidaysVacations holiday)
+    {
+        editingHoliday = new Common.Models.Data.HolidaysVacations
+            {
+                Id = holiday.Id,
+                Title = holiday.Title,
+                Type = holiday.Type,
+                StartDate = holiday.StartDate,
+                EndDate = holiday.EndDate,
+                Description = holiday.Description,
+                CreatedAt = holiday.CreatedAt
+            };
+        isEditing = true;
+        isModalOpen = true;
+    }
+
+    private async Task SaveHolidayVacation()
+    {
+        bool success;
+
+        if (isEditing)
+        {
+            success = await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
+        }
+        else
+        {
+            editingHoliday.CreatedAt = ConvertToPacificTime(DateTime.UtcNow);
+            success = await HolidaysVacationsService.CreateHolidayVacationAsync(editingHoliday);
+        }
+
+        if (success)
+        {
+            await LoadHolidaysVacations();
+            CloseModal();
+        }
+    }
+
+    private async Task DeleteHolidayVacation(long id)
+    {
+        bool success = await HolidaysVacationsService.DeleteHolidayVacationAsync(id);
+
+        if (success)
+        {
+            await LoadHolidaysVacations();
+        }
+    }
+
+    private void CloseModal()
+    {
+        isModalOpen = false;
+        editingHoliday = new Common.Models.Data.HolidaysVacations();
+    }
+
+    private DateTime ConvertToPacificTime(DateTime utcDateTime)
+    {
+        TimeZoneInfo pacificZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
+        return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, pacificZone);
+    }
+}

@@ -25,6 +25,13 @@ namespace Common.Services.SQL
 
         // New method for Holidays & Vacations
         IEnumerable<HolidaysVacations> GetHolidaysVacations();
+
+        // Admin Holidays & Vacations
+        bool CreateHolidayVacation(HolidaysVacations holidayVacation);
+        bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation);
+        bool DeleteHolidayVacation(long id);
+
+
         // New method for retrieving phone numbers
         public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
         public Task<Child> getChildById(long id);

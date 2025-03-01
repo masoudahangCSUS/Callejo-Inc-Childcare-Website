@@ -60,7 +60,13 @@
                 <li>
                     <button @onclick='() => SetContent(typeof(ChildRoster), "Child-Roster")'
                             class="btn-link @(ActivePage == "Admin-Child-Roster" ? "active" : "")">
-                        <img src="images/baby.jpg" alt="Notifications" class="nav-icon" /> Child Roster 
+                        <img src="images/baby.jpg" alt="Child Roster" class="nav-icon" /> Child Roster 
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminHolidaysVacations), "Admin-Holidays-Vacations")'
+                            class="btn-link @(ActivePage == "Admin-Holidays-Vacations" ? "active" : "")">
+                        <img src="images/AdminHolidaysVacations.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Holidays & Vacations
                     </button>
                 </li>
             </ul>

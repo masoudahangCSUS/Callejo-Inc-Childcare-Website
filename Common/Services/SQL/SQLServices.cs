@@ -178,6 +178,72 @@ namespace Common.Services.SQL
                 .ToList();
         }
 
+        // Create a new holiday/vacation (Admin)
+        public bool CreateHolidayVacation(HolidaysVacations holidayVacation)
+        {
+            if (holidayVacation == null)
+                return false;
+
+            try
+            {
+                _context.HolidaysVacations.Add(holidayVacation);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating holiday/vacation: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Update an existing holiday/vacation (Admin)
+        public bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation)
+        {
+            var existingHoliday = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
+
+            if (existingHoliday == null)
+                return false;
+
+            try
+            {
+                existingHoliday.Title = updatedHolidayVacation.Title;
+                existingHoliday.Description = updatedHolidayVacation.Description;
+                existingHoliday.StartDate = updatedHolidayVacation.StartDate;
+                existingHoliday.EndDate = updatedHolidayVacation.EndDate;
+                existingHoliday.Type = updatedHolidayVacation.Type;
+
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating holiday/vacation: {ex.Message}");
+                return false;
+            }
+        }
+
+        // Delete a holiday/vacation (Admin)
+        public bool DeleteHolidayVacation(long id)
+        {
+            var holidayVacation = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
+
+            if (holidayVacation == null)
+                return false;
+
+            try
+            {
+                _context.HolidaysVacations.Remove(holidayVacation);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error deleting holiday/vacation: {ex.Message}");
+                return false;
+            }
+        }
+
 
         public bool CreateNotification(Notification notification)
         {
