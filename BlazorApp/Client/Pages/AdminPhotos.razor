@@ -6,6 +6,9 @@
 @using System.Data.SqlClient
 @using Microsoft.Data.SqlClient
 @using System.Text.Json.Serialization;
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 

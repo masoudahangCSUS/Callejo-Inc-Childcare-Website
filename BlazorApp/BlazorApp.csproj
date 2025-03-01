@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Client\Pages\NewFolder\**" />
+    <Content Remove="Client\Pages\NewFolder\**" />
+    <EmbeddedResource Remove="Client\Pages\NewFolder\**" />
+    <None Remove="Client\Pages\NewFolder\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Remove="Client\Pages\About.razor.razor" />
     <Content Remove="Client\Pages\AdminPhotos.razor.razor" />
     <Content Remove="Client\Pages\Component.razor" />

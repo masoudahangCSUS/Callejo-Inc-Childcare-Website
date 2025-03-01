@@ -1,9 +1,12 @@
 ﻿@page "/holidays-vacations"
 @using BlazorApp.Client.Services
 @using Common.Models.Data
+@using Microsoft.AspNetCore.Authorization
+
 @inject HolidaysVacationsService HolidaysVacationsService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "User")]
 
 <h1 class="page-title">Observed Holidays & Childcare Vacations</h1>
 

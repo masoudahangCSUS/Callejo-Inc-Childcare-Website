@@ -97,7 +97,7 @@
             }
 
             // Optionally, if you stored a user id as a claim, retrieve it.
-            var userIdClaim = user.FindFirst("UserId")?.Value;
+            var userIdClaim = user.FindFirst("http://schemas.yourapp.com/claims/userid")?.Value;
             Guid? userId = null;
             if (Guid.TryParse(userIdClaim, out Guid parsedId))
             {

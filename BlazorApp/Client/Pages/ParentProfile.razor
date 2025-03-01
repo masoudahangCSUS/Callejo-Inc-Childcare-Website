@@ -7,14 +7,13 @@
 @using Common.Services.User
 @using Common.Models.Data
 @using Common.Services.SQL
-
-
+@using Microsoft.AspNetCore.Authorization
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
+
 @inject HttpClient Http
-
 @rendermode InteractiveServer
-
+@attribute [Authorize(Roles = "User")]
 @inject IUserService userService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService

@@ -3,6 +3,8 @@
 @using Microsoft.AspNetCore.Authorization
 @inject NavigationManager Navigation
 @inject UserSessionService UserSession
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin")]
 
 
@@ -98,9 +100,9 @@
         SetContent(typeof(AdminOverview), "Overview");
     }
 
-    private void LogoutUser()
+    private async Task LogoutUser()
     {
-        UserSession.SetUser(false);
+        var result = await JSRuntime.InvokeAsync<object>("logoutApi", Array.Empty<object>());
         Navigation.NavigateTo("/");
     }
 }

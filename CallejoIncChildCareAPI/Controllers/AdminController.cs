@@ -111,7 +111,8 @@ namespace CallejoIncChildcareAPI.Controllers
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, (int)user.FkRole == 1 ? "Admin" : "User")
+                new Claim(ClaimTypes.Role, (int)user.FkRole == 1 ? "Admin" : "User"),
+                new Claim(IdClaim.UserId, user.Id.ToString(), ClaimValueTypes.String),
             };
 
             // Create the identity and principal
@@ -213,5 +214,11 @@ namespace CallejoIncChildcareAPI.Controllers
                 await cmd.ExecuteNonQueryAsync();
             }
         }
+    }
+
+    public static class IdClaim
+    {
+        public const string UserId = "http://schemas.yourapp.com/claims/userid";
+
     }
 }
