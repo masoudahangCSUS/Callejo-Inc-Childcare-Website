@@ -1,7 +1,9 @@
 ﻿@inherits LayoutComponentBase
 @inject UserSessionService UserSession
+@inject NavigationManager NavigationManager
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Components.Authorization
+
 
 
 
@@ -106,6 +108,15 @@
 
             // Update the UserSessionService based on the current authentication state.
             UserSession.SetUser(true, role, userId);
+
+            if (role == 1)
+            {
+                // Prevent potential redirect loops by checking the current URL.
+                if (!NavigationManager.Uri.Contains("admin"))
+                {
+                    NavigationManager.NavigateTo("/admin", true);
+                }
+            }
         }
         else
         {
