@@ -69,6 +69,12 @@
                         <img src="images/AdminHolidaysVacations.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Holidays & Vacations
                     </button>
                 </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminDailySchedule), "Admin-Daily-Schedule")'
+                            class="btn-link @(ActivePage == "Admin-Daily-Schedule" ? "active" : "")">
+                        <img src="images/AdminHolidaysVacations.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Daily Schedule
+                    </button>
+                </li>
             </ul>
         </nav>
 

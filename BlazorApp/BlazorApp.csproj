@@ -32,6 +32,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
 	<PackageReference Include="MudBlazor" Version="8.2.0" />
+	<PackageReference Include="RestSharp" Version="112.1.0" />
 	<PackageReference Include="Syncfusion.Blazor.Calendars" Version="28.2.5" />
 	<PackageReference Include="Syncfusion.Blazor.Lists" Version="28.2.7" />
 	<PackageReference Include="Syncfusion.Blazor.Themes" Version="28.2.5" />

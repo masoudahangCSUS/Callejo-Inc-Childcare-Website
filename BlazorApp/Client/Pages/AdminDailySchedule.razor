@@ -2,8 +2,98 @@
 @using BlazorApp.Client.Services
 @using Common.Models.Data
 
-<h3>AdminDailySchedule</h3>
+<h3>DailySchedule</h3>
+
+<div class="calendar-container">
+    <SfCalendar TValue="DateTime" @bind-Value="selectedDate"></SfCalendar>
+    <div class="events-container">
+        <h3>Daily schedule on @selectedDate.ToShortDateString()</h3>
+        <textarea @bind="inputText" class="form-control" rows="5" cols="50"></textarea>
+        <br />
+        <button @onclick="ShowText" class="btn btn-primary">Submit</button>
+
+        <p>You entered:</p>
+        @if (!string.IsNullOrEmpty(displayedText))
+        {
+            <pre>@displayedText</pre>
+        }
+
+        <h3>Special Events</h3>
+        <textarea @bind="inputTextSpecial" class="form-control" rows="5" cols="50"></textarea>
+        <br />
+        <button @onclick="ShowTextSpecial" class="btn btn-primary">Submit</button>
+
+        <p>You entered:</p>
+        @if (!string.IsNullOrEmpty(displayedTextSpecial))
+        {
+            <pre>@displayedTextSpecial</pre>
+        }
+
+    </div>
+</div>
 
 @code {
+    public DateTime? DateValue { get; set; } = DateTime.Now;
+    private DateTime selectedDate = DateTime.Today;
+    private List<string> dailyRoster = new List<string>();
+    private List<string> specialEvents = new List<string>();
 
+    private string inputText = string.Empty;
+    private string displayedText = string.Empty;
+    private string inputTextSpecial = string.Empty;
+    private string displayedTextSpecial = string.Empty;
+
+    private void ShowText()
+    {
+        displayedText = inputText;
+    }
+    private void ShowTextSpecial()
+    {
+        displayedTextSpecial = inputTextSpecial;
+    }
+
+    private void onChange(Syncfusion.Blazor.Calendars.ChangedEventArgs<DateTime?> args)
+    {
+        DateValue = args.Value;
+        StateHasChanged();
+    }
+
+    protected override void OnInitialized()
+    {
+        LoadRosterForDate(selectedDate);
+        LoadSpecialEventsForDate(selectedDate);
+    }
+
+    public void LoadRosterForDate(DateTime date)
+    {
+        // Dummy events for demonstration purposes
+        dailyRoster = new List<string>
+        {
+            $"8:30 AM - 9:00 AM: Children are dropped off; playtime inside",
+            $"9:00 AM - 9:30 AM: Breakfest ",
+            $"11:00 AM - 12:00 PM: Playtime outside",
+            $"12:00 PM - 12:30 PM: Lunch",
+            $"12:30 PM - 2:30 PM: Nap time",
+            $"2:30 PM - 3:00 PM: Circle time",
+            $"3:00 PM - 5:00 PM: Playtime inside until parents arrive"
+        };
+    }
+
+    public void LoadSpecialEventsForDate(DateTime date)
+    {
+        // Dummy events for demonstration purposes
+        specialEvents = new List<string>
+        {
+            $"Bring your parents to Childcare day! (6:00 PM)"
+        };
+    }
+
+    private void OnDateChanged(DateTime? date, ChangedEventArgs<DateTime?> args)
+    {
+        if (date.HasValue)
+        {
+            selectedDate = date.Value;
+            LoadRosterForDate(selectedDate);
+        }
+    }
 }

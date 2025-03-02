@@ -2,44 +2,44 @@
 using RestSharp;
 using System.Threading.Tasks;
 using Common.View;
+using BlazorApp;
 using Org.BouncyCastle.Asn1.Crmf;
-using System.Net.Http;
 
 public class DailyScheduleService
 {
-    private readonly HttpClient _httpClient;
+    private readonly RestClient _client;
 
-    public DailyScheduleService(HttpClient httpClient)
+    public DailyScheduleService(IOptions<AppSettings> apiSettings)
     {
-        _httpClient = httpClient;
+        _client = new RestClient(apiSettings.Value.BaseUrl);
     }
 
-    public async Task<ListRoles> GetAllRoles()
+    public async Task<ListDailySchedule> GetAllRoles()
     {
         var request = new RestRequest("Role", Method.Get);
-        var response = await _client.ExecuteAsync<ListRoles>(request);
+        var response = await _client.ExecuteAsync<ListDailySchedule>(request);
         return response.Data;
     }
 
-    public async Task<ListRoles> GetRole(long id)
+    public async Task<ListDailySchedule> GetRole(long id)
     {
         var request = new RestRequest($"Role/{id}", Method.Get);
-        var response = await _client.ExecuteAsync<ListRoles>(request);
+        var response = await _client.ExecuteAsync<ListDailySchedule>(request);
         return response.Data;
     }
 
-    public async Task<APIResponse> InsertRole(RoleView roleInfo)
+    public async Task<APIResponse> InsertRole(DailyScheduleView DailyScheduleInfo)
     {
         var request = new RestRequest("Role", Method.Post);
-        request.AddJsonBody(roleInfo);
+        request.AddJsonBody(DailyScheduleInfo);
         var response = await _client.ExecuteAsync<APIResponse>(request);
         return response.Data;
     }
 
-    public async Task<APIResponse> UpdateRole(RoleView roleInfo)
+    public async Task<APIResponse> UpdateRole(DailyScheduleView DailyScheduleInfo)
     {
         var request = new RestRequest("Role", Method.Put);
-        request.AddJsonBody(roleInfo);
+        request.AddJsonBody(DailyScheduleInfo);
         var response = await _client.ExecuteAsync<APIResponse>(request);
         return response.Data;
     }
