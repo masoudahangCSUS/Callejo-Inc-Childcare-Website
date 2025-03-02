@@ -1,13 +1,13 @@
-﻿@page "/admin-scheudule"
-@using BlazorApp.Client.Services
-@using Common.Models.Data
-
-<h3>DailySchedule</h3>
+﻿@using Syncfusion.Blazor.Calendars
 
 <div class="calendar-container">
-    <SfCalendar TValue="DateTime" @bind-Value="selectedDate"></SfCalendar>
-    <div class="events-container">
-        <h3>Daily schedule on @selectedDate.ToShortDateString()</h3>
+    <SfCalendar TValue="DateTime?" @bind-Value="@SelectedDate">
+        <CalendarEvents TValue="DateTime?" OnRenderDayCell="CustomDates" ValueChange="OnChange"></CalendarEvents>
+    </SfCalendar>
+    <div class="events-container" id="display-date">
+        <span>Selected Day : @SelectedValue</span>
+        <h3>Daily schedule on @SelectedValue</h3>
+
         <textarea @bind="inputText" class="form-control" rows="5" cols="50"></textarea>
         <br />
         <button @onclick="ShowText" class="btn btn-primary">Submit</button>
@@ -28,15 +28,14 @@
         {
             <pre>@displayedTextSpecial</pre>
         }
-
     </div>
 </div>
 
+
 @code {
-    public DateTime? DateValue { get; set; } = DateTime.Now;
-    private DateTime selectedDate = DateTime.Today;
-    private List<string> dailyRoster = new List<string>();
-    private List<string> specialEvents = new List<string>();
+    public DateTime? SelectedDate { get; set; }
+    public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
+    public DateTime? CurrentDate { get; set; } = DateTime.Now;
 
     private string inputText = string.Empty;
     private string displayedText = string.Empty;
@@ -52,48 +51,64 @@
         displayedTextSpecial = inputTextSpecial;
     }
 
-    private void onChange(Syncfusion.Blazor.Calendars.ChangedEventArgs<DateTime?> args)
+    public void CustomDates(RenderDayCellEventArgs args)
     {
-        DateValue = args.Value;
-        StateHasChanged();
-    }
-
-    protected override void OnInitialized()
-    {
-        LoadRosterForDate(selectedDate);
-        LoadSpecialEventsForDate(selectedDate);
-    }
-
-    public void LoadRosterForDate(DateTime date)
-    {
-        // Dummy events for demonstration purposes
-        dailyRoster = new List<string>
+        var CurrentMonth = CurrentDate.Value.Month;
+        if (args.Date.Month == CurrentMonth && (args.Date.Day == 7 || args.Date.Day == 14 || args.Date.Day == 24 || args.Date.Day == 29))
         {
-            $"8:30 AM - 9:00 AM: Children are dropped off; playtime inside",
-            $"9:00 AM - 9:30 AM: Breakfest ",
-            $"11:00 AM - 12:00 PM: Playtime outside",
-            $"12:00 PM - 12:30 PM: Lunch",
-            $"12:30 PM - 2:30 PM: Nap time",
-            $"2:30 PM - 3:00 PM: Circle time",
-            $"3:00 PM - 5:00 PM: Playtime inside until parents arrive"
-        };
-    }
-
-    public void LoadSpecialEventsForDate(DateTime date)
-    {
-        // Dummy events for demonstration purposes
-        specialEvents = new List<string>
+            args.CellData.ClassList += " personal-appointment";
+        }
+        if (args.Date.Month == CurrentMonth && (args.Date.Day == 3 || args.Date.Day == 11 || args.Date.Day == 17 || args.Date.Day == 22))
         {
-            $"Bring your parents to Childcare day! (6:00 PM)"
-        };
+            args.CellData.ClassList += " official-appointment";
+        }
     }
-
-    private void OnDateChanged(DateTime? date, ChangedEventArgs<DateTime?> args)
+    public void OnChange(ChangedEventArgs<DateTime?> args)
     {
-        if (date.HasValue)
+        var Count = 0;
+        var CurrentMonth = CurrentDate.Value.Month;
+        if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 7 || args.Value.Value.Day == 14 || args.Value.Value.Day == 24 || args.Value.Value.Day == 29))
         {
-            selectedDate = date.Value;
-            LoadRosterForDate(selectedDate);
+            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Personal appointment)";
+            Count++;
+        }
+        if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 3 || args.Value.Value.Day == 11 || args.Value.Value.Day == 17 || args.Value.Value.Day == 22))
+        {
+            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Official appointment)";
+            Count++;
+        }
+        if (Count == 0)
+        {
+            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
         }
     }
 }
+<style>
+    #display-date {
+        max-width: 300px;
+        margin: 0 auto;
+        padding: 15px 0;
+        font-size: 13px;
+    }
+    .control-wrapper {
+        width: 300px;
+        margin: 0 auto;
+        padding-top: 20px;
+    }
+    .e-calendar .e-content .e-cell.personal-appointment span.e-day,
+    .e-calendar .e-content td:hover.e-cell.personal-appointment span.e-day,
+    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.personal-appointment span.e-day {
+        color: #28a745;
+        font-weight: 800;
+    }
+    .e-calendar .e-content .e-cell.official-appointment span.e-day,
+    .e-calendar .e-content td:hover.e-cell.official-appointment span.e-day,
+    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.official-appointment span.e-day {
+        color: #dc3545;
+        font-weight: 800;
+    }
+    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.personal-appointment span.e-day,
+    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.official-appointment span.e-day {
+        background-color: #b511485e;
+    }
+</style>
