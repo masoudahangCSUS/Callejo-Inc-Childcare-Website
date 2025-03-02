@@ -1,9 +1,13 @@
 ﻿@page "/admin-notifications"
 @using BlazorApp.Client.Services
 @using Common.Models.Data
+@using Microsoft.AspNetCore.Authorization
+
 @inject NotificationService NotificationService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
 
 @if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
 {

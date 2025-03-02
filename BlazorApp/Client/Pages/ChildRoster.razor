@@ -2,10 +2,11 @@
 @inject HttpClient Http
 @using Common.Models.Data
 @using Common.View
-
+@using Microsoft.AspNetCore.Authorization
 
 @inject AdminService AdminService
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <h1>Child Information Overview</h1>
 
