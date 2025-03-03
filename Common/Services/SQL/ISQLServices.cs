@@ -24,19 +24,19 @@ namespace Common.Services.SQL
         bool DeleteNotification(long id);
 
         // New method for Holidays & Vacations
-        IEnumerable<HolidaysVacations> GetHolidaysVacations();
+        //EC IEnumerable<HolidaysVacations> GetHolidaysVacations();
 
         // Admin Holidays & Vacations
-        bool CreateHolidayVacation(HolidaysVacations holidayVacation);
-        bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation);
-        bool DeleteHolidayVacation(long id);
+        //EC bool CreateHolidayVacation(HolidaysVacations holidayVacation);
+        //EC bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation);
+        //EC bool DeleteHolidayVacation(long id);
 
 
         // New method for retrieving phone numbers
         public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
         public Task<Child> getChildById(long id);
 
-        public Task<IEnumerable<long>> GetChildren(Guid? id);
+        // EC public Task<IEnumerable<long>> GetChildren(Guid? id);
 
 
 

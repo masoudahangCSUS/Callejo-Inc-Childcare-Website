@@ -58,7 +58,7 @@ namespace BlazorApp.Client.Services
                     parentId = parentId,
                     rqTitle = rqTitle,
                     Message = message,
-                    //TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
+                    TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
                 };*/
 
                 var response = await _httpClient.PostAsJsonAsync($"api/notifications/send-custom-notif", newRequest);

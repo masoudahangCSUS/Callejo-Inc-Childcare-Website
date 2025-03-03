@@ -1,4 +1,5 @@
 using Common.Models.Data;
+using Common.Services.DailySchedule;
 using Common.Services.Registration;
 using Common.Services.Role;
 using Common.Services.SQL;
@@ -26,6 +27,7 @@ builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
 
 // Register services here
 builder.Services.AddScoped<ImageService>();
+builder.Services.AddScoped<IDailyScheduleService, DailyScheduleService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<IUserService, UserService>();

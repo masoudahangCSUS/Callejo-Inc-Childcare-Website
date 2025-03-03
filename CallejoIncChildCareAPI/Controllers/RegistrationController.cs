@@ -58,13 +58,13 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return StatusCode(500, "File upload failed.");
             }
-            var existingRegistration = reg.FirstOrDefault(r => r.UserID == userId);
+            var existingRegistration = true; // EC reg.FirstOrDefault(r => r.UserID == userId);
             if (existingRegistration == null)
             {
                 reg.Add(new Registration
                 {
                     Id = Guid.NewGuid(),
-                    UserID = userId, //  Store User ID properly
+                    // EC UserID = userId, //  Store User ID properly
                     Name = $"User_{userId}",
                     Status = "Pending",
                     Datetime = DateTime.UtcNow
@@ -72,8 +72,8 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             else
             {
-                existingRegistration.Status = "Pending";
-                existingRegistration.Datetime = DateTime.UtcNow;
+                // EC existingRegistration.Status = "Pending";
+                // EC existingRegistration.Datetime = DateTime.UtcNow;
             }
 
             return Ok("File uploaded successfully.");
@@ -106,12 +106,12 @@ namespace CallejoIncChildcareAPI.Controllers
                 return NotFound("No file found/Deletion failed");
             }
             //  Update registration status if deleted
-            var registration = reg.FirstOrDefault(r => r.UserID == userId);
-            if (registration != null)
-            {
-                registration.Status = "Deleted";
-                registration.Datetime = DateTime.UtcNow;
-            }
+            //// EC var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            //if (registration != null)
+            //{
+            //    registration.Status = "Deleted";
+            //    registration.Datetime = DateTime.UtcNow;
+            //}
 
             return Ok("File deleted successfully");
         }
@@ -120,19 +120,19 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("status/{userId}")]
         public async Task<IActionResult> GetRegistrationStatus(Guid userId)
         {
-            var registration = reg.FirstOrDefault(r => r.UserID == userId);
-            if (registration == null)
-                return NotFound("No registration found for this user.");
+            //// EC var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            //if (registration == null)
+            //    return NotFound("No registration found for this user.");
 
             var fileData = await _regService.GetFileAsync(userId);
             bool fileExists = fileData != null;
 
             var dto = new RegistrationDTO
             {
-                Id = registration.Id,
-                Name = registration.Name,
-                Status = registration.Status == "Pending" && !fileExists ? "No File Submitted" : registration.Status,
-                DateTime = registration.Datetime
+                //// EC Id = registration.Id,
+                //Name = registration.Name,
+                //Status = registration.Status == "Pending" && !fileExists ? "No File Submitted" : registration.Status,
+                //DateTime = registration.Datetime
             };
 
             return Ok(dto);

@@ -14,7 +14,7 @@
 
         <button class="create-btn" @onclick="OpenCreateModal">Create Holiday/Vacation</button>
 
-        @if (holidaysVacations == null)
+        @*EC @if (holidaysVacations == null)
         {
             <p>Loading...</p>
         }
@@ -53,7 +53,7 @@
                         </tr>
                     }
                 </tbody>
-            </table>
+            </table> *@
         }
 
         @if (isModalOpen)
@@ -63,7 +63,7 @@
                     <h4>@(isEditing ? "Edit Holiday/Vacation" : "Create Holiday/Vacation")</h4>
 
                     <label>Title:</label>
-                    <input type="text" @bind="editingHoliday.Title" />
+                    @*EC <input type="text" @bind="editingHoliday.Title" />
 
                     <label>Type:</label>
                     <select @bind="editingHoliday.Type">
@@ -83,7 +83,7 @@
                     <div class="modal-actions">
                         <button class="save-btn" @onclick="SaveHolidayVacation">@(isEditing ? "Update" : "Create")</button>
                         <button class="cancel-btn" @onclick="CloseModal">Cancel</button>
-                    </div>
+                    </div> *@
                 </div>
             </div>
         }
@@ -97,10 +97,10 @@ else
 }
 
 @code {
-    private List<Common.Models.Data.HolidaysVacations> holidaysVacations = new();
+    // EC private List<Common.Models.Data.HolidaysVacation> holidaysVacations = new();
     private bool isModalOpen = false;
     private bool isEditing = false;
-    private Common.Models.Data.HolidaysVacations editingHoliday = new();
+    // EC private Common.Models.Data.HolidaysVacation editingHoliday = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,34 +109,34 @@ else
 
     private async Task LoadHolidaysVacations()
     {
-        holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
+        //EC holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
     }
 
     private void OpenCreateModal()
     {
-        editingHoliday = new Common.Models.Data.HolidaysVacations
-            {
-                Type = "Holiday", // Default to Holiday
-                StartDate = DateTime.UtcNow,
-                EndDate = DateTime.UtcNow.AddDays(1),
-                CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
-            };
+        //EC editingHoliday = new Common.Models.Data.HolidaysVacations
+        //     {
+        //         Type = "Holiday", // Default to Holiday
+        //         StartDate = DateTime.UtcNow,
+        //         EndDate = DateTime.UtcNow.AddDays(1),
+        //         CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
+        //     };
         isEditing = false;
         isModalOpen = true;
     }
 
-    private void OpenEditModal(Common.Models.Data.HolidaysVacations holiday)
+    private void OpenEditModal(Common.Models.Data.HolidaysVacation holiday)
     {
-        editingHoliday = new Common.Models.Data.HolidaysVacations
-            {
-                Id = holiday.Id,
-                Title = holiday.Title,
-                Type = holiday.Type,
-                StartDate = holiday.StartDate,
-                EndDate = holiday.EndDate,
-                Description = holiday.Description,
-                CreatedAt = holiday.CreatedAt
-            };
+        //EC editingHoliday = new Common.Models.Data.HolidaysVacation
+        //     {
+        //         Id = holiday.Id,
+        //         Title = holiday.Title,
+        //         Type = holiday.Type,
+        //         StartDate = holiday.StartDate,
+        //         EndDate = holiday.EndDate,
+        //         Description = holiday.Description,
+        //         CreatedAt = holiday.CreatedAt
+        //     };
         isEditing = true;
         isModalOpen = true;
     }
@@ -147,12 +147,12 @@ else
 
         if (isEditing)
         {
-            success = await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
+            success = true;//EC await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
         }
         else
         {
-            editingHoliday.CreatedAt = ConvertToPacificTime(DateTime.UtcNow);
-            success = await HolidaysVacationsService.CreateHolidayVacationAsync(editingHoliday);
+            //EC editingHoliday.CreatedAt = ConvertToPacificTime(DateTime.UtcNow);
+            success = true;//EC await HolidaysVacationsService.CreateHolidayVacationAsync(editingHoliday);
         }
 
         if (success)
@@ -175,7 +175,7 @@ else
     private void CloseModal()
     {
         isModalOpen = false;
-        editingHoliday = new Common.Models.Data.HolidaysVacations();
+        //EC editingHoliday = new Common.Models.Data.HolidaysVacations();
     }
 
     private DateTime ConvertToPacificTime(DateTime utcDateTime)

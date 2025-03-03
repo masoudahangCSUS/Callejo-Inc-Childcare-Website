@@ -15,5 +15,5 @@ public partial class DailySchedule
 
     public string Description { get; set; } = null!;
 
-    public string Desc_special { get; set; } = null!;
+    public string? DescSpecial { get; set; }
 }

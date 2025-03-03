@@ -90,8 +90,9 @@ namespace CallejoIncChildcareAPI.Controllers
         [Route("get-child-list")]
         public async Task<IActionResult> GetChildList(Guid? id)
         {
-            var result = await _sqlServices.GetChildren(id);
-            return Ok(result);
+            // EC var result = await _sqlServices.GetChildren(id);
+            //return Ok(result);
+            return Ok();
         }
 
         [HttpGet]

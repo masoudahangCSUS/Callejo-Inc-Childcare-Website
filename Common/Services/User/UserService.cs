@@ -227,8 +227,9 @@ namespace Common.Services.User
 
         public async Task<EmergencyContact?> GetEmergencyContactAsync(Guid id)
         {
-            return await _context.EmergencyContact
-                   .FirstOrDefaultAsync (user => user.fk_user == id);
+            return null;
+            //// EC return await _context.EmergencyContact
+            //       .FirstOrDefaultAsync (user => user.fk_user == id);
         }
 
         public async Task<CallejoIncUser?> GetUserByID(Guid? ID)

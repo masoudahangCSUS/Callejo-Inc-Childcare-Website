@@ -19,21 +19,25 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<Child> Children { get; set; }
 
+    public virtual DbSet<DailySchedule> DailySchedules { get; set; }
+
+    public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
+
+    public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
+
+    public virtual DbSet<Image> Images { get; set; }
+
     public virtual DbSet<InterestedParent> InterestedParents { get; set; }
+
+    public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
 
     public virtual DbSet<PhoneNumbersType> PhoneNumbersTypes { get; set; }
-    public virtual DbSet<Image> Images { get; set; }
+
+    public virtual DbSet<Registration> Registrations { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
-    public virtual DbSet<Notification> Notifications { get; set; }
-    public virtual DbSet<HolidaysVacations> HolidaysVacations { get; set; }
-
-    public virtual DbSet<EmergencyContact> EmergencyContact { get; set; }
-
-    public virtual DbSet<Guardian> Guardians { get; set; }
-
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -41,25 +45,6 @@ public partial class CallejoSystemDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-
-        modelBuilder.Entity<Image>(entity =>
-        {
-            entity.ToTable("Images");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ImageUrl)
-                .IsRequired()
-                .HasMaxLength(1024)
-                .IsUnicode(false)
-                .HasColumnName("image_url");
-            entity.Property(e => e.IsPublished)
-                .HasColumnName("is_published");
-            entity.Property(e => e.UploadedAt)
-                .HasColumnName("uploaded_at")
-                .HasDefaultValueSql("GETUTCDATE()");
-        });
-
-
         modelBuilder.Entity<CallejoIncUser>(entity =>
         {
             entity.ToTable("Callejo_Inc_Users");
@@ -96,6 +81,7 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false)
                 .HasColumnName("password");
+            entity.Property(e => e.RegistrationDocument).HasColumnName("registration_document");
             entity.Property(e => e.State)
                 .HasMaxLength(120)
                 .IsUnicode(false)
@@ -104,46 +90,34 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(12)
                 .IsUnicode(false)
                 .HasColumnName("zip_code");
-            entity.Property(e => e.RegistrationDocument)
-                .HasColumnType("varbinary(max)")
-                .HasColumnName("registration_document");
 
             entity.HasOne(d => d.FkRoleNavigation).WithMany(p => p.CallejoIncUsers)
                 .HasForeignKey(d => d.FkRole)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Callejo_Inc_Users_Role");
 
-            entity.HasMany(d => d.FkChildren)
-                .WithMany(p => p.FkParents)
-                .UsingEntity<Guardian>(
-            r => r.HasOne<Child>()
-                .WithMany()
-                .HasForeignKey(g => g.fk_child)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Guardians_Children"),
-            l => l.HasOne<CallejoIncUser>()
-                .WithMany()
-                .HasForeignKey(g => g.fk_parent)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Guardians_Callejo_Inc_Users"),
-            j =>
-            {
-                j.ToTable("Guardians");
-                j.HasKey(e => new { e.fk_parent, e.fk_child });
-                j.Property(e => e.fk_parent).HasColumnName("fk_parent");
-                j.Property(e => e.fk_child).HasColumnName("fk_children");
-            });
-            entity.HasMany(u => u.Notifications)
-                .WithOne()  // No navigation property defined in Notification
-                 .HasForeignKey(n => n.FkParentId)
-                 .OnDelete(DeleteBehavior.ClientSetNull);
-
+            entity.HasMany(d => d.FkChildren).WithMany(p => p.FkParents)
+                .UsingEntity<Dictionary<string, object>>(
+                    "Guardian",
+                    r => r.HasOne<Child>().WithMany()
+                        .HasForeignKey("FkChildren")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Guardians_Children"),
+                    l => l.HasOne<CallejoIncUser>().WithMany()
+                        .HasForeignKey("FkParent")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK_Guardians_Callejo_Inc_Users"),
+                    j =>
+                    {
+                        j.HasKey("FkParent", "FkChildren");
+                        j.ToTable("Guardians");
+                        j.IndexerProperty<Guid>("FkParent").HasColumnName("fk_parent");
+                        j.IndexerProperty<long>("FkChildren").HasColumnName("fk_children");
+                    });
         });
 
         modelBuilder.Entity<Child>(entity =>
         {
-            entity.ToTable("Children");
-
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Age).HasColumnName("age");
             entity.Property(e => e.FirstName)
@@ -158,6 +132,93 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("middle_name");
+        });
+
+        modelBuilder.Entity<DailySchedule>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Daily_Schedule");
+
+            entity.Property(e => e.Day).HasColumnName("day");
+            entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Id)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id");
+            entity.Property(e => e.Month)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("month");
+            entity.Property(e => e.Year)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("year");
+        });
+
+        modelBuilder.Entity<EmergencyContact>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Emergenc__3213E83F720F3CF7");
+
+            entity.ToTable("Emergency_Contact");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.FirstName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("first_name");
+            entity.Property(e => e.FkUsers).HasColumnName("fk_users");
+            entity.Property(e => e.LastName)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("last_name");
+            entity.Property(e => e.Relationship)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("relationship");
+
+            entity.HasOne(d => d.FkUsersNavigation).WithMany(p => p.EmergencyContacts)
+                .HasForeignKey(d => d.FkUsers)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Callejo_Inc_Users");
+        });
+
+        modelBuilder.Entity<HolidaysVacation>(entity =>
+        {
+            entity.ToTable("Holidays_Vacations");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.EndDate).HasColumnName("end_date");
+            entity.Property(e => e.StartDate).HasColumnName("start_date");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasColumnName("title");
+            entity.Property(e => e.Type)
+                .HasMaxLength(50)
+                .HasColumnName("type");
+        });
+
+        modelBuilder.Entity<Image>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Images__3213E83F8C33DC9C");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(1024)
+                .HasColumnName("image_url");
+            entity.Property(e => e.IsPublished)
+                .HasDefaultValue(false)
+                .HasColumnName("is_published");
+            entity.Property(e => e.UploadedAt)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("uploaded_at");
         });
 
         modelBuilder.Entity<InterestedParent>(entity =>
@@ -179,6 +240,17 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("reason_for_inquiry");
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.Property(e => e.SentOn).HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(255);
+
+            entity.HasOne(d => d.FkParent).WithMany(p => p.Notifications)
+                .HasForeignKey(d => d.FkParentId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Notifications_Callejo_Inc_Users");
         });
 
         modelBuilder.Entity<PhoneNumber>(entity =>
@@ -222,6 +294,26 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasColumnName("description");
         });
 
+        modelBuilder.Entity<Registration>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("Registration");
+
+            entity.Property(e => e.Datetime)
+                .HasColumnType("datetime")
+                .HasColumnName("datetime");
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasMaxLength(512)
+                .IsUnicode(false)
+                .HasColumnName("name");
+            entity.Property(e => e.Status)
+                .HasMaxLength(512)
+                .IsUnicode(false)
+                .HasColumnName("status");
+        });
+
         modelBuilder.Entity<Role>(entity =>
         {
             entity.ToTable("Role");
@@ -230,55 +322,6 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.Description)
                 .IsUnicode(false)
                 .HasColumnName("description");
-        });
-
-        modelBuilder.Entity<HolidaysVacations>(entity =>
-        {
-            entity.ToTable("Holidays_Vacations");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Title)
-                  .IsRequired()
-                  .HasColumnName("title");
-
-            entity.Property(e => e.Description)
-                  .HasColumnName("description");
-
-            entity.Property(e => e.StartDate)
-                  .IsRequired()
-                  .HasColumnName("start_date");
-
-            entity.Property(e => e.EndDate)
-                  .IsRequired()
-                  .HasColumnName("end_date");
-
-            entity.Property(e => e.Type)
-                  .IsRequired()
-                  .HasColumnName("type");
-
-            entity.Property(e => e.CreatedAt)
-                  .HasColumnName("created_at")
-                  .HasDefaultValueSql("GETUTCDATE()");
-        });
-
-        modelBuilder.Entity<EmergencyContact>(entity =>
-        {
-            entity.ToTable("Emergency_Contact");
-
-            entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.fk_user).HasColumnName("fk_users");
-            entity.Property(e => e.FirstName).HasColumnName("first_name");
-            entity.Property(e => e.LastName).HasColumnName("last_name");
-            entity.Property(e => e.Relationship).HasColumnName("relationship");
-        });
-
-        modelBuilder.Entity<Guardian>(entity =>
-        {
-            entity.ToTable("Guardians");
-            entity.HasKey(e => new { e.fk_parent, e.fk_child });
-
-            entity.Property(e => e.fk_parent).HasColumnName("fk_parent");
-            entity.Property(e => e.fk_child).HasColumnName("fk_children");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -130,22 +130,22 @@ namespace Common.Services.SQL
             {
                 string query = @"INSERT INTO Notifications (FkParentId, Title, Message, SentOn, IsRead) VALUES (@FkParentId, @Title, @Message, @SentOn, @IsRead)";
 
-                var parameters = new
-                {
-                    FkParentId = newRequest.FkParentId,
-                    Title = newRequest.Title,
-                    Message = newRequest.Message,
-                    SentOn = newRequest.SentOn,
-                    IsRead = newRequest.IsRead
-                };
+        var parameters = new
+        {
+            FkParentId = newRequest.FkParentId,
+            Title = newRequest.Title,
+            Message = newRequest.Message,
+            SentOn = newRequest.SentOn,
+            IsRead = newRequest.IsRead
+        };
 
-                int rowsAffected = _context.Database.ExecuteSqlRaw(query,
-                    new SqlParameter("@FkParentId", newRequest.FkParentId),
-                    new SqlParameter("@Title", newRequest.Title),
-                    new SqlParameter("@Message", newRequest.Message),
-                    new SqlParameter("@SentOn", newRequest.SentOn),
-                    new SqlParameter("@IsRead", newRequest.IsRead)
-                );
+        int rowsAffected = _context.Database.ExecuteSqlRaw(query,
+            new SqlParameter("@FkParentId", newRequest.FkParentId),
+            new SqlParameter("@Title", newRequest.Title),
+            new SqlParameter("@Message", newRequest.Message),
+            new SqlParameter("@SentOn", newRequest.SentOn),
+            new SqlParameter("@IsRead", newRequest.IsRead)
+        );
                 return rowsAffected > 0;
             }
             catch (Exception ex)
@@ -156,7 +156,7 @@ namespace Common.Services.SQL
             // Create said notification
             /*var newNotif = new Notification
             {
-        
+
                 FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
                 Title = "CUSTOM NOTIFICATION FROM: " + newRequest.Title,
                 Message = newRequest.Message,
@@ -171,78 +171,78 @@ namespace Common.Services.SQL
         }
 
         // New Method: Fetch all holidays & vacations
-        public IEnumerable<HolidaysVacations> GetHolidaysVacations()
-        {
-            return _context.HolidaysVacations
-                .OrderBy(h => h.StartDate)
-                .ToList();
-        }
+        //EC public IEnumerable<HolidaysVacations> GetHolidaysVacations()
+        //{
+        //    return _context.HolidaysVacations
+        //       .OrderBy(h => h.StartDate)
+        //       .ToList();
+        //}
 
         // Create a new holiday/vacation (Admin)
-        public bool CreateHolidayVacation(HolidaysVacations holidayVacation)
-        {
-            if (holidayVacation == null)
-                return false;
+        //EC public bool CreateHolidayVacation(HolidaysVacations holidayVacation)
+        //{
+        //    if (holidayVacation == null)
+        //        return false;
 
-            try
-            {
-                _context.HolidaysVacations.Add(holidayVacation);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error creating holiday/vacation: {ex.Message}");
-                return false;
-            }
-        }
+        //    try
+        //    {
+        //        // EC_context.HolidaysVacations.Add(holidayVacation);
+        //        _context.SaveChanges();
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error creating holiday/vacation: {ex.Message}");
+        //        return false;
+        //    }
+        //}
 
         // Update an existing holiday/vacation (Admin)
-        public bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation)
-        {
-            var existingHoliday = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
+        //EC public bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation)
+        //{
+        //    var existingHoliday = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
 
-            if (existingHoliday == null)
-                return false;
+        //    if (existingHoliday == null)
+        //        return false;
 
-            try
-            {
-                existingHoliday.Title = updatedHolidayVacation.Title;
-                existingHoliday.Description = updatedHolidayVacation.Description;
-                existingHoliday.StartDate = updatedHolidayVacation.StartDate;
-                existingHoliday.EndDate = updatedHolidayVacation.EndDate;
-                existingHoliday.Type = updatedHolidayVacation.Type;
+        //    try
+        //    {
+        //        existingHoliday.Title = updatedHolidayVacation.Title;
+        //        existingHoliday.Description = updatedHolidayVacation.Description;
+        //        // EC existingHoliday.StartDate = updatedHolidayVacation.StartDate;
+        //        // EC existingHoliday.EndDate = updatedHolidayVacation.EndDate;
+        //        existingHoliday.Type = updatedHolidayVacation.Type;
 
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating holiday/vacation: {ex.Message}");
-                return false;
-            }
-        }
+        //        _context.SaveChanges();
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error updating holiday/vacation: {ex.Message}");
+        //        return false;
+        //    }
+        //}
 
         // Delete a holiday/vacation (Admin)
-        public bool DeleteHolidayVacation(long id)
-        {
-            var holidayVacation = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
+        //EC public bool DeleteHolidayVacation(long id)
+        //{
+        //    var holidayVacation = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
 
-            if (holidayVacation == null)
-                return false;
+        //    if (holidayVacation == null)
+        //        return false;
 
-            try
-            {
-                _context.HolidaysVacations.Remove(holidayVacation);
-                _context.SaveChanges();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error deleting holiday/vacation: {ex.Message}");
-                return false;
-            }
-        }
+        //    try
+        //    {
+        //        _context.HolidaysVacations.Remove(holidayVacation);
+        //        _context.SaveChanges();
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine($"Error deleting holiday/vacation: {ex.Message}");
+        //        return false;
+        //    }
+        //}
 
 
         public bool CreateNotification(Notification notification)
@@ -319,15 +319,15 @@ namespace Common.Services.SQL
             return _context.Notifications
                 .OrderByDescending(n => n.SentOn)
                 .ToList();
-        }
+    }
 
-        public async Task<IEnumerable<long>> GetChildren(Guid? id)
-        {
-            return await _context.Guardians
-                            .Where(g => g.fk_parent == id)
-                            .Select(g => g.fk_child)
-                            .ToListAsync();
-        }
+        //        EC public async Task<IEnumerable<long>> GetChildren(Guid? id)
+        //        {
+        //            return await _context.Guardians
+        //                            .Where(g => g.fk_parent == id)
+        //                            .Select(g => g.fk_child)
+        //                            .ToListAsync();
+        //}
 
         public async Task<Child> getChildById(long id)
         {
