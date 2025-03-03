@@ -1,0 +1,27 @@
+﻿
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+
+.full-width-container {
+    background-color: #00B7D7;
+    color: white;
+    text-align: center;
+    justify-content:center;
+    width: 100vw;
+    height: 65vh;
+    padding-top: 10%;
+}
+
+.header{
+    font-size:  4rem;
+    padding-bottom: 2%;
+}
+
+.p1, .p2{
+    font-size: 1.25rem;
+    
+}

@@ -1,8 +1,11 @@
 ﻿@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
 @inject AdminService AdminService
 @inject HttpClient Http
 @inject IJSRuntime JS
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <div>
     <h3>Users</h3>

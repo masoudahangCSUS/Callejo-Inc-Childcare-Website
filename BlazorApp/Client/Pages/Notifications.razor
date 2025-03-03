@@ -1,9 +1,12 @@
 ﻿@page "/notifications"
 @using BlazorApp.Client.Services
 @using Common.Models.Data
+@using Microsoft.AspNetCore.Authorization
+
 @inject NotificationService NotificationService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "User")]
 
 <div class="notifications-page">
     <h1 class="notifications-title">Notifications</h1>

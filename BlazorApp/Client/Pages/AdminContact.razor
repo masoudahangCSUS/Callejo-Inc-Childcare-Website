@@ -1,7 +1,11 @@
 @page "/inquiry"
 @using Common.Models.Data
+@using Microsoft.AspNetCore.Authorization
+
 @inject HttpClient Http
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
+
 
 <div class="header">
     <h1>Inquiries</h1>
