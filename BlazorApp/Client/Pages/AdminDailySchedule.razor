@@ -1,6 +1,13 @@
-﻿@using Syncfusion.Blazor.Calendars
+﻿@page "/admin-schedule"
+@using Syncfusion.Blazor.Calendars
+@using BlazorApp.Client.Services
+@inject DailyScheduleService DailyScheduleService
+@rendermode InteractiveServer
+
+<h1 class="title">Daily Schedule</h1>
 
 <div class="calendar-container">
+    
     <SfCalendar TValue="DateTime?" @bind-Value="@SelectedDate">
         <CalendarEvents TValue="DateTime?" OnRenderDayCell="CustomDates" ValueChange="OnChange"></CalendarEvents>
     </SfCalendar>
