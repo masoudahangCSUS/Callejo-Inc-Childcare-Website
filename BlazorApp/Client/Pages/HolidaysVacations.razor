@@ -1,6 +1,6 @@
 ﻿@page "/holidays-vacations"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@using Common.View
 @using Microsoft.AspNetCore.Authorization
 
 @inject HolidaysVacationsService HolidaysVacationsService
@@ -46,7 +46,7 @@ else
 }
 
 @code {
-    private List<Common.Models.Data.HolidaysVacations> holidaysVacations = new();
+    private List<HolidaysVacationView> holidaysVacations = new();
     private long? expandedHolidayId = null;
 
     protected override async Task OnInitializedAsync()

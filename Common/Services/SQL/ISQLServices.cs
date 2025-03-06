@@ -13,22 +13,22 @@ namespace Common.Services.SQL
         ListChildrenGuardianView GetListOfAllChildrenAndGuardians();
 
         // Parent Notifications
-        IEnumerable<Notification> GetNotificationsByParentId(Guid parentId);
+        IEnumerable<NotificationView> GetNotificationsByParentId(Guid parentId);
         bool MarkNotificationAsRead(long id);
-        bool SendCustomNotification(Notification notification);
+        bool SendCustomNotification(NotificationView notification);
 
         // Admin Notifications
-        IEnumerable<Notification> GetAllNotifications();  // <-- New method
-        bool CreateNotification(Notification notification);
-        bool UpdateNotification(long id, Notification updatedNotification);
+        IEnumerable<NotificationView> GetAllNotifications();
+        bool CreateNotification(NotificationView notification);
+        bool UpdateNotification(long id, NotificationView updatedNotification);
         bool DeleteNotification(long id);
-
-        // New method for Holidays & Vacations
-        IEnumerable<HolidaysVacations> GetHolidaysVacations();
+        
+        // Holidays & Vacations
+        IEnumerable<HolidaysVacationView> GetHolidaysVacations();
 
         // Admin Holidays & Vacations
-        bool CreateHolidayVacation(HolidaysVacations holidayVacation);
-        bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation);
+        bool CreateHolidayVacation(HolidaysVacationView holidayVacation);
+        bool UpdateHolidayVacation(long id, HolidaysVacationView updatedHolidayVacation);
         bool DeleteHolidayVacation(long id);
 
 
@@ -37,8 +37,6 @@ namespace Common.Services.SQL
         public Task<Child> getChildById(long id);
 
         public Task<IEnumerable<long>> GetChildren(Guid? id);
-
-
 
     }
 

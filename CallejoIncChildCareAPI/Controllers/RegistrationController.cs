@@ -1,4 +1,5 @@
-﻿using Common.Services.Registration;
+﻿
+using Common.Services.Registration;
 using Common.View;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;

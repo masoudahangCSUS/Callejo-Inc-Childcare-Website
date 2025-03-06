@@ -88,12 +88,21 @@ namespace Common.Services.SQL
             }
             return listChildren;
         }
-        // New Method: Fetch notifications by parent ID
-        public IEnumerable<Notification> GetNotificationsByParentId(Guid parentId)
+        public IEnumerable<NotificationView> GetNotificationsByParentId(Guid parentId)
         {
             return _context.Notifications
                 .Where(n => n.FkParentId == parentId)
                 .OrderByDescending(n => n.SentOn)
+                .Select(n => new NotificationView
+                {
+                    Id = n.Id,
+                    FkParentId = n.FkParentId,
+                    Title = n.Title,
+                    Message = n.Message,
+                    SentOn = n.SentOn,
+                    IsRead = n.IsRead,
+                    IsExpanded = n.IsExpanded
+                })
                 .ToList();
         }
 
@@ -107,9 +116,6 @@ namespace Common.Services.SQL
 
         }
 
-        
-
-        // New Method: Mark a notification as read
         public bool MarkNotificationAsRead(long id)
         {
             var notification = _context.Notifications.FirstOrDefault(n => n.Id == id);
@@ -124,68 +130,84 @@ namespace Common.Services.SQL
         }
 
         // New Method: Create custom notification from parent to owner
-        public bool SendCustomNotification(Notification newRequest)
+        public bool SendCustomNotification(NotificationView newRequest)
         {
             try
             {
-                string query = @"INSERT INTO Notifications (FkParentId, Title, Message, SentOn, IsRead) VALUES (@FkParentId, @Title, @Message, @SentOn, @IsRead)";
-
-                var parameters = new
+                var newNotif = new Notification
                 {
                     FkParentId = newRequest.FkParentId,
                     Title = newRequest.Title,
                     Message = newRequest.Message,
-                    SentOn = newRequest.SentOn,
-                    IsRead = newRequest.IsRead
+                    SentOn = DateTime.UtcNow,
+                    IsRead = false,
+                    IsExpanded = false
                 };
 
-                int rowsAffected = _context.Database.ExecuteSqlRaw(query,
-                    new SqlParameter("@FkParentId", newRequest.FkParentId),
-                    new SqlParameter("@Title", newRequest.Title),
-                    new SqlParameter("@Message", newRequest.Message),
-                    new SqlParameter("@SentOn", newRequest.SentOn),
-                    new SqlParameter("@IsRead", newRequest.IsRead)
-                );
-                return rowsAffected > 0;
+                _context.Notifications.Add(newNotif);
+                _context.SaveChanges();
+                return true;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error saving notification: {ex.Message}");
                 return false;
             }
-            // Create said notification
-            /*var newNotif = new Notification
-            {
-        
-                FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
-                Title = "CUSTOM NOTIFICATION FROM: " + newRequest.Title,
-                Message = newRequest.Message,
-                SentOn = DateTime.Now,
-                IsRead = false,
-            };
-
-            // Add notification to db, save, and return
-            _context.Notifications.Add(newNotif);
-            _context.SaveChanges();
-            return true;*/
         }
+        // Create said notification
+        /*var newNotif = new Notification
+        {
+
+            FkParentId = Guid.Parse("F7DE2748-4FB0-4A78-8EF7-014C4D716A9B"),    // Hardcoded owner GUID -- change later
+            Title = "CUSTOM NOTIFICATION FROM: " + newRequest.Title,
+            Message = newRequest.Message,
+            SentOn = DateTime.Now,
+            IsRead = false,
+        };
+
+        // Add notification to db, save, and return
+        _context.Notifications.Add(newNotif);
+        _context.SaveChanges();
+        return true;*/
+        //  }
+
 
         // New Method: Fetch all holidays & vacations
-        public IEnumerable<HolidaysVacations> GetHolidaysVacations()
+        public IEnumerable<HolidaysVacationView> GetHolidaysVacations()
         {
             return _context.HolidaysVacations
                 .OrderBy(h => h.StartDate)
+                .Select(h => new HolidaysVacationView
+                {
+                    Id = h.Id,
+                    Title = h.Title,
+                    Description = h.Description,
+                    StartDate = h.StartDate,
+                    EndDate = h.EndDate,
+                    Type = h.Type,
+                    CreatedAt = h.CreatedAt ?? DateTime.UtcNow
+                })
                 .ToList();
         }
 
         // Create a new holiday/vacation (Admin)
-        public bool CreateHolidayVacation(HolidaysVacations holidayVacation)
+        public bool CreateHolidayVacation(HolidaysVacationView holidayVacationView)
         {
-            if (holidayVacation == null)
+            if (holidayVacationView == null)
                 return false;
 
             try
             {
+                var holidayVacation = new HolidaysVacation
+                {
+                    Title = holidayVacationView.Title,
+                    Description = holidayVacationView.Description,
+                    StartDate = holidayVacationView.StartDate,
+                    EndDate = holidayVacationView.EndDate,
+                    Type = holidayVacationView.Type,
+                    CreatedAt = holidayVacationView.CreatedAt ?? DateTime.UtcNow
+                };
+
                 _context.HolidaysVacations.Add(holidayVacation);
                 _context.SaveChanges();
                 return true;
@@ -197,8 +219,9 @@ namespace Common.Services.SQL
             }
         }
 
+
         // Update an existing holiday/vacation (Admin)
-        public bool UpdateHolidayVacation(long id, HolidaysVacations updatedHolidayVacation)
+        public bool UpdateHolidayVacation(long id, HolidaysVacationView updatedHolidayVacation)
         {
             var existingHoliday = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
 
@@ -212,6 +235,7 @@ namespace Common.Services.SQL
                 existingHoliday.StartDate = updatedHolidayVacation.StartDate;
                 existingHoliday.EndDate = updatedHolidayVacation.EndDate;
                 existingHoliday.Type = updatedHolidayVacation.Type;
+                existingHoliday.CreatedAt = updatedHolidayVacation.CreatedAt ?? existingHoliday.CreatedAt;
 
                 _context.SaveChanges();
                 return true;
@@ -245,19 +269,21 @@ namespace Common.Services.SQL
         }
 
 
-        public bool CreateNotification(Notification notification)
+        public bool CreateNotification(NotificationView notification)
         {
-            if (notification == null)
-            {
-                return false;
-            }
-
-            // Ensure IsRead is always false by default
-            notification.IsRead = false;
-
             try
             {
-                _context.Notifications.Add(notification);
+                var newNotif = new Notification
+                {
+                    FkParentId = notification.FkParentId,
+                    Title = notification.Title,
+                    Message = notification.Message,
+                    SentOn = DateTime.UtcNow,
+                    IsRead = false,
+                    IsExpanded = false
+                };
+
+                _context.Notifications.Add(newNotif);
                 _context.SaveChanges();
                 return true;
             }
@@ -269,21 +295,20 @@ namespace Common.Services.SQL
         }
 
 
-        public bool UpdateNotification(long id, Notification updatedNotification)
+        public bool UpdateNotification(long id, NotificationView updatedNotification)
         {
             try
             {
-                using var dbContext = new CallejoSystemDbContext();
-                var notification = dbContext.Notifications.FirstOrDefault(n => n.Id == id);
-
+                var notification = _context.Notifications.FirstOrDefault(n => n.Id == id);
                 if (notification == null) return false;
 
                 notification.Title = updatedNotification.Title;
                 notification.Message = updatedNotification.Message;
                 notification.SentOn = updatedNotification.SentOn;
                 notification.IsRead = updatedNotification.IsRead;
+                notification.IsExpanded = updatedNotification.IsExpanded;
 
-                dbContext.SaveChanges();
+                _context.SaveChanges();
                 return true;
             }
             catch (Exception ex)
@@ -297,13 +322,11 @@ namespace Common.Services.SQL
         {
             try
             {
-                using var dbContext = new CallejoSystemDbContext();
-                var notification = dbContext.Notifications.FirstOrDefault(n => n.Id == id);
-
+                var notification = _context.Notifications.FirstOrDefault(n => n.Id == id);
                 if (notification == null) return false;
 
-                dbContext.Notifications.Remove(notification);
-                dbContext.SaveChanges();
+                _context.Notifications.Remove(notification);
+                _context.SaveChanges();
                 return true;
             }
             catch (Exception ex)
@@ -313,14 +336,24 @@ namespace Common.Services.SQL
             }
         }
 
-        // Fetch all notifications for admin
-        public IEnumerable<Notification> GetAllNotifications()
+        public IEnumerable<NotificationView> GetAllNotifications()
         {
             return _context.Notifications
                 .OrderByDescending(n => n.SentOn)
+                .Select(n => new NotificationView
+                {
+                    Id = n.Id,
+                    FkParentId = n.FkParentId,
+                    Title = n.Title,
+                    Message = n.Message,
+                    SentOn = n.SentOn,
+                    IsRead = n.IsRead,
+                    IsExpanded = n.IsExpanded
+                })
                 .ToList();
         }
-
+        
+        
         public async Task<IEnumerable<long>> GetChildren(Guid? id)
         {
             return await _context.Guardians
@@ -328,6 +361,8 @@ namespace Common.Services.SQL
                             .Select(g => g.fk_child)
                             .ToListAsync();
         }
+        
+        
 
         public async Task<Child> getChildById(long id)
         {

@@ -2,7 +2,8 @@ using Common.Services.SQL;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
-using Common.Models.Data;
+using System.Collections.Generic;
+using Common.View;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -18,7 +19,7 @@ namespace CallejoIncChildcareAPI.Controllers
             _sqlServices = sqlServices;
         }
 
-        //  Get notifications for a parent
+        
         [HttpGet("{parentId}")]
         public IActionResult GetNotificationsByParentId(Guid parentId)
         {
@@ -30,7 +31,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
-        //  Mark notification as read
+        
         [HttpPut("mark-as-read/{id}")]
         public IActionResult MarkNotificationAsRead(long id)
         {
@@ -42,16 +43,16 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification marked as read.");
         }
 
-        //  Parent sending notification to the admin (DO NOT REMOVE)
+        
         [HttpPost("send-custom-notif")]
-        public IActionResult SendCustomNotification([FromBody] Notification newRequest)
+        public IActionResult SendCustomNotification([FromBody] NotificationView newRequest)
         {
             if (newRequest == null || string.IsNullOrWhiteSpace(newRequest.Message))
             {
                 return BadRequest("Invalid notification data.");
             }
 
-            // Ensure IsRead is false for new requests
+            // Ensure default values
             newRequest.IsRead = false;
             newRequest.SentOn = DateTime.UtcNow;
 
@@ -61,18 +62,11 @@ namespace CallejoIncChildcareAPI.Controllers
                 return StatusCode(500, "Failed to save the notification.");
             }
             return Ok("Notification sent successfully.");
-
-            /*var success = _sqlServices.SendCustomNotification(newRequest);
-            if (!success)
-            {
-                return NotFound("Parent ID not found.");
-            }
-            return Ok("Notification sent.");*/
         }
 
-        // POST: api/Notifications/admin-create
+        
         [HttpPost("admin-create")]
-        public IActionResult CreateNotification([FromBody] Notification notification)
+        public IActionResult CreateNotification([FromBody] NotificationView notification)
         {
             if (notification == null || string.IsNullOrEmpty(notification.Title) || string.IsNullOrEmpty(notification.Message))
             {
@@ -81,11 +75,8 @@ namespace CallejoIncChildcareAPI.Controllers
 
             // Ensure Id is not set since it's auto-generated
             notification.Id = 0;
-
-            // Force IsRead to be false when creating a new notification
             notification.IsRead = false;
 
-            // Save the notification
             var success = _sqlServices.CreateNotification(notification);
             if (!success)
             {
@@ -95,10 +86,9 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification created successfully.");
         }
 
-
-        //  Update notification (Admin)
+        
         [HttpPut("admin-update/{id}")]
-        public IActionResult UpdateNotification(long id, [FromBody] Notification updatedNotification)
+        public IActionResult UpdateNotification(long id, [FromBody] NotificationView updatedNotification)
         {
             if (updatedNotification == null || string.IsNullOrWhiteSpace(updatedNotification.Message))
             {
@@ -114,7 +104,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification updated successfully.");
         }
 
-        //  Delete notification (Admin)
+        
         [HttpDelete("admin-delete/{id}")]
         public IActionResult DeleteNotification(long id)
         {
@@ -127,7 +117,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification deleted successfully.");
         }
 
-        // Get all notifications (Admin)
+        
         [HttpGet("get-all")]
         public IActionResult GetAllNotifications()
         {
@@ -138,6 +128,5 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             return Ok(notifications);
         }
-
     }
 }
