@@ -146,14 +146,8 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("id");
-            entity.Property(e => e.Month)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("month");
-            entity.Property(e => e.Year)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("year");
+            entity.Property(e => e.Month).HasColumnName("month");
+            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         modelBuilder.Entity<EmergencyContact>(entity =>

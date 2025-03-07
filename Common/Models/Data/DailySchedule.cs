@@ -9,9 +9,9 @@ public partial class DailySchedule
 
     public short Day { get; set; }
 
-    public string Month { get; set; } = null!;
+    public short Month { get; set; }
 
-    public string Year { get; set; } = null!;
+    public short Year { get; set; }
 
     public string Description { get; set; } = null!;
 

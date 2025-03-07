@@ -41,7 +41,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
         // POST: api/Role
         [HttpPost]
-        public ActionResult<APIResponse> InsertRole([FromBody] RoleView roleInfo)
+        public ActionResult<APIResponse> InsertRole([FromBody] DailyScheduleView roleInfo)
         {
             var result = _roleService.InsertRole(roleInfo);
             if (result.Success)
@@ -53,7 +53,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
         // PUT: api/Role/{id}
         [HttpPut]
-        public ActionResult<APIResponse> UpdateRole([FromBody] RoleView roleInfo)
+        public ActionResult<APIResponse> UpdateRole([FromBody] DailyScheduleView roleInfo)
         {
             var result = _roleService.UpdateRole(roleInfo);
             if (result.Success)

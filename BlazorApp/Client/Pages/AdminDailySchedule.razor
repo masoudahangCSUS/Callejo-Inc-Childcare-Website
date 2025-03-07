@@ -2,22 +2,25 @@
 @using Syncfusion.Blazor.Calendars
 @using BlazorApp.Client.Services
 @inject DailyScheduleService DailyScheduleService
-@rendermode InteractiveServer
+
+ @rendermode InteractiveServer
 
 <h1 class="title">Daily Schedule</h1>
 
 <div class="calendar-container">
-    
+
     <SfCalendar TValue="DateTime?" @bind-Value="@SelectedDate">
-        <CalendarEvents TValue="DateTime?" OnRenderDayCell="CustomDates" ValueChange="OnChange"></CalendarEvents>
+        <CalendarEvents TValue="DateTime?" ValueChange="OnChange"></CalendarEvents>
     </SfCalendar>
     <div class="events-container" id="display-date">
         <span>Selected Day : @SelectedValue</span>
         <h3>Daily schedule on @SelectedValue</h3>
+        <input type="text" @bind="newDailySchedule" placeholder="Enter the schedule" />
+        <button @onclick="AddDailySchedule">Add Role</button>
 
-        <textarea @bind="inputText" class="form-control" rows="5" cols="50"></textarea>
+        @* <textarea @bind="inputText" class="form-control" rows="5" cols="50"></textarea>
         <br />
-        <button @onclick="ShowText" class="btn btn-primary">Submit</button>
+        <button @onclick="AddDailySchedule" class="btn btn-primary">Submit</button> *@
 
         <p>You entered:</p>
         @if (!string.IsNullOrEmpty(displayedText))
@@ -26,10 +29,10 @@
         }
 
         <h3>Special Events</h3>
-        <textarea @bind="inputTextSpecial" class="form-control" rows="5" cols="50"></textarea>
+        @*<textarea @bind="inputTextSpecial" class="form-control" rows="5" cols="50"></textarea>
         <br />
-        <button @onclick="ShowTextSpecial" class="btn btn-primary">Submit</button>
-
+                 <button @onclick="ShowTextSpecial" class="btn btn-primary">Submit</button>
+ *@
         <p>You entered:</p>
         @if (!string.IsNullOrEmpty(displayedTextSpecial))
         {
@@ -43,45 +46,66 @@
     public DateTime? SelectedDate { get; set; }
     public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
     public DateTime? CurrentDate { get; set; } = DateTime.Now;
+    public int CurrentMonth = 0;
+    public int CurrentDay = 0;
+    public int CurrentYear = 0;
 
     private string inputText = string.Empty;
     private string displayedText = string.Empty;
     private string inputTextSpecial = string.Empty;
     private string displayedTextSpecial = string.Empty;
+    private int dailyScheduleId;
 
-    private void ShowText()
+    private Common.View.ListDailySchedule listDailySchedule;
+    private Common.View.DailyScheduleView dailySchedule;
+    private string newDailySchedule;
+
+    /*private async Task GetRoleById()
     {
-        displayedText = inputText;
+        roleInfo = string.Empty;
+        listRoles = await RoleService.GetRole(roleId);
+
+        foreach (var role in listRoles.roles)
+        {
+            roleInfo += @"<br/><br/><b>Role Description</b>: " + role.Description + "<br/><br/><br/>";
+        }
+    }*/
+
+
+    private async Task AddDailySchedule()
+    {
+        CurrentMonth = CurrentDate.Value.Month;
+        CurrentDay = CurrentDate.Value.Day;
+        CurrentYear = CurrentDate.Value.Year;
+
+        var dailyScheduleInfo = new Common.View.DailyScheduleView { Description = newDailySchedule };
+        var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
+
+        if(response.Success)
+        {
+            //listDailySchedule = await DailyScheduleService.GetAllDailySchedules;
+            newDailySchedule = string.Empty;
+            displayedText = inputText;
+        }
     }
-    private void ShowTextSpecial()
+    private void AddSpeicalEventsDescription()
     {
         displayedTextSpecial = inputTextSpecial;
     }
 
-    public void CustomDates(RenderDayCellEventArgs args)
-    {
-        var CurrentMonth = CurrentDate.Value.Month;
-        if (args.Date.Month == CurrentMonth && (args.Date.Day == 7 || args.Date.Day == 14 || args.Date.Day == 24 || args.Date.Day == 29))
-        {
-            args.CellData.ClassList += " personal-appointment";
-        }
-        if (args.Date.Month == CurrentMonth && (args.Date.Day == 3 || args.Date.Day == 11 || args.Date.Day == 17 || args.Date.Day == 22))
-        {
-            args.CellData.ClassList += " official-appointment";
-        }
-    }
-    public void OnChange(ChangedEventArgs<DateTime?> args)
+    private async Task OnChange(ChangedEventArgs<DateTime?> args)
     {
         var Count = 0;
-        var CurrentMonth = CurrentDate.Value.Month;
+        var dailyScheduleInfo = string.Empty;
+        CurrentMonth = CurrentDate.Value.Month;
+        CurrentDay = CurrentDate.Value.Day;
+        CurrentYear = CurrentDate.Value.Year;
+
+        //listDailySchedule = await DailyScheduleService.GetDailySchedule(dailyScheduleId);
+
         if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 7 || args.Value.Value.Day == 14 || args.Value.Value.Day == 24 || args.Value.Value.Day == 29))
         {
             this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Personal appointment)";
-            Count++;
-        }
-        if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 3 || args.Value.Value.Day == 11 || args.Value.Value.Day == 17 || args.Value.Value.Day == 22))
-        {
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Official appointment)";
             Count++;
         }
         if (Count == 0)
@@ -90,32 +114,3 @@
         }
     }
 }
-<style>
-    #display-date {
-        max-width: 300px;
-        margin: 0 auto;
-        padding: 15px 0;
-        font-size: 13px;
-    }
-    .control-wrapper {
-        width: 300px;
-        margin: 0 auto;
-        padding-top: 20px;
-    }
-    .e-calendar .e-content .e-cell.personal-appointment span.e-day,
-    .e-calendar .e-content td:hover.e-cell.personal-appointment span.e-day,
-    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.personal-appointment span.e-day {
-        color: #28a745;
-        font-weight: 800;
-    }
-    .e-calendar .e-content .e-cell.official-appointment span.e-day,
-    .e-calendar .e-content td:hover.e-cell.official-appointment span.e-day,
-    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.official-appointment span.e-day {
-        color: #dc3545;
-        font-weight: 800;
-    }
-    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.personal-appointment span.e-day,
-    .e-calendar .e-content td.e-selected.e-focused-date.e-cell.official-appointment span.e-day {
-        background-color: #b511485e;
-    }
-</style>

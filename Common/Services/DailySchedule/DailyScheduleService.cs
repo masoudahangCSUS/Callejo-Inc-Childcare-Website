@@ -1,11 +1,5 @@
 ﻿using Common.Models.Data;
 using Common.View;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Common.Services.DailySchedule
 {
@@ -21,7 +15,7 @@ namespace Common.Services.DailySchedule
         }
 
         /// <summary>
-        /// Creates a role reccord in role database
+        /// Creates a daily schedule reccord in daily schedule database
         /// </summary>
         /// <param name="dailyScheduleView">Data to be saved.  Since the id field is an auto increment field we will not retrieve that value</param>
         /// <returns></returns>
@@ -55,5 +49,43 @@ namespace Common.Services.DailySchedule
 
             return response;
         }
+
+        /// <summary>
+        /// Retrieve a daily schedule record
+        /// </summary>
+        /// <param name="id">Primary key for daily schedule record</param>
+        /// <returns></returns>
+        public ListDailySchedule GetDailySchedule(long id)
+        {
+            ListDailySchedule listDailySchedule = new ListDailySchedule();
+
+            try
+            {
+                var dailyScheduleRec = _context.DailySchedules.Where(r => r.Id == id).FirstOrDefault();
+
+                if (dailyScheduleRec != null)
+                {
+                    DailyScheduleView dailyScheduleViewRec = new DailyScheduleView();
+                    dailyScheduleViewRec.Id = dailyScheduleRec.Id;
+                    dailyScheduleViewRec.Description = dailyScheduleRec.Description;
+
+                    listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
+                    listDailySchedule.Message = "Retrieved daily schedule record that matched id " + id.ToString();
+                }
+                else
+                {
+                    listDailySchedule.Status = "No record matching id " + id.ToString() + " would found";
+                }
+                listDailySchedule.Success = true;
+            }
+            catch (Exception ex)
+            {
+                listDailySchedule.Success = false;
+                listDailySchedule.Message = "Problems retrieve daily schedule record " + id.ToString() + ". Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+            }
+
+            return listDailySchedule;
+        }
+
     }
 }
