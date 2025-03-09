@@ -228,8 +228,8 @@ namespace Common.Services.User
         
         public async Task<EmergencyContact?> GetEmergencyContactAsync(Guid id)
         {
-            return await _context.EmergencyContact
-                   .FirstOrDefaultAsync (user => user.fk_user == id);
+            return await _context.EmergencyContacts
+                   .FirstOrDefaultAsync (user => user.FkUsers == id);
         }
         
         

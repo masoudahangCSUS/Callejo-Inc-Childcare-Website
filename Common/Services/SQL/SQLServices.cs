@@ -356,10 +356,17 @@ namespace Common.Services.SQL
         
         public async Task<IEnumerable<long>> GetChildren(Guid? id)
         {
-            return await _context.Guardians
-                            .Where(g => g.fk_parent == id)
-                            .Select(g => g.fk_child)
-                            .ToListAsync();
+            var user = await _context.CallejoIncUsers
+            .Include(u => u.FkChildren)
+            .FirstOrDefaultAsync(u => u.Id == id);
+
+            if (user == null)
+            {
+                return Enumerable.Empty<long>();
+            }
+
+
+            return user.FkChildren.Select(child => child.Id);
         }
         
         
