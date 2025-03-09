@@ -5,7 +5,7 @@
 
 @inject ProfileService profileService;
 @inject UserSessionService UserSession
-@attribute [Authorize(Roles = "User")]
+@attribute [Authorize(Roles = "Admin")]
 
 
 
@@ -52,7 +52,7 @@ else {
                             <em> </em>
                         }
 
-                    </p>
+                    </p> 
                     <p><strong>Last Name:</strong> @child.LastName</p>
                     <p><strong>Age:</strong> @child.Age</p>
                 </div>
