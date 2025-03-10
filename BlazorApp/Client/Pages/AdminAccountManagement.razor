@@ -44,7 +44,7 @@ else
                     <td>@user.ZipCode</td>
                     <td>
                         @if (user.RegistrationDocument != null) {
-                            <button @onclick = "() => DownloadFile(user.Id)">Download</button>
+                            <button @onclick="() => DownloadFile(user.Id, user.FirstName, user.LastName)">Download</button>
                             <button @onclick = "() => DeleteFile(user.Id)">Delete</button>
                         }
                         else{
@@ -53,8 +53,8 @@ else
                         }
                     </td>
                     <td>
-                        <button @onclick = "() => EditUser(user)">Edit</button> 
-                        <button @onclick = "() => DeleteUser(user.Id)">Delete</button>
+                        <button @onclick = "() => EditUser(user)">Edit</button>
+                        <button @onclick="() => ConfirmDeleteUser(user.Id)">Delete</button>
                     </td>
                 </tr>
             }
@@ -75,6 +75,15 @@ else
     private string GetModalTitle()
     {
         return formMode == FormMode.Create ? "Create Profile" : "Edit Profile";
+    }
+
+    public async Task ConfirmDeleteUser(Guid userId)
+    {
+        bool isConfirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this user?");
+        if (isConfirmed)
+        {
+            await DeleteUser(userId);
+        }
     }
 
     protected override async Task OnInitializedAsync()
@@ -143,7 +152,7 @@ else
         }
     }
 
-    async Task DownloadFile(Guid userId)
+    async Task DownloadFile(Guid userId, string first, string last)
     {
         var response = await Http.GetAsync($"https://localhost:7139/api/Registration/Download?userId={userId}");
 
@@ -151,18 +160,7 @@ else
         {
             var fileData = await response.Content.ReadAsByteArrayAsync();
             var base64File = Convert.ToBase64String(fileData);
-            var fileName = "RegistrationDocument.pdf";
-
-            /* Using JavaScript instead
-            // Create Blob and download in browser
-            var file = new Blob(new[] { fileData });
-            var url = URL.CreateObjectURL(file);
-            var anchor = new ElementReference();
-            anchor.SetAttribute("href", url);
-            anchor.SetAttribute("download", fileName);
-            anchor.Click();
-            URL.RevokeObjectURL(url);
-            */
+            var fileName = $"{first}_{last}_registration.pdf";
 
             await JS.InvokeVoidAsync("downloadFile", fileName, base64File);
         }
