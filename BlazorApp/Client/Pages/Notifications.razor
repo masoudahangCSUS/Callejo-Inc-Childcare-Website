@@ -1,6 +1,6 @@
 ﻿@page "/notifications"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@using Common.View
 @using Microsoft.AspNetCore.Authorization
 
 @inject NotificationService NotificationService
@@ -56,7 +56,7 @@
 </div>
 
 @code {
-    private List<Notification> notifications = new();
+    private List<NotificationView> notifications = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -83,7 +83,7 @@
         }
     }
 
-    private async Task ToggleNotification(Notification notification)
+    private async Task ToggleNotification(NotificationView notification)
     {
         if (!notification.IsRead)
         {

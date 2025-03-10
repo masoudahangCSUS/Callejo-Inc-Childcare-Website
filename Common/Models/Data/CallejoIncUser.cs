@@ -29,6 +29,8 @@ public partial class CallejoIncUser
 
     public byte[]? RegistrationDocument { get; set; }
 
+    public virtual ICollection<EmergencyContact> EmergencyContacts { get; set; } = new List<EmergencyContact>();
+
     public virtual Role FkRoleNavigation { get; set; } = null!;
 
     public virtual ICollection<Notification> Notifications { get; set; } = new List<Notification>();

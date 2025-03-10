@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Common.Models.Data
+namespace Common.Models.Data;
+
+public partial class EmergencyContact
 {
-    public class EmergencyContact
-    {
-        [Key]
-        [Column("id")]
-        public Guid Id { get; set; }
+    public Guid Id { get; set; }
 
-        // Assuming fk_users is a foreign key to a Users table
-        [Column("fk_users")]
-        public Guid fk_user { get; set; }
+    public Guid FkUsers { get; set; }
 
-        [Column("first_name")]
-        public string? FirstName { get; set; }
+    public string? FirstName { get; set; }
 
-        [Column("last_name")]
-        public string? LastName { get; set; }
+    public string? LastName { get; set; }
 
-        [Column("relationship")]
-        public string? Relationship { get; set; }
-    }
+    public string? Relationship { get; set; }
+
+    public virtual CallejoIncUser FkUsersNavigation { get; set; } = null!;
 }
