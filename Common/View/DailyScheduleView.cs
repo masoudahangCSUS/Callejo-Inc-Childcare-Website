@@ -7,7 +7,7 @@
         public short Month { get; set; }
         public short Year { get; set; }
         public string Description { get; set; }
-        public string  Desc_special { get; set; }
+        public string?  Desc_special { get; set; }
     }
     public class ListDailySchedule : APIResponse
     {

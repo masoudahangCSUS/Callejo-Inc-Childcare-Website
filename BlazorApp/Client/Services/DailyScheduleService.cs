@@ -13,7 +13,7 @@ namespace BlazorApp.Client.Services
 
         public DailyScheduleService(IOptions<AppSettings> apiSettings)
         {
-            _client = new RestClient(apiSettings.Value.BaseUrl);
+            _client = new RestClient(apiSettings.Value.BaseAddress);
         }
         public async Task<ListDailySchedule> GetDailySchedule(long id)
         {
@@ -26,6 +26,7 @@ namespace BlazorApp.Client.Services
         {
             //https://localhost:7139/api/DailySchedule
             //https://localhost:7139/api
+            //https://localhost:7139/api/DailySchedule
 
             var request = new RestRequest("DailySchedule", Method.Post);
             request.AddJsonBody(dailyScheduleView);

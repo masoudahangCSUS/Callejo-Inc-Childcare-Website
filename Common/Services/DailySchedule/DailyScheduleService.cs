@@ -37,6 +37,10 @@ namespace Common.Services.DailySchedule
 
                 _context.DailySchedules.Add(dailySchedule);
                 _context.SaveChanges();
+
+                // Retrieve the newly generated ID
+                response.Data = dailySchedule.Id; // Access the ID here
+
                 response.Message = "Daily Schedule record with description " + dailyScheduleView.Description + " was saved to database";
 
                 response.Success = true;

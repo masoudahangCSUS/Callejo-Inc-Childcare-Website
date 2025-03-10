@@ -136,16 +136,12 @@ public partial class CallejoSystemDbContext : DbContext
 
         modelBuilder.Entity<DailySchedule>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("Daily_Schedule");
+            entity.ToTable("Daily_Schedule");
 
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Day).HasColumnName("day");
             entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id");
             entity.Property(e => e.Month).HasColumnName("month");
             entity.Property(e => e.Year).HasColumnName("year");
         });

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
 using Common.Services.User;
 using Syncfusion.Blazor;
+using BlazorApp;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // Register HttpClient for making HTTP requests in Blazor components
 builder.Services.AddScoped(sp =>
@@ -45,7 +48,7 @@ builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ProfileService>();
-//builder.Services.AddScoped<DailyScheduleService>();
+builder.Services.AddScoped<DailyScheduleService>();
 
 // Adds Syncfusion Blazor Service
 builder.Services.AddSyncfusionBlazor(); 

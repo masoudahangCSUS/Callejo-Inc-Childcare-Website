@@ -1,7 +1,8 @@
 ﻿@page "/admin-schedule"
+@using Common.View
 @using Syncfusion.Blazor.Calendars
 @using BlazorApp.Client.Services
-@inject DailyScheduleService DailyScheduleService
+@inject DailyScheduleService DailyScheduleService 
 
  @rendermode InteractiveServer
 
@@ -15,12 +16,16 @@
     <div class="events-container" id="display-date">
         <span>Selected Day : @SelectedValue</span>
         <h3>Daily schedule on @SelectedValue</h3>
-        <input type="text" @bind="newDailySchedule" placeholder="Enter the schedule" />
-        <button @onclick="AddDailySchedule">Add Role</button>
+        @* <input type="text" @bind="newDailySchedule" placeholder="Enter the schedule" />
+        <button @onclick="AddDailySchedule">Add Schedule</button> *@
 
-        @* <textarea @bind="inputText" class="form-control" rows="5" cols="50"></textarea>
+        <textarea type="text" @bind="newDailySchedule" class="form-control" rows="5" cols="50"></textarea>
         <br />
-        <button @onclick="AddDailySchedule" class="btn btn-primary">Submit</button> *@
+
+        <h3>Special Events</h3>
+        <textarea type="text" @bind="specialEvents" class="form-control" rows="5" cols="50"></textarea>
+        <br />
+        <button @onclick="AddDailySchedule" class="btn btn-primary">Submit</button>
 
         <p>You entered:</p>
         @if (!string.IsNullOrEmpty(displayedText))
@@ -28,11 +33,6 @@
             <pre>@displayedText</pre>
         }
 
-        <h3>Special Events</h3>
-        @*<textarea @bind="inputTextSpecial" class="form-control" rows="5" cols="50"></textarea>
-        <br />
-                 <button @onclick="ShowTextSpecial" class="btn btn-primary">Submit</button>
- *@
         <p>You entered:</p>
         @if (!string.IsNullOrEmpty(displayedTextSpecial))
         {
@@ -43,51 +43,70 @@
 
 
 @code {
-    public DateTime? SelectedDate { get; set; }
+    public DateTime? SelectedDate { get; set; } = DateTime.Now;
     public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
-    public DateTime? CurrentDate { get; set; } = DateTime.Now;
-    public int CurrentMonth = 0;
-    public int CurrentDay = 0;
-    public int CurrentYear = 0;
+    //public DateTime? CurrentDate { get; set; } = DateTime.Now;
+    // public int CurrentMonth = 0;
+    // public int CurrentDay = 0;
+    // public int CurrentYear = 0;
 
     private string inputText = string.Empty;
     private string displayedText = string.Empty;
     private string inputTextSpecial = string.Empty;
     private string displayedTextSpecial = string.Empty;
-    private int dailyScheduleId;
+    private long dailyScheduleIdCurrentlyBeingEdited;
+
 
     private Common.View.ListDailySchedule listDailySchedule;
     private Common.View.DailyScheduleView dailySchedule;
+    //private Common.View.
     private string newDailySchedule;
+    private string specialEvents;
 
     /*private async Task GetRoleById()
     {
-        roleInfo = string.Empty;
-        listRoles = await RoleService.GetRole(roleId);
+    roleInfo = string.Empty;
+    listRoles = await RoleService.GetRole(roleId);
 
-        foreach (var role in listRoles.roles)
+    foreach (var role in listRoles.roles)
         {
-            roleInfo += @"<br/><br/><b>Role Description</b>: " + role.Description + "<br/><br/><br/>";
-        }
+        roleInfo += @"<br/><br/><b>Role Description</b>: " + role.Description + "<br/><br/><br/>";
+    }
     }*/
 
 
     private async Task AddDailySchedule()
     {
-        CurrentMonth = CurrentDate.Value.Month;
-        CurrentDay = CurrentDate.Value.Day;
-        CurrentYear = CurrentDate.Value.Year;
+        dailyScheduleIdCurrentlyBeingEdited = 0;
+        //Need to get date from syncfusion date control
+        // CurrentMonth = (short)SelectedDate.Value.Month;
+        // CurrentDay = (short)SelectedDate.Value.Day;
+        // CurrentYear = (short)SelectedDate.Value.Year;
 
-        var dailyScheduleInfo = new Common.View.DailyScheduleView { Description = newDailySchedule };
+        DailyScheduleView dailyScheduleInfo = new DailyScheduleView();
+        dailyScheduleInfo.Month = (short)SelectedDate.Value.Month;
+        dailyScheduleInfo.Day = (short)SelectedDate.Value.Day;
+        dailyScheduleInfo.Year = (short)SelectedDate.Value.Year;
+        dailyScheduleInfo.Description = newDailySchedule;
+        if(specialEvents != null)
+        {
+            dailyScheduleInfo.Desc_special = specialEvents;
+        }
         var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
+
+
+
 
         if(response.Success)
         {
-            //listDailySchedule = await DailyScheduleService.GetAllDailySchedules;
+            //listDailySchedule = await DailyScheduleService.GetDailySchedule();
             newDailySchedule = string.Empty;
+            specialEvents = string.Empty;
             displayedText = inputText;
+            //dailyScheduleIdCurrentlyBeingEdited = Convert.ToInt64(response.Data);
         }
     }
+    
     private void AddSpeicalEventsDescription()
     {
         displayedTextSpecial = inputTextSpecial;
@@ -97,15 +116,14 @@
     {
         var Count = 0;
         var dailyScheduleInfo = string.Empty;
-        CurrentMonth = CurrentDate.Value.Month;
-        CurrentDay = CurrentDate.Value.Day;
-        CurrentYear = CurrentDate.Value.Year;
+        //CurrentMonth = SelectedDate.Value.Month;
+        //CurrentDay = SelectedDate.Value.Day;
+        //CurrentYear = SelectedDate.Value.Year;
 
-        //listDailySchedule = await DailyScheduleService.GetDailySchedule(dailyScheduleId);
-
-        if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 7 || args.Value.Value.Day == 14 || args.Value.Value.Day == 24 || args.Value.Value.Day == 29))
+        if (args.Value.Value.Month == SelectedDate.Value.Month && args.Value.Value.Day == SelectedDate.Value.Day && args.Value.Value.Year == SelectedDate.Value.Year)
         {
             this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Personal appointment)";
+            //listDailySchedule = await DailyScheduleService.GetDailySchedule(dailyScheduleId);
             Count++;
         }
         if (Count == 0)
