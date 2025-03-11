@@ -59,13 +59,13 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return StatusCode(500, "File upload failed.");
             }
-            var existingRegistration = reg.FirstOrDefault(r => r.UserID == userId);
+            var existingRegistration = reg.FirstOrDefault(r => r.UserId == userId);
             if (existingRegistration == null)
             {
                 reg.Add(new Registration
                 {
                     Id = Guid.NewGuid(),
-                    UserID = userId, //  Store User ID properly
+                    UserId = userId, //  Store User ID properly
                     Name = $"User_{userId}",
                     Status = "Pending",
                     Datetime = DateTime.UtcNow
@@ -107,7 +107,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 return NotFound("No file found/Deletion failed");
             }
             //  Update registration status if deleted
-            var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            var registration = reg.FirstOrDefault(r => r.UserId == userId);
             if (registration != null)
             {
                 registration.Status = "Deleted";
@@ -121,7 +121,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("status/{userId}")]
         public async Task<IActionResult> GetRegistrationStatus(Guid userId)
         {
-            var registration = reg.FirstOrDefault(r => r.UserID == userId);
+            var registration = reg.FirstOrDefault(r => r.UserId == userId);
             if (registration == null)
                 return NotFound("No registration found for this user.");
 
