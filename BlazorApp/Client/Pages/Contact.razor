@@ -6,82 +6,67 @@
 <PageTitle>About</PageTitle>
 <!--Move all styles attributes into separate css file later...-->
 <!--Inital Contact Us message-->
-<div style="background-color: #00B7D7; padding: 120px 0; text-align:center">
-    <div style="max-width: 900px; margin: auto; display: flex; align-items: center; gap: 20px;">
-        <div style="flex: 2; text-align:center;">
-            <h1 style="color: white; font-family: 'Roboto', sans-serif; text-align:center;font-weight:bold">Get in Touch
-                with Us Today!</h1><br />
-            <p style="color: white; font-family: 'Roboto', sans-serif; text-align:center; font-size:25px">We're here to
-                answer any questions you have about our childcare <br />services. Whether you're interested in enrolling
-                your child or have specific<br /> inquiries, we'd love to hear from you. Fill out the form below and one
-                of our staff members will get back to you shortly!</p>
-
-        </div>
-
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Get in Touch with Us Today!</h1>
+        <p>We’re here to answer any questions about our childcare services. Fill out the form below, and our staff will get back to you shortly.</p>
     </div>
-</div>
-<!--All forms and labels for contact-->
-<div class="contact-page">
-    <h2>Get Started today!</h2>
-    <div class="contact-form-container">
-        <EditForm Model="@inquiry" OnValidSubmit="HandleValidSubmit" FormName="contact">
-            <DataAnnotationsValidator/>
-            <ValidationSummary/>
+</section>
+
+<!-- Contact Form Section -->
+<section class="contact-container">
+    <div class="contact-form">
+        <h2>Get Started Today!</h2>
+        <EditForm Model="@inquiry" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
             @if (showText)
             {
                 <div class="form-group">
-                    <label for="fname">Name:</label>
-                    <input type="text" id="fname" name="fname" @bind="inquiry.Name" required>
+                    <label for="fname">Name</label>
+                    <InputText id="fname" @bind-Value="inquiry.Name" required class="form-control" />
                 </div>
 
                 <div class="form-group">
-                    <label for="phone">Phone Number:</label>
-                    <input type="text" id="phone" name="phone" required>
+                    <label for="phone">Phone Number</label>
+                    <InputText id="phone" @bind-Value="inquiry.Phone" required class="form-control" />
                 </div>
 
                 <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" @bind="inquiry.Email" required>
+                    <label for="email">Email</label>
+                    <InputText id="email" @bind-Value="inquiry.Email" required class="form-control" />
                 </div>
 
                 <div class="form-group">
-                    <label for="reason">Reason for Inquiry:</label>
-                    <textarea name="reason" id="reason" rows="10" @bind=inquiry.ReasonForInquiry></textarea>
-                </div>
-
-
-                <div class="info-links">
-                    <a href="BlazorApp/Forms/Parent_Guardian_Contract_Daycare.pdf" class="info-link">Click here to read
-                        the
-                        Parent/Provider Contract.</a>
-                    <a href="BlazorApp/Forms/Licensing_Agreement_Template.pdf" class="info-link">Click here to read
-                        the licensing
-                        agreement.</a>
+                    <label for="reason">Reason for Inquiry</label>
+                    <textarea id="reason" rows="5" @bind="inquiry.ReasonForInquiry" class="form-control"></textarea>
+                    
                 </div>
 
                 <div class="button-group">
-                    <button type="submit">Submit</button>
+                    <button type="submit" class="btn-submit">Submit</button>
                 </div>
             }
             else
             {
                 <div class="post-text">
-                <h1>Thank you for your interest!</h1>
-                <br>
-                <h1>We'll get back to you as soon as possible!</h1>
+                    <h1>Thank You for Your Interest!</h1>
+                    <p>We’ll get back to you as soon as possible.</p>
                 </div>
             }
         </EditForm>
-        <div class="status-message" style="color:red">
+
+        <div class="status-message">
             @if (!string.IsNullOrEmpty(statusMsg))
             {
                 <p>@statusMsg</p>
                 <p>@statusCode</p>
-
             }
         </div>
     </div>
-</div>
+</section>
 
 @code
 {
@@ -124,6 +109,7 @@
         public Guid guid{ get; set; }
         public string Email { get; set; }
         public string ReasonForInquiry { get; set; }
+        public string Phone { get; set; }
 
     }
     private bool showText = true;
