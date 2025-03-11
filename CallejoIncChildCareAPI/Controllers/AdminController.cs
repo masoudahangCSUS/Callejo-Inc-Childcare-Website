@@ -175,7 +175,41 @@ namespace CallejoIncChildcareAPI.Controllers
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Fetch and delete notifications linked to the user
+                // 1. Load the user and include related children relationships
+                var parent = await _context.CallejoIncUsers
+                    .Include(u => u.FkChildren) // Include many-to-many relationship (Guardians)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (parent != null && parent.FkChildren.Any())
+                {
+                    // Remove the child relationships first (EF Core will handle the Guardians join table)
+                    parent.FkChildren.Clear();
+                    await _context.SaveChangesAsync();
+                }
+
+                // 2. Delete emergency contacts linked to the user
+                var emergencyContacts = await _context.EmergencyContacts
+                    .Where(ec => ec.FkUsers == userId)
+                    .ToListAsync();
+
+                if (emergencyContacts.Any())
+                {
+                    _context.EmergencyContacts.RemoveRange(emergencyContacts);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 3. Delete phone numbers linked to the user
+                var phoneNumbers = await _context.PhoneNumbers
+                    .Where(pn => pn.FkUsers == userId)
+                    .ToListAsync();
+
+                if (phoneNumbers.Any())
+                {
+                    _context.PhoneNumbers.RemoveRange(phoneNumbers);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 4. Delete notifications linked to the user
                 var notifications = await _context.Notifications
                     .Where(n => n.FkParentId == userId)
                     .ToListAsync();
@@ -186,7 +220,7 @@ namespace CallejoIncChildcareAPI.Controllers
                     await _context.SaveChangesAsync();
                 }
 
-                // Fetch and delete the user
+                // 5. Fetch and delete the user
                 var user = await _context.CallejoIncUsers.FindAsync(userId);
                 if (user == null)
                 {
@@ -205,7 +239,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 return Ok(new APIResponse
                 {
                     Success = true,
-                    Message = "User deleted successfully."
+                    Message = "User and all related records deleted successfully."
                 });
             }
             catch (Exception ex)
@@ -218,6 +252,8 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
         }
+
+
 
 
         //  GET: api/admin/get-latest-image
