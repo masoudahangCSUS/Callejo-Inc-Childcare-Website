@@ -34,8 +34,28 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("data")]
         public async Task<IActionResult> GetFormData()
         {
-            var data = await _context.InterestedParents.ToListAsync();
+            var data = await _context.InterestedParents  
+                .OrderByDescending(i => i.Datetime)
+                .ToListAsync();
+
             return Ok(data);
         }
+        // DELETE: api/Submit/delete/{id}
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> DeleteInquiry(Guid id)
+        {
+            var inquiry = await _context.InterestedParents.FindAsync(id);
+
+            if (inquiry == null)
+            {
+                return NotFound("Inquiry not found.");
+            }
+
+            _context.InterestedParents.Remove(inquiry);
+            await _context.SaveChangesAsync();
+
+            return Ok("Inquiry deleted successfully.");
+        }
+
     }
 }

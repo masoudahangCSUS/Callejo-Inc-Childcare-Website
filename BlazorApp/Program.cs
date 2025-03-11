@@ -12,6 +12,7 @@ using Common.Services.User;
 using Microsoft.AspNetCore.DataProtection;
 
 using Syncfusion.Blazor;
+using Common.Services.Submit;
 
 
 
@@ -51,6 +52,7 @@ builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ProfileService>();builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
+builder.Services.AddScoped<ISubmitService, SubmitService>();
 
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
