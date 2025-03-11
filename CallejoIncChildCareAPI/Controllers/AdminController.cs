@@ -31,11 +31,12 @@ namespace CallejoIncChildcareAPI.Controllers
 
    
 
-        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration)
+        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration, CallejoSystemDbContext context)
         {
             _userService = userService;
             _imageService = imageService;
             _configuration = configuration;
+            _context = context; 
         }
 
         //  POST: api/admin/create-user
@@ -66,14 +67,6 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
 
-
-        //  DELETE: api/admin/delete-user
-        [HttpDelete("delete-user")]
-        public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
-        {
-            var result = _userService.DeleteUser(userId);
-            return result.Success ? Ok(result) : BadRequest(result.Message);
-        }
 
         //  PUT: api/admin/update-user
         [HttpPut("update-user")]
@@ -175,6 +168,57 @@ namespace CallejoIncChildcareAPI.Controllers
                 return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
             }
         }
+
+        [HttpDelete("delete-user")]
+        public async Task<ActionResult<APIResponse>> DeleteUser([FromQuery] Guid userId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Fetch and delete notifications linked to the user
+                var notifications = await _context.Notifications
+                    .Where(n => n.FkParentId == userId)
+                    .ToListAsync();
+
+                if (notifications.Any())
+                {
+                    _context.Notifications.RemoveRange(notifications);
+                    await _context.SaveChangesAsync();
+                }
+
+                // Fetch and delete the user
+                var user = await _context.CallejoIncUsers.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new APIResponse
+                    {
+                        Success = false,
+                        Message = "User not found."
+                    });
+                }
+
+                _context.CallejoIncUsers.Remove(user);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(new APIResponse
+                {
+                    Success = true,
+                    Message = "User deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new APIResponse
+                {
+                    Success = false,
+                    Message = $"Error deleting user: {ex.Message}"
+                });
+            }
+        }
+
 
         //  GET: api/admin/get-latest-image
         [HttpGet("get-latest-image")]
