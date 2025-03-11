@@ -17,21 +17,17 @@
 @attribute [Authorize(Roles = "User")]
 
 @inject NavigationManager Navigation
-
-
-@inject IUserService userService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
 @inject ProfileService profileService;
-
+@inject IJSRuntime JS
 
 @code {
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
-    Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
+    Guid CurrentUserId = new Guid("0453E93A-3C15-420F-9087-64BB21F70FDF");      // Temporary testing parameter to a parent account ~ delete once file upload is working
     private CustomerUserViewDTO? userViewDTO;
     private EmergencyContactDTO? emergencyDTO;
-
 
     void ShowFileUploadDialog()
     {
@@ -76,10 +72,12 @@
             if (response.IsSuccessStatusCode)
             {
                 Console.WriteLine("[Blazor] File uploaded successfully");
+                await JS.InvokeVoidAsync("alert", "Registration document uploaded successfully!");
             }
             else
             {
                 Console.WriteLine("[Blazor] File upload failed");
+                await JS.InvokeVoidAsync("alert", "Registration document upload failed!");
             }
 
             showUploadDialog = false;
@@ -90,7 +88,6 @@
     {
         await GetUserView();
     }
-
 
     async Task GetUserView(){
 
