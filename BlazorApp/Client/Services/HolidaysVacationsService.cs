@@ -2,7 +2,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Common.Models.Data;
+using Common.View;
 
 namespace BlazorApp.Client.Services
 {
@@ -16,21 +16,21 @@ namespace BlazorApp.Client.Services
         }
 
         // Get all holidays and vacations
-        public async Task<List<HolidaysVacations>> GetHolidaysVacationsAsync()
+        public async Task<List<HolidaysVacationView>> GetHolidaysVacationsAsync()
         {
-            var result = await _httpClient.GetFromJsonAsync<List<HolidaysVacations>>("api/HolidaysVacations");
-            return result ?? new List<HolidaysVacations>(); // Avoid null reference errors
+            var result = await _httpClient.GetFromJsonAsync<List<HolidaysVacationView>>("api/HolidaysVacations");
+            return result ?? new List<HolidaysVacationView>(); // Avoid null reference errors
         }
 
         // Create a new holiday/vacation
-        public async Task<bool> CreateHolidayVacationAsync(HolidaysVacations holidayVacation)
+        public async Task<bool> CreateHolidayVacationAsync(HolidaysVacationView holidayVacation)
         {
             var response = await _httpClient.PostAsJsonAsync("api/HolidaysVacations/admin-create", holidayVacation);
             return response.IsSuccessStatusCode;
         }
 
         // Update an existing holiday/vacation
-        public async Task<bool> UpdateHolidayVacationAsync(long id, HolidaysVacations holidayVacation)
+        public async Task<bool> UpdateHolidayVacationAsync(long id, HolidaysVacationView holidayVacation)
         {
             var response = await _httpClient.PutAsJsonAsync($"api/HolidaysVacations/admin-update/{id}", holidayVacation);
             return response.IsSuccessStatusCode;
