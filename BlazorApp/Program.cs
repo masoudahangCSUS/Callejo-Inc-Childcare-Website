@@ -14,6 +14,11 @@ using Microsoft.AspNetCore.DataProtection;
 using Syncfusion.Blazor;
 using Common.Services.Submit;
 
+using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
+
+
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -86,6 +91,47 @@ builder.Services.AddAuthentication(options =>
 
 // Load environment variables
 Env.Load();
+
+
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Callejo API",
+        Version = "v1"
+    });
+
+    // Enable file upload support in Swagger
+    options.OperationFilter<SwaggerFileUploadOperationFilter>();
+
+    // Support for authorization in Swagger if needed later
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer {token}' to authenticate."
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
 
 var app = builder.Build();
 

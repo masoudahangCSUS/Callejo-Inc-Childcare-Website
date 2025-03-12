@@ -1,0 +1,90 @@
+﻿@page "/NewParentDocs"
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<h3>Document Upload for Prospective Parents</h3>
+<br><br>
+
+<div class="new-parent-docs">
+    <div class="identify-info-upload">
+        <label for="identify-info-upload">Identification/Emergency Contact Information</label><br>
+        <InputFile OnChange="@(e => HandleFileSelected(e, "IndentificationInfo"))" class="file-input" />
+        <button class="identify-upload-btn">Submit</button><br><br>
+    </div>
+
+
+    <div class="consent-emt">
+        <label for="consent-emt">Consent for Emergency Medical Treatment</label><br>
+    </div>
+    <InputFile OnChange="@(e => HandleFileSelected(e, "ConsentEMT"))" class="file-input" />
+    <button class="consent-emt-upload-btn">Submit</button><br><br>
+
+    <div class="additional-children">
+        <label for="additional-children">Notification for Additional Children in Care</label><br>
+    </div>
+    <InputFile OnChange="@(e => HandleFileSelected(e, "AdditionalChildren"))" class="file-input" />
+    <button class="additional-children-upload-btn">Submit</button><br><br>
+
+    <div class="parent-rights-acknowledgement">
+        <label for="parent-rights-acknowledgement">Acknowledgement of Notification of Parent's Rights</label><br>
+    </div>
+    <InputFile OnChange="@(e => HandleFileSelected(e, "ParentRights"))" class="file-input" />
+    <button class="parent-rights-upload-btn">Submit</button><br><br>
+
+    <div class="immunization-card">
+        <label for="immunization-card">Immunization Card</label><br>
+    </div>
+    <InputFile OnChange="@(e => HandleFileSelected(e, "ImmunizationCard"))" class="file-input" />
+    <button class="immunization-card-upload-btn">Submit</button><br><br>
+    
+
+</div>
+@code {
+    private IBrowserFile? selectedFile;
+    private string? selectedDocumentType;
+    private string statusMessage = string.Empty;
+
+    private readonly List<string> documentTypes = new()
+    {
+        "Identification/Emergency Contact",
+        "Consent for Emergency Treatment",
+        "Additional Children",
+        "Parent Rights",
+        "Immunization Card"
+    };
+
+    private void HandleFileSelected(InputFileChangeEventArgs e, string documentType)
+    {
+        selectedFile = e.File;
+        selectedDocumentType = documentType;
+        Console.WriteLine($"Selected file: {selectedFile.Name} for {selectedDocumentType}");
+    }
+
+    private async Task UploadFile(string documentType)
+    {
+        if (selectedFile != null)
+        {
+            try
+            {
+                var content = new MultipartFormDataContent();
+                var fileStream = selectedFile.OpenReadStream(maxAllowedSize: 10_000_000);
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
+                content.Add(fileContent, "file", selectedFile.Name);
+                content.Add(new StringContent(documentType), "documentType");
+
+                var response = await Http.PostAsync("api/files", content);
+
+                statusMessage = response.IsSuccessStatusCode ? "File uploaded successfully!" : "Upload failed.";
+            }
+            catch (Exception ex)
+            {
+                statusMessage = $"Error: {ex.Message}";
+            }
+        }
+        else
+        {
+            statusMessage = "No file selected.";
+        }
+    }
+}

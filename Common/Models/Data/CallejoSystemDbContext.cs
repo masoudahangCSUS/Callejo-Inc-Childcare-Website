@@ -21,6 +21,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
+    public virtual DbSet<FileUpload> FileUploads { get; set; }
+
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -39,7 +41,7 @@ public partial class CallejoSystemDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.\\;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -159,6 +161,18 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasForeignKey(d => d.FkUsers)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Callejo_Inc_Users");
+        });
+
+        modelBuilder.Entity<FileUpload>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__FileUplo__3214EC07E2B87D88");
+
+            entity.Property(e => e.ContentType).HasMaxLength(100);
+            entity.Property(e => e.DocumentType).HasMaxLength(255);
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.UploadDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<HolidaysVacation>(entity =>
