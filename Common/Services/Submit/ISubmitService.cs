@@ -14,7 +14,7 @@ namespace Common.Services.Submit
         // Get Inquiries
         public Task<List<InterestedParent>> GetInquiryAsync();
         // Delete Inquiries
-        public void DeleteInquiryAsync();
+        public Task<bool> DeleteInquiryAsync(Guid id);
 
 
     }

@@ -219,6 +219,7 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
+            entity.Property(e => e.Datetime).HasColumnType("datetime");
             entity.Property(e => e.Email)
                 .HasMaxLength(512)
                 .IsUnicode(false)
@@ -227,6 +228,10 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(512)
+                .IsUnicode(false)
+                .HasColumnName("phone");
             entity.Property(e => e.ReasonForInquiry)
                 .HasMaxLength(512)
                 .IsUnicode(false)
