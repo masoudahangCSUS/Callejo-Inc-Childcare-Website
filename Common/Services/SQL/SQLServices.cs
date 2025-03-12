@@ -247,7 +247,7 @@ namespace Common.Services.SQL
             }
         }
 
-        // Delete a holiday/vacation (Admin)
+        //Delete a holiday/vacation(Admin)
         public bool DeleteHolidayVacation(long id)
         {
             var holidayVacation = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);

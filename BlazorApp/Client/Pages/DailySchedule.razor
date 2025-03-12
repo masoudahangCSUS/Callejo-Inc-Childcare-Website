@@ -1,13 +1,25 @@
 ﻿@page "/schedule"
 @rendermode InteractiveServer
+@using BlazorApp.Client.Services
+@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
+@inject DailyScheduleService DailyScheduleService
+@inject UserSessionService UserSession
+@attribute [Authorize(Roles = "User")]
 
 <h1 class="title">Daily Schedule</h1>
 
 <div class="calendar-container">
-    <SfCalendar TValue="DateTime" @bind-Value="selectedDate" Min="@DateTime.Today"></SfCalendar>
+@*     <SfCalendar TValue="DateTime" @bind-Value="selectedDate" Min="@DateTime.Today"></SfCalendar>*@
+    <SfCalendar TValue="DateTime?" @bind-Value="@SelectedDate" Min="@DateTime.Today">
+        <CalendarEvents TValue="DateTime?" ValueChange="OnChange"></CalendarEvents>
+    </SfCalendar>
     <div class="events-container">
-        <h3>Daily schedule on @selectedDate.ToShortDateString()</h3>
-        <ul>
+        <h3>@SelectedValue</h3>
+        <p>@SelectedValueDesc</p>
+        <span>Selected Day : @SelectedValue</span>
+        @* <ul>
             @foreach (var eventItem in dailyRoster)
             {
                 <li>@eventItem</li>
@@ -19,12 +31,64 @@
             {
                 <li>@eventItem</li>
             }
-        </ul>
+        </ul> *@
     </div>
 </div>
 
 @code {
-    public DateTime? DateValue { get; set; } = DateTime.Now;
+    public DateTime? SelectedDate { get; set; }
+    public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
+    public DateTime? CurrentDate { get; set; } = DateTime.Now;
+    public string SelectedValueDesc { get; set; } = null;
+
+    private string inputText = string.Empty;
+    private string displayedText = string.Empty;
+    private string inputTextSpecial = string.Empty;
+    private string displayedTextSpecial = string.Empty;
+
+    private List<DailyScheduleView> dailySchedules = new();
+
+    /*protected override async Task OnInitializedAsync()
+        {
+        listRoles = await RoleService.GetAllRoles();
+        BuildHtmlTable();
+    }*/
+
+    private void ShowText()
+    {
+        displayedText = inputText;
+    }
+    private void ShowTextSpecial()
+    {
+        displayedTextSpecial = inputTextSpecial;
+    }
+
+    public void OnChange(ChangedEventArgs<DateTime?> args)
+    {
+        var Count = 0;
+        var SelectedMonth = SelectedDate.Value.Month;
+        var SelectedDay = SelectedDate.Value.Day;
+        var SelectedYear = SelectedDate.Value.Year;
+        if (args.Value.Value.Month == SelectedMonth && args.Value.Value.Day == SelectedDay && args.Value.Value.Year == SelectedYear)
+        {
+            this.SelectedValue = "Daily schedule on: " + this.SelectedDate?.ToString("M/d/yyyy") + ": ";
+            //this.SelectedValueDesc = @dailySchedules.description;
+
+            Count++;
+        }
+        // if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 3 || args.Value.Value.Day == 11 || args.Value.Value.Day == 17 || args.Value.Value.Day == 22))
+        // {
+        //     this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Official appointment)";
+        //     Count++;
+        // }
+        if (Count == 0)
+        {
+            this.SelectedValue = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+        }
+        //args.Value.Value.Year = 2024;
+    }
+    
+    /*public DateTime? DateValue { get; set; } = DateTime.Now;
     private DateTime selectedDate = DateTime.Today;
     private List<string> dailyRoster = new List<string>();
     private List<string> specialEvents = new List<string>();
@@ -72,5 +136,5 @@
             selectedDate = date.Value;
             LoadRosterForDate(selectedDate);
         }
-    }
+    }*/
 }

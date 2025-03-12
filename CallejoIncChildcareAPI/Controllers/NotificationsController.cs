@@ -29,6 +29,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 return NotFound("No notifications found for this parent.");
             }
             return Ok(result);
+            return Ok(1);
         }
 
         
@@ -86,7 +87,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification created successfully.");
         }
 
-        
+
         [HttpPut("admin-update/{id}")]
         public IActionResult UpdateNotification(long id, [FromBody] NotificationView updatedNotification)
         {
@@ -104,7 +105,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification updated successfully.");
         }
 
-        
+
         [HttpDelete("admin-delete/{id}")]
         public IActionResult DeleteNotification(long id)
         {
