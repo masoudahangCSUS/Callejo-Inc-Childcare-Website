@@ -13,7 +13,7 @@
 
         <button class="create-btn" @onclick="OpenCreateModal">Create Holiday/Vacation</button>
 
-        @*EC @if (holidaysVacations == null)
+        if (holidaysVacations == null)
         {
             <p>Loading...</p>
         }
@@ -52,7 +52,7 @@
                         </tr>
                     }
                 </tbody>
-            </table> *@
+            </table>
         }
 
         @if (isModalOpen)
@@ -62,7 +62,7 @@
                     <h4>@(isEditing ? "Edit Holiday/Vacation" : "Create Holiday/Vacation")</h4>
 
                     <label>Title:</label>
-                    @*EC <input type="text" @bind="editingHoliday.Title" />
+                    <input type="text" @bind="editingHoliday.Title" />
 
                     <label>Type:</label>
                     <select @bind="editingHoliday.Type">
@@ -82,7 +82,7 @@
                     <div class="modal-actions">
                         <button class="save-btn" @onclick="SaveHolidayVacation">@(isEditing ? "Update" : "Create")</button>
                         <button class="cancel-btn" @onclick="CloseModal">Cancel</button>
-                    </div> *@
+                    </div> 
                 </div>
             </div>
         }
@@ -107,7 +107,7 @@ else
 
     private async Task LoadHolidaysVacations()
     {
-        //EC holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
+        holidaysVacations = await HolidaysVacationsService.GetHolidaysVacationsAsync();
     }
 
     private void OpenCreateModal()
@@ -146,12 +146,12 @@ else
 
         if (isEditing)
         {
-            success = true;//EC await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
+            success =  await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
         }
         else
         {
-            //EC editingHoliday.CreatedAt = ConvertToPacificTime(DateTime.UtcNow);
-            success = true;//EC await HolidaysVacationsService.CreateHolidayVacationAsync(editingHoliday);
+            editingHoliday.CreatedAt = ConvertToPacificTime(DateTime.UtcNow);
+            success = await HolidaysVacationsService.CreateHolidayVacationAsync(editingHoliday);
         }
 
         if (success)

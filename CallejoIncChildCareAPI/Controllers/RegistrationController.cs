@@ -73,8 +73,8 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             else
             {
-                // EC existingRegistration.Status = "Pending";
-                // EC existingRegistration.Datetime = DateTime.UtcNow;
+                existingRegistration.Status = "Pending";
+                existingRegistration.Datetime = DateTime.UtcNow;
             }
 
             return Ok("File uploaded successfully.");
@@ -130,10 +130,10 @@ namespace CallejoIncChildcareAPI.Controllers
 
             var dto = new RegistrationDTO
             {
-                //// EC Id = registration.Id,
-                //Name = registration.Name,
-                //Status = registration.Status == "Pending" && !fileExists ? "No File Submitted" : registration.Status,
-                //DateTime = registration.Datetime
+                Id = registration.Id,
+                Name = registration.Name,
+                Status = registration.Status == "Pending" && !fileExists ? "No File Submitted" : registration.Status,
+                DateTime = registration.Datetime
             };
 
             return Ok(dto);

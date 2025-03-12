@@ -36,7 +36,7 @@ namespace Common.Services.SQL
         public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
         public Task<Child> getChildById(long id);
 
-        // EC public Task<IEnumerable<long>> GetChildren(Guid? id);
+        public Task<IEnumerable<long>> GetChildren(Guid? id);
 
     }
 

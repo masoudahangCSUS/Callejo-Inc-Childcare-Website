@@ -1,6 +1,13 @@
 ﻿@page "/schedule"
 @rendermode InteractiveServer
 @using BlazorApp.Client.Services
+@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
+@inject DailyScheduleService DailyScheduleService
+@inject UserSessionService UserSession
+@attribute [Authorize(Roles = "User")]
+
 <h1 class="title">Daily Schedule</h1>
 
 <div class="calendar-container">
@@ -9,7 +16,8 @@
         <CalendarEvents TValue="DateTime?" ValueChange="OnChange"></CalendarEvents>
     </SfCalendar>
     <div class="events-container">
-        <h3>Daily schedule on @SelectedDate</h3>
+        <h3>@SelectedValue</h3>
+        <p>@SelectedValueDesc</p>
         <span>Selected Day : @SelectedValue</span>
         @* <ul>
             @foreach (var eventItem in dailyRoster)
@@ -31,14 +39,17 @@
     public DateTime? SelectedDate { get; set; }
     public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
     public DateTime? CurrentDate { get; set; } = DateTime.Now;
+    public string SelectedValueDesc { get; set; } = null;
 
     private string inputText = string.Empty;
     private string displayedText = string.Empty;
     private string inputTextSpecial = string.Empty;
     private string displayedTextSpecial = string.Empty;
 
+    private List<DailyScheduleView> dailySchedules = new();
+
     /*protected override async Task OnInitializedAsync()
-    {
+        {
         listRoles = await RoleService.GetAllRoles();
         BuildHtmlTable();
     }*/
@@ -55,22 +66,24 @@
     public void OnChange(ChangedEventArgs<DateTime?> args)
     {
         var Count = 0;
-        var CurrentMonth = CurrentDate.Value.Month;
-        var CurrentDay = CurrentDate.Value.Day;
-        var CurrentYear = CurrentDate.Value.Year;
-        if (args.Value.Value.Month == CurrentMonth && args.Value.Value.Day == CurrentDay && args.Value.Value.Year == CurrentYear)
+        var SelectedMonth = SelectedDate.Value.Month;
+        var SelectedDay = SelectedDate.Value.Day;
+        var SelectedYear = SelectedDate.Value.Year;
+        if (args.Value.Value.Month == SelectedMonth && args.Value.Value.Day == SelectedDay && args.Value.Value.Year == SelectedYear)
         {
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Personal appointment)";
+            this.SelectedValue = "Daily schedule on: " + this.SelectedDate?.ToString("M/d/yyyy") + ": ";
+            //this.SelectedValueDesc = @dailySchedules.description;
+
             Count++;
         }
-        if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 3 || args.Value.Value.Day == 11 || args.Value.Value.Day == 17 || args.Value.Value.Day == 22))
-        {
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Official appointment)";
-            Count++;
-        }
+        // if (args.Value.Value.Month == CurrentMonth && (args.Value.Value.Day == 3 || args.Value.Value.Day == 11 || args.Value.Value.Day == 17 || args.Value.Value.Day == 22))
+        // {
+        //     this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Official appointment)";
+        //     Count++;
+        // }
         if (Count == 0)
         {
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
+            this.SelectedValue = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
         }
         //args.Value.Value.Year = 2024;
     }
