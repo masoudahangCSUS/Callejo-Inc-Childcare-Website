@@ -1,5 +1,7 @@
 ﻿@page "/Photos"
 @using BlazorApp.Client.Services
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "User")]
 
 
 <!DOCTYPE html>
