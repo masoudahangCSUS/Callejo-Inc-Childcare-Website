@@ -1,4 +1,4 @@
-﻿namespace Common.View.DTOs
+﻿namespace Common.View
 {
     public class ChildDTO
     {

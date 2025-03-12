@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
 using Common.View;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -15,6 +16,7 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private ISQLServices _sqlServices;
         private IUserService _userService;
+         
 
         public CustomerController(ISQLServices sqlServices, IUserService userService)
         {
@@ -101,7 +103,78 @@ namespace CallejoIncChildcareAPI.Controllers
             var result = await _sqlServices.getChildById(id);
             return Ok(result);
         }
-                
+
+
+        [HttpPut("update-user/{userId}")]
+        public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] CustomerUserViewDTO userDto)
+        {
+            if (userDto == null)
+            {
+                return BadRequest("User data is null.");
+            }
+
+            // Retrieve the user record along with associated phone numbers.
+            var user = await _sqlServices.getUserWithNumber(userId);
+            bool updateStatus =await _sqlServices.updateUser(user, userDto);
+            if (updateStatus)
+                return Ok("User Updated Succesfully");
+            else
+                return BadRequest("User Update Failed");
+
+        }
+
+        
+        [HttpPut("update-emergency/{userId}")]
+        public async Task<IActionResult> UpdateEmergencyContact(Guid userId, [FromBody] EmergencyContactDTO emergencyDto)
+        {
+            if (emergencyDto == null)
+            {
+                return BadRequest("Emergency contact data is null.");
+            }
+
+            // Retrieve the emergency contact record using the parent's userId.
+            var emergencyContact = await _userService.GetEmergencyContactAsync(userId);
+
+            if (emergencyContact == null)
+            {
+                return NotFound("Emergency contact not found.");
+            }
+
+            bool updateEmergency = await _sqlServices.updateEmergencyContact(emergencyContact, emergencyDto);
+            if (updateEmergency)
+                return Ok("Emergency Contact succesfully updated");
+            else
+                return BadRequest("Emergency Contact update failed");
+        }
+
+        // Endpoint to update a child's information.
+        [HttpPut("update-child/{childId}")]
+        public async Task<IActionResult> UpdateChild(long childId, [FromBody] ChildDTO childDto)
+        {
+            if (childDto == null)
+            {
+                return BadRequest("Child data is null.");
+            }
+
+            // Retrieve the existing child record by its ID.
+            var child = await _sqlServices.getChildById(childId);
+            if (child == null)
+            {
+                Console.WriteLine("Child not found");
+                return NotFound("Child not found.");
+            }
+            // Call the update method on your SQL service.
+            bool updateStatus = await _sqlServices.updateChild(child, childDto);
+            if (updateStatus)
+            {
+                return Ok("Child updated successfully.");
+            }
+            else
+            {
+                return BadRequest("Child update failed.");
+            }
+        }
+
         //[HttpPost]
         //[Route("create-child")]
         //public ActionResult<APIResponse> InsertChild([FromBody] ChildView childInfo, [FromBody] UserView userInfo)
