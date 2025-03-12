@@ -1,6 +1,5 @@
 ﻿@page "/SendRequest"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
 @using Common.View
 @using Common.Services.User
 @inject NotificationService NotificationService
@@ -9,7 +8,8 @@
 @rendermode InteractiveServer
 
 <h3>Send Notification</h3>
-<br><br>
+<br>
+<br>
 
 <div class="request-page">
     <div class="parentID">
@@ -32,28 +32,30 @@
         <a href="/profile" class="rq-cancel-btn">Cancel</a> <br>
     </div>
 </div>
+
 @code {
-    private List<Notification> notifications = new();
+    private List<NotificationView> notifications = new(); // Modified to use NotificationView
     private bool? isSuccess;
     private bool isLoading = false;
-    private Notification newRequest = new();
+    private NotificationView newRequest = new(); // Modified to use NotificationView
     private DateTime? newFormattedSentOn = null;
 
-
-    private async Task customNotificationInfo(Notification notification){
+    private async Task customNotificationInfo(NotificationView notification) // Modified to use NotificationView
+    {
 
     }
 
     private readonly IUserService _userService;
 
-    public class notificationModel{
+    public class notificationModel
+    {
         public string parentID { get; set; }
         public string Title { get; set; }
         public string Message { get; set; }
     }
 
-    private async Task HandleSubmit(){
-
+    private async Task HandleSubmit()
+    {
         if (string.IsNullOrWhiteSpace(newRequest.Title) || string.IsNullOrWhiteSpace(newRequest.Message))
         {
             Console.WriteLine("Title and Message are required.");
@@ -71,7 +73,7 @@
             if (success)
             {
                 Console.WriteLine("Notification sent successfully.");
-                newRequest = new Notification(); // Reset fields after sending
+                newRequest = new NotificationView(); // Reset fields after sending (Updated to use NotificationView)
             }
             else
             {
@@ -82,7 +84,8 @@
         {
             Console.WriteLine($"Error sending notification: {ex.Message}");
         }
-        /*newRequest = new Notification();
+
+        /*newRequest = new NotificationView(); // Updated to use NotificationView
 
         try
         {
@@ -102,7 +105,7 @@
             Console.WriteLine($"Error creating notification: {ex.Message}");
         }*/
 
-        /*var newRequest = new Notification
+        /*var newRequest = new NotificationView // Updated to use NotificationView
             {
                 FkParentId = UserSession.UserId.Value, // Assuming parent is logged in
                 Title = notificationTitle,
@@ -111,7 +114,7 @@
                 IsRead = false
             };
 
-        var success = await NotificationService.SendCustomNotification(notification);
+        var success = await NotificationService.SendCustomNotification(newRequest);
 
         if (success)
         {
@@ -123,6 +126,7 @@
         {
             Console.WriteLine("Failed to send notification.");
         }*/
+
         /*isLoading = true;
         try
         {
@@ -150,7 +154,7 @@
         {
             isLoading = false;
         }*/
-    } 
+    }
 
     public class SendRequestDTO
     {

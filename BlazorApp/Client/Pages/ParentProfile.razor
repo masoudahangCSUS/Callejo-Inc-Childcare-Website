@@ -7,14 +7,17 @@
 @using Common.Services.User
 @using Common.Models.Data
 @using Common.Services.SQL
-
-
+@using Microsoft.AspNetCore.Authorization
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
-@inject HttpClient Http
 
+@inject HttpClient Http
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "User")]
+
 @inject NavigationManager Navigation
+
 
 @inject IUserService userService
 @inject UserSessionService UserSession
@@ -61,7 +64,8 @@
             content.Add(fileContent, "file", selectedFile.Name);
 
             // Declare API URL
-            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={CurrentUserId}";
+            var user = await profileService.GetUserByID(UserSession.UserId);
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={user.Id}";
             Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
 
             // Call API
@@ -216,10 +220,13 @@ else{
 
         @if (showUploadDialog)
         {
-            <div>
-                <InputFile OnChange="HandleFileSelected" />
-                <button class="btn-upload" @onclick="UploadFile">Upload</button>
-                <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
+            // Display file selection button above upload and cancel buttons
+            <div class="file-select-container">
+                <InputFile OnChange="HandleFileSelected" class="btn-regupload"/>
+            </div>
+            <div class="file-upload-container">
+                <button class="btn-regupload" @onclick="UploadFile">Upload</button>
+                <button class="btn-regupload" @onclick="CancelUpload">Cancel</button>
             </div>
         }
 

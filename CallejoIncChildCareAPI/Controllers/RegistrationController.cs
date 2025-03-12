@@ -1,4 +1,5 @@
-﻿using Common.Services.Registration;
+﻿
+using Common.Services.Registration;
 using Common.View;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
@@ -58,13 +59,13 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return StatusCode(500, "File upload failed.");
             }
-            var existingRegistration = true; // EC reg.FirstOrDefault(r => r.UserID == userId);
+            var existingRegistration = reg.FirstOrDefault(r => r.UserId == userId);
             if (existingRegistration == null)
             {
                 reg.Add(new Registration
                 {
                     Id = Guid.NewGuid(),
-                    // EC UserID = userId, //  Store User ID properly
+                    UserId = userId, //  Store User ID properly
                     Name = $"User_{userId}",
                     Status = "Pending",
                     Datetime = DateTime.UtcNow
@@ -106,12 +107,12 @@ namespace CallejoIncChildcareAPI.Controllers
                 return NotFound("No file found/Deletion failed");
             }
             //  Update registration status if deleted
-            //// EC var registration = reg.FirstOrDefault(r => r.UserID == userId);
-            //if (registration != null)
-            //{
-            //    registration.Status = "Deleted";
-            //    registration.Datetime = DateTime.UtcNow;
-            //}
+            var registration = reg.FirstOrDefault(r => r.UserId == userId);
+            if (registration != null)
+            {
+                registration.Status = "Deleted";
+                registration.Datetime = DateTime.UtcNow;
+            }
 
             return Ok("File deleted successfully");
         }
@@ -120,9 +121,9 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("status/{userId}")]
         public async Task<IActionResult> GetRegistrationStatus(Guid userId)
         {
-            //// EC var registration = reg.FirstOrDefault(r => r.UserID == userId);
-            //if (registration == null)
-            //    return NotFound("No registration found for this user.");
+            var registration = reg.FirstOrDefault(r => r.UserId == userId);
+            if (registration == null)
+                return NotFound("No registration found for this user.");
 
             var fileData = await _regService.GetFileAsync(userId);
             bool fileExists = fileData != null;

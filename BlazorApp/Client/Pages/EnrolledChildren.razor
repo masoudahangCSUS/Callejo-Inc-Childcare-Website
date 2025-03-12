@@ -1,8 +1,12 @@
 ﻿@page "/enrolled-children"
 @using BlazorApp.Client.Services
 @using Common.Models.Data
+@using Microsoft.AspNetCore.Authorization
+
 @inject ProfileService profileService;
 @inject UserSessionService UserSession
+@attribute [Authorize(Roles = "Admin")]
+
 
 
 @code {
@@ -48,7 +52,7 @@ else {
                             <em> </em>
                         }
 
-                    </p>
+                    </p> 
                     <p><strong>Last Name:</strong> @child.LastName</p>
                     <p><strong>Age:</strong> @child.Age</p>
                 </div>

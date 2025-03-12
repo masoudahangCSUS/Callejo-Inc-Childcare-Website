@@ -1,6 +1,6 @@
 ﻿@page "/admin-holidays-vacations"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@using Common.View
 @using System.Globalization
 @inject HolidaysVacationsService HolidaysVacationsService
 @inject UserSessionService UserSession
@@ -8,7 +8,6 @@
 
 @if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
 {
-
     <div class="admin-container">
         <h3 class="page-title">Admin Holidays & Vacations Management</h3>
 
@@ -88,7 +87,6 @@
             </div>
         }
     </div>
-
 }
 else
 {
@@ -97,10 +95,10 @@ else
 }
 
 @code {
-    // EC private List<Common.Models.Data.HolidaysVacation> holidaysVacations = new();
+    private List<HolidaysVacationView> holidaysVacations = new();
     private bool isModalOpen = false;
     private bool isEditing = false;
-    // EC private Common.Models.Data.HolidaysVacation editingHoliday = new();
+    private HolidaysVacationView editingHoliday = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,29 +112,30 @@ else
 
     private void OpenCreateModal()
     {
-        //EC editingHoliday = new Common.Models.Data.HolidaysVacations
-        //     {
-        //         Type = "Holiday", // Default to Holiday
-        //         StartDate = DateTime.UtcNow,
-        //         EndDate = DateTime.UtcNow.AddDays(1),
-        //         CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
-        //     };
+        editingHoliday = new HolidaysVacationView
+            {
+                Type = "Holiday", // Default to Holiday
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow), // Convert DateTime to DateOnly
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)), // Convert DateTime to DateOnly
+                CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
+            };
         isEditing = false;
         isModalOpen = true;
     }
 
-    private void OpenEditModal(Common.Models.Data.HolidaysVacation holiday)
+
+    private void OpenEditModal(HolidaysVacationView holiday)
     {
-        //EC editingHoliday = new Common.Models.Data.HolidaysVacation
-        //     {
-        //         Id = holiday.Id,
-        //         Title = holiday.Title,
-        //         Type = holiday.Type,
-        //         StartDate = holiday.StartDate,
-        //         EndDate = holiday.EndDate,
-        //         Description = holiday.Description,
-        //         CreatedAt = holiday.CreatedAt
-        //     };
+        editingHoliday = new HolidaysVacationView
+        {
+            Id = holiday.Id,
+            Title = holiday.Title,
+            Type = holiday.Type,
+            StartDate = holiday.StartDate,
+            EndDate = holiday.EndDate,
+            Description = holiday.Description,
+            CreatedAt = holiday.CreatedAt
+        };
         isEditing = true;
         isModalOpen = true;
     }
@@ -175,7 +174,7 @@ else
     private void CloseModal()
     {
         isModalOpen = false;
-        //EC editingHoliday = new Common.Models.Data.HolidaysVacations();
+        editingHoliday = new HolidaysVacationView();
     }
 
     private DateTime ConvertToPacificTime(DateTime utcDateTime)

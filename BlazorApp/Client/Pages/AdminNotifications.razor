@@ -1,9 +1,12 @@
 ﻿@page "/admin-notifications"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
 @inject NotificationService NotificationService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 @if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
 {
@@ -113,11 +116,11 @@ else
 }
 
 @code {
-    private List<Notification> notifications = new();
+    private List<NotificationView> notifications = new();
     private bool isEditModalOpen = false;
     private bool isCreateModalOpen = false;
-    private Notification editingNotification = new();
-    private Notification newNotification = new();
+    private NotificationView editingNotification = new();
+    private NotificationView newNotification = new();
     private DateTime? formattedSentOn = null;
     private DateTime? newFormattedSentOn = null;
 
@@ -134,11 +137,11 @@ else
         notifications = await NotificationService.GetAllNotifications();
     }
 
-    private void OpenEditModal(Notification notification)
+    private void OpenEditModal(NotificationView notification)
     {
         if (notification == null) return;
 
-        editingNotification = new Notification
+        editingNotification = new NotificationView
             {
                 Id = notification.Id,
                 FkParentId = notification.FkParentId,
@@ -177,7 +180,7 @@ else
     private void CloseEditModal()
     {
         isEditModalOpen = false;
-        editingNotification = new Notification();
+        editingNotification = new NotificationView();
         formattedSentOn = null;
     }
 
@@ -192,7 +195,7 @@ else
 
     private void OpenCreateModal()
     {
-        newNotification = new Notification();
+        newNotification = new NotificationView();
         newFormattedSentOn = DateTime.Now;
         isCreateModalOpen = true;
     }
@@ -223,7 +226,7 @@ else
     private void CloseCreateModal()
     {
         isCreateModalOpen = false;
-        newNotification = new Notification();
+        newNotification = new NotificationView();
         newFormattedSentOn = null;
     }
 }

@@ -1,10 +1,9 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using System.Collections.Generic;
-using Common.Models.Data;
 using Common.View;
-using BlazorApp.Client.Pages;
 
 namespace BlazorApp.Client.Services
 {
@@ -17,18 +16,18 @@ namespace BlazorApp.Client.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<Notification>> GetNotificationsByParentId(Guid parentId)
+        public async Task<List<NotificationView>> GetNotificationsByParentId(Guid parentId)
         {
             try
             {
                 Console.WriteLine($"Fetching notifications for parentId: {parentId}");
-                var notifications = await _httpClient.GetFromJsonAsync<List<Notification>>($"api/Notifications/{parentId}");
-                return notifications ?? new List<Notification>();
+                var notifications = await _httpClient.GetFromJsonAsync<List<NotificationView>>($"api/Notifications/{parentId}");
+                return notifications ?? new List<NotificationView>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching notifications: {ex.Message}");
-                return new List<Notification>();
+                return new List<NotificationView>();
             }
         }
 
@@ -48,24 +47,16 @@ namespace BlazorApp.Client.Services
             }
         }
 
-        public async Task<bool> SendCustomNotification(Notification newRequest)
+        public async Task<bool> SendCustomNotification(NotificationView newRequest)
         {
             try
             {
-                Console.WriteLine($"Sending new notification from: ");//{parentId}
-                /*var notificationPayload = new
-                {
-                    parentId = parentId,
-                    rqTitle = rqTitle,
-                    Message = message,
-                    TargetId = "F7DE2748-4FB0-4A78-8EF7-014C4D716A9B" // Hardcoded owner GUID -- change later
-                };*/
-
-                var response = await _httpClient.PostAsJsonAsync($"api/notifications/send-custom-notif", newRequest);
+                Console.WriteLine($"Sending new notification from: {newRequest.FkParentId}");
+                var response = await _httpClient.PostAsJsonAsync("api/notifications/send-custom-notif", newRequest);
 
                 if (response.IsSuccessStatusCode)
                 {
-                    Console.WriteLine($"Notification sent successfully from ");//{parentId}
+                    Console.WriteLine("Notification sent successfully.");
                     return true;
                 }
                 else
@@ -74,15 +65,14 @@ namespace BlazorApp.Client.Services
                     return false;
                 }
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 Console.WriteLine($"Error creating notification: {ex.Message}");
                 return false;
             }
-
         }
 
-        public async Task<bool> CreateNotification(Notification newNotification)
+        public async Task<bool> CreateNotification(NotificationView newNotification)
         {
             try
             {
@@ -96,7 +86,7 @@ namespace BlazorApp.Client.Services
             }
         }
 
-        public async Task<bool> UpdateNotification(long id, Notification updatedNotification)
+        public async Task<bool> UpdateNotification(long id, NotificationView updatedNotification)
         {
             try
             {
@@ -124,22 +114,19 @@ namespace BlazorApp.Client.Services
             }
         }
 
-        public async Task<List<Notification>> GetAllNotifications()
+        public async Task<List<NotificationView>> GetAllNotifications()
         {
             try
             {
                 Console.WriteLine("Fetching all notifications for admin...");
-                var notifications = await _httpClient.GetFromJsonAsync<List<Notification>>("api/notifications/get-all");
-                return notifications ?? new List<Notification>();
+                var notifications = await _httpClient.GetFromJsonAsync<List<NotificationView>>("api/notifications/get-all");
+                return notifications ?? new List<NotificationView>();
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error fetching notifications: {ex.Message}");
-                return new List<Notification>();
+                return new List<NotificationView>();
             }
         }
-
-
-
     }
 }

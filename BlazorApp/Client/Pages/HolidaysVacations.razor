@@ -1,9 +1,12 @@
 ﻿@page "/holidays-vacations"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
 @inject HolidaysVacationsService HolidaysVacationsService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "User")]
 
 <h1 class="page-title">Observed Holidays & Childcare Vacations</h1>
 
@@ -78,7 +81,7 @@ else
 } *@
 
 @code {
-    //EC private List<Common.Models.Data.HolidaysVacations> holidaysVacations = new();
+    private List<HolidaysVacationView> holidaysVacations = new();
     private long? expandedHolidayId = null;
 
     protected override async Task OnInitializedAsync()

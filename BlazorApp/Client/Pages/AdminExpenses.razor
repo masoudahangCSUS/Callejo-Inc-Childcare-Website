@@ -1,4 +1,8 @@
-﻿<div class="expenses-page">
+﻿@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+
+<div class="expenses-page">
     <h2>Expenses Overview</h2>
 
     <!-- Summary Section -->

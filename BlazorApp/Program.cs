@@ -8,8 +8,12 @@ using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
 using Common.Services.User;
+
+using Microsoft.AspNetCore.DataProtection;
+
 using Syncfusion.Blazor;
 using BlazorApp;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -57,6 +61,16 @@ builder.Services.AddSyncfusionBlazor();
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE=");
 
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
+
+
+// Creates a shared encryption key for both the API and Website
+// In order for this to work, you need to create the SharedKeys folder in the C: drive
+builder.Services.AddDataProtection()
+    .SetApplicationName("CallejoIncApp") 
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\")); // Make sure that path of SharedKeys folder matches this path string
+
+
+
 builder.Services.AddAuthentication(options =>
 {
     // Set the default schemes for authentication, challenge, and sign in.
@@ -69,7 +83,7 @@ builder.Services.AddAuthentication(options =>
     // Configure cookie settings as needed.
     options.Cookie.Name = "MyAppAuthCookie";
     options.LoginPath = "/Login";
-    options.AccessDeniedPath = "/AccessDenied";
+    options.AccessDeniedPath = "/UnauthorizedAccess";
     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     options.SlidingExpiration = true;
     options.Cookie.HttpOnly = true;

@@ -1,4 +1,7 @@
-﻿<div class="content">
+﻿@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="content">
     <div class="grid">
         <!-- Company Facts -->
         <div class="card">

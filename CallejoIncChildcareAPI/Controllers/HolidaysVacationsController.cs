@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Common.Models.Data;
+using Common.View;
 using Common.Services.SQL;
-
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -12,57 +12,52 @@ namespace CallejoIncChildcareAPI.Controllers
     [ApiController]
     public class HolidaysVacationsController : ControllerBase
     {
-        private readonly CallejoSystemDbContext _context;
         private readonly ISQLServices _sqlServices;
 
-        public HolidaysVacationsController(CallejoSystemDbContext context, ISQLServices sqlServices)
+        public HolidaysVacationsController(ISQLServices sqlServices)
         {
-            _context = context;
             _sqlServices = sqlServices;
         }
 
-        //[HttpGet]
-        //[Produces("application/json")] // Ensure JSON response
-        //EC public async Task<ActionResult<IEnumerable<HolidaysVacations>>> GetHolidaysVacations()
-        //{
-        //    var holidaysVacations = await _context.HolidaysVacations
-        //        .OrderBy(h => h.StartDate) // Order by start date for better display
-        //        .ToListAsync();
+        [HttpGet]
+        [Produces("application/json")] // Ensure JSON response
+        public async Task<ActionResult<IEnumerable<HolidaysVacationView>>> GetHolidaysVacations()
+        {
+            var holidaysVacations = await Task.Run(() => _sqlServices.GetHolidaysVacations().ToList());
 
-        //    return Ok(holidaysVacations);
-        //}
+            return Ok(holidaysVacations);
+        }
 
         // Create a new holiday/vacation (Admin)
-        //[HttpPost("admin-create")]
-        //EC public IActionResult CreateHolidayVacation([FromBody] HolidaysVacations holidayVacation)
-        //{
-        //    if (holidayVacation == null || string.IsNullOrWhiteSpace(holidayVacation.Title))
-        //        return BadRequest("Invalid holiday/vacation data.");
+        [HttpPost("admin-create")]
+        public IActionResult CreateHolidayVacation([FromBody] HolidaysVacationView holidayVacationView)
+        {
+            if (holidayVacationView == null || string.IsNullOrWhiteSpace(holidayVacationView.Title))
+                return BadRequest("Invalid holiday/vacation data.");
 
-        //    var success = _sqlServices.CreateHolidayVacation(holidayVacation);
-        //    return success ? Ok("Holiday/Vacation created successfully.") : StatusCode(500, "Failed to create.");
-        //}
+            var success = _sqlServices.CreateHolidayVacation(holidayVacationView);
+
+            return success ? Ok("Holiday/Vacation created successfully.") : StatusCode(500, "Failed to create.");
+        }
 
         // Update an existing holiday/vacation (Admin)
-        //[HttpPut("admin-update/{id}")]
-        //EC public IActionResult UpdateHolidayVacation(long id, [FromBody] HolidaysVacations updatedHolidayVacation)
-        //{
-        //    if (updatedHolidayVacation == null || string.IsNullOrWhiteSpace(updatedHolidayVacation.Title))
-        //        return BadRequest("Invalid holiday/vacation data.");
+        [HttpPut("admin-update/{id}")]
+        public IActionResult UpdateHolidayVacation(long id, [FromBody] HolidaysVacationView updatedHolidayVacation)
+        {
+            if (updatedHolidayVacation == null || string.IsNullOrWhiteSpace(updatedHolidayVacation.Title))
+                return BadRequest("Invalid holiday/vacation data.");
 
-        //    var success = _sqlServices.UpdateHolidayVacation(id, updatedHolidayVacation);
-        //    return success ? Ok("Updated successfully.") : NotFound("Holiday/Vacation not found.");
-        //}
+            var success = _sqlServices.UpdateHolidayVacation(id, updatedHolidayVacation);
+
+            return success ? Ok("Updated successfully.") : NotFound("Holiday/Vacation not found.");
+        }
 
         // Delete a holiday/vacation (Admin)
-        //[HttpDelete("admin-delete/{id}")]
-        //EC public IActionResult DeleteHolidayVacation(long id)
-        //{
-        //    var success = _sqlServices.DeleteHolidayVacation(id);
-        //    return success ? Ok("Deleted successfully.") : NotFound("Holiday/Vacation not found.");
-        //}
-
-
-
+        [HttpDelete("admin-delete/{id}")]
+        public IActionResult DeleteHolidayVacation(long id)
+        {
+            var success = _sqlServices.DeleteHolidayVacation(id);
+            return success ? Ok("Deleted successfully.") : NotFound("Holiday/Vacation not found.");
+        }
     }
 }

@@ -6,6 +6,7 @@ using Common.Services.SQL;
 using Common.Services.Submit;
 using Common.Services.User;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -34,6 +35,12 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IRegService, RegService>();
 
+// Creates a shared encryption key for both the API and Website
+// In order for this to work, you need to create the SharedKeys folder in your C: drive
+builder.Services.AddDataProtection()
+    .SetApplicationName("CallejoIncApp") 
+    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\")); // Make sure that path of SharedKeys folder matches this path string
+
 builder.Services.AddAuthentication(options =>
 {
     // Set the default schemes for authentication, challenge, and sign in.
@@ -54,6 +61,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 
+
 builder.Services.AddControllersWithViews();
 
 // Add CORS services and configure a policy
@@ -61,7 +69,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorClient", policy =>
     {
-        policy.WithOrigins("https://localhost:7273") // The origin of your Blazor app
+        policy.WithOrigins("https://localhost:7273") 
               .AllowAnyMethod()
               .AllowAnyHeader()
               .AllowCredentials();
