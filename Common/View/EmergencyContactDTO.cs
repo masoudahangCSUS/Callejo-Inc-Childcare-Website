@@ -12,7 +12,7 @@ namespace Common.View
         public string FirstName { get; set;}
         public string LastName { get; set; }
         public string Relationship { get; set; }
-        public PhoneNumber? PrimaryPhoneNumber { get; set; }
-        public PhoneNumber? SecondaryPhoneNumber { get; set; }
+        public PhoneNumberDTO? PrimaryPhoneNumber { get; set; }
+        public PhoneNumberDTO? SecondaryPhoneNumber { get; set; }
     }
 }

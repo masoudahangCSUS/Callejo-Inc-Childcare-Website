@@ -31,6 +31,8 @@
     Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
     private CustomerUserViewDTO? userViewDTO;
     private EmergencyContactDTO? emergencyDTO;
+    private PhoneNumberDTO? UserPrimaryNumber, UserSecondaryNumber, EmergencyPrimaryNumber, EmergencySecondaryNumber;
+
 
 
     void ShowFileUploadDialog()
@@ -64,8 +66,7 @@
             content.Add(fileContent, "file", selectedFile.Name);
 
             // Declare API URL
-            var user = await profileService.GetUserByID(UserSession.UserId);
-            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={user.Id}";
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={CurrentUserId}";
             Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
 
             // Call API
@@ -90,28 +91,94 @@
     protected override async Task OnInitializedAsync()
     {
         await GetUserView();
+        if (userViewDTO != null)
+        {
+            // Initialize updatedUser to a copy of userViewDTO
+            updatedUser = new CustomerUserViewDTO
+                {
+                    FirstName = userViewDTO.FirstName,
+                    LastName = userViewDTO.LastName,
+                    Email = userViewDTO.Email,
+                    Address = userViewDTO.Address,
+                    City = userViewDTO.City,
+                    State = userViewDTO.State,
+                    ZipCode = userViewDTO.ZipCode,
+                    PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
+                    SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber,
+                    Children = new List<ChildView>(userViewDTO.Children)
+                };
+
+            editContext = new EditContext(updatedUser);
+        }
     }
 
 
     async Task GetUserView(){
 
         // Get user information
+        // Store the number in a DTO
         var user = await profileService.GetUserByID(UserSession.UserId);
         PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
         PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+        UserPrimaryNumber = new PhoneNumberDTO
+        {
+            Id = PrimaryPhoneNumber.Id,
+            AreaCode = PrimaryPhoneNumber.AreaCode,
+            Prefix = PrimaryPhoneNumber.Prefix,
+            LastFour = PrimaryPhoneNumber.LastFour,
+            Fk_users = PrimaryPhoneNumber.FkUsers,
+            Type = PrimaryPhoneNumber.FkType
+        };
+
+        UserSecondaryNumber = new PhoneNumberDTO
+            {
+                Id = SecondaryPhoneNumber.Id,
+                AreaCode = SecondaryPhoneNumber.AreaCode,
+                Prefix = SecondaryPhoneNumber.Prefix,
+                LastFour = SecondaryPhoneNumber.LastFour,
+                Fk_users = SecondaryPhoneNumber.FkUsers,
+                Type = SecondaryPhoneNumber.FkType
+            };
 
         // Get ermgency contact information
+        //Store the number in a DTO
         var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
         PhoneNumber EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
         PhoneNumber EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+        EmergencyPrimaryNumber = new PhoneNumberDTO
+        {
+            Id = EmergencyPrimary.Id,
+            AreaCode = EmergencyPrimary.AreaCode,
+            Prefix = EmergencyPrimary.Prefix,
+            LastFour = EmergencyPrimary.LastFour,
+            Fk_users = EmergencyPrimary.FkUsers,
+            Type = EmergencyPrimary.FkType
+        };
+
+        if(EmergencySecondary != null){
+            EmergencySecondaryNumber = new PhoneNumberDTO
+                {
+                    Id = EmergencySecondary.Id,
+                    AreaCode = EmergencySecondary.AreaCode,
+                    Prefix = EmergencySecondary.Prefix,
+                    LastFour = EmergencySecondary.LastFour,
+                    Fk_users = EmergencySecondary.FkUsers,
+                    Type = EmergencySecondary.FkType
+                };
+        }
+
+
+
+
 
         userViewDTO = new CustomerUserViewDTO
         {
             FirstName = user.FirstName,
             LastName = user.LastName,
+            MiddleName = user.MiddleName,
             Email = user.Email,
-            PrimaryPhoneNumber = PrimaryPhoneNumber,
-            SecondaryPhoneNumber = SecondaryPhoneNumber,
+            PrimaryPhoneNumber = UserPrimaryNumber,
+            SecondaryPhoneNumber = UserSecondaryNumber,
             Address = user.Address,
             City = user.City,
             State = user.State,
@@ -123,15 +190,15 @@
         {
             FirstName = emergencyContact.FirstName,
             LastName = emergencyContact.LastName,
-            PrimaryPhoneNumber = EmergencyPrimary,
-            SecondaryPhoneNumber = EmergencySecondary,
+            PrimaryPhoneNumber = EmergencyPrimaryNumber,
+            SecondaryPhoneNumber = EmergencySecondaryNumber,
             Relationship = emergencyContact.Relationship
         };
         StateHasChanged();
     }
-
-
 }
+
+
 @if(userViewDTO == null || emergencyDTO == null){
     <p>Loading profile...</p>
 }
@@ -149,7 +216,7 @@ else{
                             <p><strong>First Name:</strong> @userViewDTO?.FirstName</p>
                             <p><strong>Last Name:</strong> @userViewDTO.LastName</p>
                             <p><strong>Email Address:</strong> @userViewDTO.Email</p>
-                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PrimaryPhoneNumber.AreaCode) @userViewDTO.PrimaryPhoneNumber.Prefix - @userViewDTO.PrimaryPhoneNumber.LastFour</p> 
+                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PrimaryPhoneNumber.AreaCode) @userViewDTO.PrimaryPhoneNumber.Prefix - @userViewDTO.PrimaryPhoneNumber.LastFour</p>  
                             <p><strong>Secondary Phone Number: </strong>
                                 @if (userViewDTO.SecondaryPhoneNumber != null)
                                 {
@@ -159,8 +226,8 @@ else{
                                 {
                                     <em> </em>
                                 }
-                                
-                            </p> 
+
+                            </p>  
                         </div>
                         <div class="profile-column">
                             <p><strong>Street Address:</strong> @userViewDTO.Address</p>
@@ -200,35 +267,272 @@ else{
             </div>
         </div>
 
-    <div class="button-group">
-        <button class="btn-edit" onclick="location.href='/edit-profile'">Edit Profile</button>
-        <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
-        <button class="btn-regupload" @onclick ="Navigate"> Registration Status</button>
+        <div class="button-group">
+            <button class="btn-edit" @onclick="ShowEditProfileCard">Edit Profile</button>
+            <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
+            <button class="btn-regupload" @onclick="Navigate"> Registration Status</button>
+        </div>
     </div>
 
 
-</div>
-
-@code
-{
-    private void Navigate()
-    {
-        Navigation.NavigateTo("/parent_status");
-
-    }
 }
 
-        @if (showUploadDialog)
+@if (showEditCard) {
+    <div class="card-carousel">
+        @if (currentCardIndex == 0)
         {
-            // Display file selection button above upload and cancel buttons
-            <div class="file-select-container">
-                <InputFile OnChange="HandleFileSelected" class="btn-regupload"/>
-            </div>
-            <div class="file-upload-container">
-                <button class="btn-regupload" @onclick="UploadFile">Upload</button>
-                <button class="btn-regupload" @onclick="CancelUpload">Cancel</button>
+            <div class="card">
+                <h3>Edit Profile</h3>
+                <EditForm Model="updatedUser" OnValidSubmit="HandleValidSubmit">
+                    <DataAnnotationsValidator />
+                    <ValidationSummary />
+                    <div class="form-group">
+                        <label>First Name:</label>
+                        <InputText @bind-Value="updatedUser.FirstName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name:</label>
+                        <InputText @bind-Value="updatedUser.LastName" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Email:</label>
+                        <InputText @bind-Value="updatedUser.Email" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Phone Number:</label>
+                        <InputText @bind-Value="userPrimary" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label> Secondary Phone Number:</label>
+                        <InputText @bind-Value="userSecondary" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>Street Address:</label>
+                        <InputText @bind-Value="updatedUser.Address" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>City:</label>
+                        <InputText @bind-Value="updatedUser.City" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>State:</label>
+                        <InputText @bind-Value="updatedUser.State" class="form-control" />
+                    </div>
+                    <div class="form-group">
+                        <label>ZIP:</label>
+                        <InputText @bind-Value="updatedUser.ZipCode" class="form-control" />
+                    </div>
+                </EditForm>
+
+                <!-- Navigation buttons to scroll between cards -->
+                <div class="card-footer">
+                    <button @onclick="PreviousCard" class="btn-arrow">←</button>
+                    <button @onclick="NextCard" class="btn-arrow">→</button>
+                </div>
             </div>
         }
+        else if (currentCardIndex == 1)
+        {
+            <div class="card">
+                <h3>Emergency Contact</h3>
+                <div class="form-group">
+                    <label>First Name:</label>
+                    <InputText @bind-Value="updatedEmergency.FirstName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Last Name:</label>
+                    <InputText @bind-Value="updatedEmergency.LastName" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Primary Phone Number:</label>
+                    <InputText @bind-Value="emergencyPrimary" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label> Secondary Phone Number:</label>
+                    <InputText @bind-Value="emergencySecondary" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Relation To Child:</label>
+                    <InputText @bind-Value="updatedEmergency.Relationship" class="form-control"/>
+                </div>
+                <div class="card-footer">
+                    <button @onclick="PreviousCard" class="btn-arrow">←</button>
+                    <button @onclick="NextCard" class="btn-arrow">→</button>
+                </div>
+            </div>
+        }
+        <div class="button-group">
+            <button type="submit" class="btn-save" @onclick ="HandleValidSubmit">Save</button>
+            <button type="button" class="btn-cancel" @onclick="HideCards">Cancel</button>
+        </div>
+    </div>
+
+}
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+@code 
+{
+    private int currentCardIndex = 0; 
+    private bool showEditCard = false;
+    private string userPrimary, userSecondary, emergencyPrimary, emergencySecondary;
+    private CustomerUserViewDTO updatedUser;
+    private EmergencyContactDTO updatedEmergency;
+    private EditContext editContext;
+
+
+    private void NextCard() 
+    { 
+        currentCardIndex = (currentCardIndex + 1) % 2; 
+    } 
+
+    private void PreviousCard() 
+    { 
+        currentCardIndex = (currentCardIndex - 1 + 2) % 2; 
+    } 
+
+    private void ShowEditProfileCard() 
+    {
+        userPrimary = profileService.numberToString(userViewDTO.PrimaryPhoneNumber);
+        userSecondary = profileService.numberToString(userViewDTO.SecondaryPhoneNumber);
+        updatedUser = new CustomerUserViewDTO
+            {   
+                Id = UserSession.UserId,
+                FirstName = userViewDTO.FirstName,
+                LastName = userViewDTO.LastName,
+                MiddleName = userViewDTO.MiddleName,
+                Email = userViewDTO.Email,
+                Address = userViewDTO.Address,
+                City = userViewDTO.City,
+                State = userViewDTO.State,
+                ZipCode = userViewDTO.ZipCode,
+                PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
+                SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber
+            };
+
+        emergencyPrimary = profileService.numberToString(emergencyDTO.PrimaryPhoneNumber);
+        emergencySecondary = profileService.numberToString(emergencyDTO.SecondaryPhoneNumber);
+        updatedEmergency = new EmergencyContactDTO
+            {
+                FirstName = emergencyDTO.FirstName,
+                LastName = emergencyDTO.LastName,
+                PrimaryPhoneNumber = emergencyDTO.PrimaryPhoneNumber,
+                SecondaryPhoneNumber = emergencyDTO.SecondaryPhoneNumber,
+                Relationship = emergencyDTO.Relationship
+            };
+        showEditCard = true; 
+    } 
+
+
+    private async Task HandleValidSubmit() 
+    { 
+        // Create separate field identifiers for each DTO
+        var userSecondaryField = new FieldIdentifier(updatedUser, nameof(updatedUser.SecondaryPhoneNumber));
+        var emergencySecondaryField = new FieldIdentifier(updatedEmergency, nameof(updatedEmergency.SecondaryPhoneNumber));
+
+        bool isUserSecondaryModified = editContext.IsModified(userSecondaryField);
+        if (!isUserSecondaryModified)
+        {
+            updatedUser.SecondaryPhoneNumber = null;
+            updatedEmergency.SecondaryPhoneNumber = null;
+        }
+
+        var decodedUserPrimary = profileService.PhoneNumberDecode(userPrimary);
+        var decodedUserSeconodary = profileService.PhoneNumberDecode(userSecondary);
+        var decodedEmergencyPrimary = profileService.PhoneNumberDecode(emergencyPrimary);
+        var decodedEmergencySecondary = profileService.PhoneNumberDecode(emergencySecondary);
+
+        PhoneNumberDTO updateUserPrimary = new PhoneNumberDTO
+        {
+            Id = userViewDTO.PrimaryPhoneNumber.Id,
+            AreaCode = decodedUserPrimary.AreaCode,
+            Prefix = decodedUserPrimary.Prefix,
+            LastFour = decodedUserPrimary.LastFour,
+            Type = userViewDTO.PrimaryPhoneNumber.Type,
+            Fk_users = userViewDTO.PrimaryPhoneNumber.Fk_users
+        };
+        PhoneNumberDTO updatedUserSecondary = new PhoneNumberDTO
+        {
+            Id = userViewDTO.SecondaryPhoneNumber.Id,
+            AreaCode = decodedUserSeconodary.AreaCode,
+            Prefix = decodedUserSeconodary.Prefix,
+            LastFour = decodedUserSeconodary.LastFour,
+            Type = userViewDTO.SecondaryPhoneNumber.Type,
+            Fk_users = userViewDTO.SecondaryPhoneNumber.Fk_users
+        };
+        updatedUser.PrimaryPhoneNumber = updateUserPrimary;
+        updatedUser.SecondaryPhoneNumber = updatedUserSecondary;
+
+        PhoneNumberDTO updatedEmergencyPrimary = new PhoneNumberDTO
+        {
+            Id = emergencyDTO.PrimaryPhoneNumber.Id,
+            AreaCode = decodedEmergencyPrimary.AreaCode,
+            Prefix = decodedEmergencyPrimary.Prefix,
+            LastFour = decodedEmergencyPrimary.LastFour,
+            Type = emergencyDTO.PrimaryPhoneNumber.Type,
+            Fk_users = emergencyDTO.PrimaryPhoneNumber.Fk_users
+        };
+        PhoneNumberDTO updatedEmergencySecondary = new PhoneNumberDTO
+        {
+            Id = emergencyDTO.SecondaryPhoneNumber.Id,
+            AreaCode = decodedEmergencySecondary.AreaCode,
+            Prefix = decodedEmergencySecondary.Prefix,
+            LastFour = decodedEmergencySecondary.LastFour,
+            Type = emergencyDTO.SecondaryPhoneNumber.Type,
+            Fk_users = emergencyDTO.SecondaryPhoneNumber.Fk_users
+        };
+        updatedEmergency.PrimaryPhoneNumber = updatedEmergencyPrimary;
+        updatedEmergency.SecondaryPhoneNumber = updatedEmergencySecondary;
+
+
+
+        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, updatedUser);
+        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, updatedEmergency);
+
+        if (!userUpdateStatus)
+            Console.WriteLine("Debug: user update failed");
+        else
+            Console.WriteLine("Debug: user update succesful");
+
+        if (!emergencyUpdateStatus)
+            Console.WriteLine("Debug: emergency contact update failed");
+        else
+            Console.WriteLine("Debug: emergnecy contact update successful");
+
+        // Optionally, handle the statuses (e.g. show messages) before hiding the edit UI.
+        HideCards();
+        await GetUserView();
+        StateHasChanged();
+    } 
+
+    private void HideCards() 
+    { 
+        currentCardIndex = 0;
+        showEditCard = false;
+    } 
+
+    private void Navigate() 
+    { 
+       Navigation.NavigateTo("/parent_status"); 
+    } 
+} 
+
+@if (showUploadDialog) 
+{ 
+    <div> 
+        <InputFile OnChange="HandleFileSelected" /> 
+        <button class="btn-upload" @onclick="UploadFile">Upload</button> 
+        <button class="btn-cancel" @onclick="CancelUpload">Cancel</button> 
+    </div> 
 }

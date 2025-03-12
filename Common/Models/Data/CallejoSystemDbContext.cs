@@ -19,6 +19,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<Child> Children { get; set; }
 
+    public virtual DbSet<DailySchedule> DailySchedules { get; set; }
+
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
@@ -132,6 +134,18 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasColumnName("middle_name");
         });
 
+        modelBuilder.Entity<DailySchedule>(entity =>
+        {
+            entity.ToTable("Daily_Schedule");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Day).HasColumnName("day");
+            entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Month).HasColumnName("month");
+            entity.Property(e => e.Year).HasColumnName("year");
+        });
+
         modelBuilder.Entity<EmergencyContact>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Emergenc__3213E83F720F3CF7");
@@ -205,6 +219,7 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
+            entity.Property(e => e.Datetime).HasColumnType("datetime");
             entity.Property(e => e.Email)
                 .HasMaxLength(512)
                 .IsUnicode(false)
@@ -213,6 +228,10 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("name");
+            entity.Property(e => e.Phone)
+                .HasMaxLength(512)
+                .IsUnicode(false)
+                .HasColumnName("phone");
             entity.Property(e => e.ReasonForInquiry)
                 .HasMaxLength(512)
                 .IsUnicode(false)

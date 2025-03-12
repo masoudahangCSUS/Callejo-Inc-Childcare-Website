@@ -1,28 +1,40 @@
 @page "/inquiry"
 @using Common.Models.Data
+@using Common.Services.Submit
 @using Microsoft.AspNetCore.Authorization
-
+@inject ISubmitService SubmitService
 @inject HttpClient Http
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
 
-<div class="header">
+<!-- Header Section -->
+<header class="page-header">
     <h1>Inquiries</h1>
-    <br>
-</div>
+</header>
 
-<div class ="inq_container">
-    @foreach (var inq in inquiry)
+<!-- Inquiry Cards Section -->
+<section class="inq-container">
+    @if (inquiry.Any())
     {
-        <div class="info">
-        <h3>Name: @inq.Name</h3>
-        <h4>Email:@inq.Email</h4>
-        <h4>Reason:</h4>
-        <p>@inq.Reason</p>
-        </div>
+        @foreach (var inq in inquiry)
+        {
+            <div class="info-card">
+                <h3>@inq.Name</h3>
+                <p><strong>Email:</strong> @inq.Email</p>
+                <p><strong>Phone:</strong> @inq.Phone</p>
+                <p><strong>Reason for Inquiry:</strong></p>
+                <p class="reason-text">@inq.ReasonForInquiry</p>
+                <p><strong>Received at: @inq.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</strong></p>
+                <button class="delete-btn" @onclick="() => DeleteInquiry(inq.guid)">Delete</button>
+            </div>
+        }
     }
-    </div>
+    else
+    {
+        <p class="no-inquiries">No inquiries found.</p>
+    }
+</section>
 
 @code
 {
@@ -30,16 +42,39 @@
 
     protected override async Task OnInitializedAsync()
     {
-        inquiry = await Http.GetFromJsonAsync<List<InterestedParent>>("https://localhost:7139/api/Submit/data");
+        await LoadInquiries();
+    }
+    private async Task LoadInquiries()
+    {
+        var response = await Http.GetFromJsonAsync<List<InterestedParent>>("https://localhost:7139/api/Submit/data");
 
+        // Sort by Datetime on frontend just in case (failsafe)
+        inquiry = response?.OrderByDescending(i => i.Datetime).ToList() ?? new List<InterestedParent>();
+    }
+    private async Task DeleteInquiry(Guid id)
+    {
+        // Call the service to delete the inquiry
+        var result = await SubmitService.DeleteInquiryAsync(id);
+
+        if (result)
+        {
+            // Remove the inquiry from the local list if successful
+            inquiry = inquiry.Where(i => i.guid != id).ToList();
+        }
+        else
+        {
+            // Handle failure (e.g., show an error message)
+            Console.WriteLine("Failed to delete inquiry.");
+        }
     }
     public class InterestedParent
     {
         public Guid guid { get; set; }    
         public string Name { get; set; }
         public string Email { get; set; }
-        public string Reason { get; set; }
-
+        public string ReasonForInquiry { get; set; }
+        public string Phone { get; set; }
+        public DateTime Datetime{ get; set; }
     }
 
 
@@ -47,25 +82,36 @@
 
 <style>
     .info {
-        border-style: solid;
-        align-self: auto;
-        display: block;
-        width: 45%;
+        border: 1px solid #ddd;
         padding: 15px;
         margin: 15px;
-        color: black;
-        background-color: white;
-        border-radius: 15px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
     }
-    .inq_container{
-        background-color: #00B7D7;
+
+    .delete-btn {
+        background-color: #ff4d4d;
+        color: white;
+        border: none;
+        padding: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+        align-self: flex-start;
+        transition: background 0.3s;
+    }
+
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
+
+    .inq_container {
+        padding: 20px;
+        background-color: #f0f8ff;
         border-radius: 15px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
-        margin-top: 15px;
-        margin-bottom: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 </style>

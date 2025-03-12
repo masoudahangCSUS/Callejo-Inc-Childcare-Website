@@ -31,11 +31,12 @@ namespace CallejoIncChildcareAPI.Controllers
 
    
 
-        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration)
+        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration, CallejoSystemDbContext context)
         {
             _userService = userService;
             _imageService = imageService;
             _configuration = configuration;
+            _context = context; 
         }
 
         //  POST: api/admin/create-user
@@ -66,14 +67,6 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
 
-
-        //  DELETE: api/admin/delete-user
-        [HttpDelete("delete-user")]
-        public ActionResult<APIResponse> DeleteUser([FromQuery] Guid userId)
-        {
-            var result = _userService.DeleteUser(userId);
-            return result.Success ? Ok(result) : BadRequest(result.Message);
-        }
 
         //  PUT: api/admin/update-user
         [HttpPut("update-user")]
@@ -175,6 +168,93 @@ namespace CallejoIncChildcareAPI.Controllers
                 return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
             }
         }
+
+        [HttpDelete("delete-user")]
+        public async Task<ActionResult<APIResponse>> DeleteUser([FromQuery] Guid userId)
+        {
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // 1. Load the user and include related children relationships
+                var parent = await _context.CallejoIncUsers
+                    .Include(u => u.FkChildren) // Include many-to-many relationship (Guardians)
+                    .FirstOrDefaultAsync(u => u.Id == userId);
+
+                if (parent != null && parent.FkChildren.Any())
+                {
+                    // Remove the child relationships first (EF Core will handle the Guardians join table)
+                    parent.FkChildren.Clear();
+                    await _context.SaveChangesAsync();
+                }
+
+                // 2. Delete emergency contacts linked to the user
+                var emergencyContacts = await _context.EmergencyContacts
+                    .Where(ec => ec.FkUsers == userId)
+                    .ToListAsync();
+
+                if (emergencyContacts.Any())
+                {
+                    _context.EmergencyContacts.RemoveRange(emergencyContacts);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 3. Delete phone numbers linked to the user
+                var phoneNumbers = await _context.PhoneNumbers
+                    .Where(pn => pn.FkUsers == userId)
+                    .ToListAsync();
+
+                if (phoneNumbers.Any())
+                {
+                    _context.PhoneNumbers.RemoveRange(phoneNumbers);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 4. Delete notifications linked to the user
+                var notifications = await _context.Notifications
+                    .Where(n => n.FkParentId == userId)
+                    .ToListAsync();
+
+                if (notifications.Any())
+                {
+                    _context.Notifications.RemoveRange(notifications);
+                    await _context.SaveChangesAsync();
+                }
+
+                // 5. Fetch and delete the user
+                var user = await _context.CallejoIncUsers.FindAsync(userId);
+                if (user == null)
+                {
+                    return NotFound(new APIResponse
+                    {
+                        Success = false,
+                        Message = "User not found."
+                    });
+                }
+
+                _context.CallejoIncUsers.Remove(user);
+                await _context.SaveChangesAsync();
+
+                await transaction.CommitAsync();
+
+                return Ok(new APIResponse
+                {
+                    Success = true,
+                    Message = "User and all related records deleted successfully."
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new APIResponse
+                {
+                    Success = false,
+                    Message = $"Error deleting user: {ex.Message}"
+                });
+            }
+        }
+
+
+
 
         //  GET: api/admin/get-latest-image
         [HttpGet("get-latest-image")]

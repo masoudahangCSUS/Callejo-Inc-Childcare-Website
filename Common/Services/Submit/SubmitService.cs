@@ -3,30 +3,39 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
 namespace Common.Services.Submit
 {
     public class SubmitService : ISubmitService
     {
-        // Construct service with DB Context for DB manipulation
-        private readonly CallejoSystemDbContext _context;
-        public SubmitService(CallejoSystemDbContext context) 
+        private readonly HttpClient _http;
+
+        public SubmitService(HttpClient http)
         {
-            _context = context;
+            _http = http;
         }
-        public async Task AddInquiryAsync(InterestedParent inquiry) 
+
+        // Submit an inquiry via API
+        public async Task AddInquiryAsync(InterestedParent inquiry)
         {
-            _context.InterestedParents.Add(inquiry);
-            await _context.SaveChangesAsync();
+            await _http.PostAsJsonAsync("https://localhost:7139/api/Submit/submit", inquiry);
         }
-        public async Task<List<InterestedParent>> GetInquiryAsync() 
+
+        // Fetch inquiries from the API
+        public async Task<List<InterestedParent>> GetInquiryAsync()
         {
-            return await _context.InterestedParents.ToListAsync();
+            return await _http.GetFromJsonAsync<List<InterestedParent>>("https://localhost:7139/api/Submit/data");
         }
-        public async void DeleteInquiryAsync() 
-        { 
+
+        // Delete an inquiry via API
+        public async Task<bool> DeleteInquiryAsync(Guid id)
+        {
+            var response = await _http.DeleteAsync($"https://localhost:7139/api/Submit/delete/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }

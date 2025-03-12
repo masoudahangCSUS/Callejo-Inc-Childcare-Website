@@ -12,6 +12,8 @@ using Common.Services.User;
 using Microsoft.AspNetCore.DataProtection;
 
 using Syncfusion.Blazor;
+using Common.Services.Submit;
+using BlazorApp;
 
 
 
@@ -21,7 +23,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // Register HttpClient for making HTTP requests in Blazor components
 builder.Services.AddScoped(sp =>
@@ -50,7 +52,13 @@ builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ProfileService>();builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
+builder.Services.AddScoped<DailyScheduleService>();
+builder.Services.AddScoped<ProfileService>();
+builder.Services.AddScoped<ISubmitService, SubmitService>();
+
+builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
+Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license
+
 
 builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
