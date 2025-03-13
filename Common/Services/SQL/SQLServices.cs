@@ -472,7 +472,7 @@ namespace Common.Services.SQL
             if (emergencyDto.PrimaryPhoneNumber != null)
             {
                 var emergencyPrimary = await _context.PhoneNumbers
-                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.fk_user && p.FkType == 3);
+                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.FkUsers && p.FkType == 3);
                 if (emergencyPrimary != null)
                 {
                     emergencyPrimary.AreaCode = emergencyDto.PrimaryPhoneNumber.AreaCode;
@@ -483,7 +483,7 @@ namespace Common.Services.SQL
                 {
                     var newEmergencyPrimary = new PhoneNumber
                     {
-                        FkUsers = emergencyContact.fk_user,
+                        FkUsers = emergencyContact.FkUsers,
                         FkType = 3,
                         AreaCode = emergencyDto.PrimaryPhoneNumber.AreaCode,
                         Prefix = emergencyDto.PrimaryPhoneNumber.Prefix,
@@ -497,7 +497,7 @@ namespace Common.Services.SQL
             if (emergencyDto.SecondaryPhoneNumber != null)
             {
                 var emergencySecondary = await _context.PhoneNumbers
-                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.fk_user && p.FkType == 4);
+                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.FkUsers && p.FkType == 4);
                 if (emergencySecondary != null)
                 {
                     emergencySecondary.AreaCode = emergencyDto.SecondaryPhoneNumber.AreaCode;
@@ -508,7 +508,7 @@ namespace Common.Services.SQL
                 {
                     var newEmergencySecondary = new PhoneNumber
                     {
-                        FkUsers = emergencyContact.fk_user,
+                        FkUsers = emergencyContact.FkUsers,
                         FkType = 4,
                         AreaCode = emergencyDto.SecondaryPhoneNumber.AreaCode,
                         Prefix = emergencyDto.SecondaryPhoneNumber.Prefix,
