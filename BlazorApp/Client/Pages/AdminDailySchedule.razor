@@ -78,24 +78,18 @@
     private async Task AddDailySchedule()
     {
         dailyScheduleIdCurrentlyBeingEdited = 0;
-        //Need to get date from syncfusion date control
-        // CurrentMonth = (short)SelectedDate.Value.Month;
-        // CurrentDay = (short)SelectedDate.Value.Day;
-        // CurrentYear = (short)SelectedDate.Value.Year;
 
         DailyScheduleView dailyScheduleInfo = new DailyScheduleView();
-        dailyScheduleInfo.Month = (short)SelectedDate.Value.Month;
-        dailyScheduleInfo.Day = (short)SelectedDate.Value.Day;
-        dailyScheduleInfo.Year = (short)SelectedDate.Value.Year;
+        // dailyScheduleInfo.Month = (short)SelectedDate.Value.Month;
+        // dailyScheduleInfo.Day = (short)SelectedDate.Value.Day;
+        // dailyScheduleInfo.Year = (short)SelectedDate.Value.Year;
         dailyScheduleInfo.Description = newDailySchedule;
+        dailyScheduleInfo.CreatedAt = SelectedDate;
         if(specialEvents != null)
         {
             dailyScheduleInfo.Desc_special = specialEvents;
         }
         var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
-
-
-
 
         if(response.Success)
         {
