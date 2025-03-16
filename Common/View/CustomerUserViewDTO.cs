@@ -9,7 +9,7 @@ namespace Common.View
 {
     public class CustomerUserViewDTO
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public string FirstName { get; set; }
         public string MiddleName { get; set; }
         public string LastName { get; set; }
@@ -18,9 +18,8 @@ namespace Common.View
         public string State { get; set; }
         public string ZipCode { get; set; }
         public string Email { get; set; }
-        public string Password { get; set; }
-        public PhoneNumber? PrimaryPhoneNumber { get; set; }
-        public PhoneNumber? SecondaryPhoneNumber { get; set; }
+        public PhoneNumberDTO? PrimaryPhoneNumber { get; set; }
+        public PhoneNumberDTO? SecondaryPhoneNumber { get; set; }
 
         public List<ChildView> Children { get; set; } = new List<ChildView>();
 

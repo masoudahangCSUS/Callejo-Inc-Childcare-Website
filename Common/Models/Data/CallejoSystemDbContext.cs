@@ -19,6 +19,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<Child> Children { get; set; }
 
+    public virtual DbSet<DailySchedule> DailySchedules { get; set; }
+
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
     public virtual DbSet<FileUpload> FileUploads { get; set; }
@@ -132,6 +134,18 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("middle_name");
+        });
+
+        modelBuilder.Entity<DailySchedule>(entity =>
+        {
+            entity.ToTable("Daily_Schedule");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
+            entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
+            entity.Property(e => e.Description).HasColumnName("description");
         });
 
         modelBuilder.Entity<EmergencyContact>(entity =>

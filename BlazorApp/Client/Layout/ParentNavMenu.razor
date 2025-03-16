@@ -12,38 +12,74 @@
     </a>
 
     <nav class="nav-menu">
+        <!-- Home and About -->
         <a class="nav-item-link" href="/">
             <img src="images/home.png" alt="Home Icon" class="nav-icon" /> HOME
         </a>
         <a class="nav-item-link" href="/about">
             <img src="images/about.png" alt="About Us Icon" class="nav-icon" /> ABOUT US
         </a>
-        <a class="nav-item-link" href="/schedule">
-            <img src="images/schedule.png" alt="Child's Schedule Icon" class="nav-icon" /> Child's Schedule
-        </a>
-        <a class="nav-item-link" href="/holidays-vacations">
-            <img src="images/holidays_vacations_icon.png" alt="Holidays & Vacations Icon" class="nav-icon" /> Holidays & Vacations
-        </a>
-        <a class="nav-item-link" href="/notifications">
-            <img src="images/Notifications.png" alt="Notifications Icon" class="nav-icon" /> Notifications
-        </a>
 
+        <!-- Schedule Dropdown (LEFT OF BLUE AREA) -->
+        <div class="dropdown">
+            <button class="dropdown-toggle">
+                <img src="images/schedule.png" alt="Schedule Icon" class="nav-icon" />
+                Schedule
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="/schedule">
+                    <img src="images/childSchedule.png" alt="Child's Schedule Icon" class="nav-icon" /> Child's Schedule
+                </a>
+                <a class="dropdown-item" href="/holidays-vacations">
+                    <img src="images/holidays_vacations_icon.png" alt="Holidays & Vacations Icon" class="nav-icon" /> Holidays & Vacations
+                </a>
+            </div>
+        </div>
+
+        <!-- Communication Dropdown (LEFT OF BLUE AREA) -->
+        <div class="dropdown">
+            <button class="dropdown-toggle">
+                <img src="images/communication.png" alt="Communication Icon" class="nav-icon" />
+                Communication
+            </button>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="/notifications">
+                    <img src="images/notifications.png" alt="Notifications Icon" class="nav-icon" /> Notifications
+                </a>
+                <a class="dropdown-item" href="/SendRequest">
+                    <img src="images/Request.png" alt="Send Request Icon" class="nav-icon" /> Send Request
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Section (INSIDE BLUE AREA) -->
         <div class="nav-right">
-            <a class="nav-item-link" href="/profile">
-                <img src="images/myprofile.png" alt="My Profile Icon" class="nav-icon" /> Profile
+            <!-- Profile Dropdown -->
+            <div class="dropdown">
+                <button class="dropdown-toggle">
+                    <img src="images/myprofile.png" alt="Profile Icon" class="nav-icon" />
+                </button>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="/profile">
+                        <img src="images/myprofile2.png" alt="Profile Icon" class="nav-icon" /> Profile
+                    </a>
+                    <a class="dropdown-item" href="/enrolled-children">
+                        <img src="images/child-placeholder.png" alt="My Child Info Icon" class="nav-icon child-info" /> My Child Info
+                    </a>
+                </div>
+            </div>
+
+            <!-- Photos -->
+            <a class="nav-item-link" href="/photos">
+                <img src="images/camera1.png" alt="Photos Icon" class="nav-icon" /> Photos
             </a>
-            <a class="nav-item-link" href="/enrolled-children">
-                <img src="images/child-placeholder.png" alt="My Child Info Icon" class="nav-icon child-info" /> My Child Info
-            </a>
+
+            <!-- Settings -->
             <a class="nav-item-link" href="/settings">
                 <img src="images/settings.png" alt="Settings Icon" class="nav-icon" /> Settings
             </a>
-            <a class="nav-item-link" href="/Photos">
-                <img src="images/camera1.png" alt="Photos Icon" class="nav-icon" /> Photos
-            </a>
-            <a class="nav-item-link" href="/SendRequest">
-                <img src="images/logout.png" alt="Logout Icon" class="nav-icon" /> Send Request
-            </a>
+
+            <!-- Logout -->
             <a class="nav-item-link" @onclick="LogoutUser">
                 <img src="images/logout.png" alt="Logout Icon" class="nav-icon" /> Logout
             </a>

@@ -37,6 +37,15 @@ namespace Common.Services.SQL
         public Task<Child> getChildById(long id);
 
         public Task<IEnumerable<long>> GetChildren(Guid? id);
+        public Task<CallejoIncUser?> getUserWithNumber(Guid id);
+
+
+        public Task<bool> updateUser(CallejoIncUser user, CustomerUserViewDTO userDto);
+
+        public Task<bool> updateEmergencyContact(EmergencyContact emergencyContact, EmergencyContactDTO emergencyDto);
+        public Task<bool> updateChild(Child childId, ChildDTO childDto);
+
+
 
     }
 

@@ -247,7 +247,7 @@ namespace Common.Services.SQL
             }
         }
 
-        // Delete a holiday/vacation (Admin)
+        //Delete a holiday/vacation(Admin)
         public bool DeleteHolidayVacation(long id)
         {
             var holidayVacation = _context.HolidaysVacations.FirstOrDefault(h => h.Id == id);
@@ -376,6 +376,189 @@ namespace Common.Services.SQL
             return await _context.Children
                            .FirstOrDefaultAsync(g => g.Id == id);
         }
+
+        public async Task<CallejoIncUser?> getUserWithNumber(Guid id)
+        {
+            return await _context.CallejoIncUsers
+                        .Include(u => u.PhoneNumbers)
+                        .FirstOrDefaultAsync(u => u.Id == id); ;
+        }
+
+        public async Task<bool> updateUser(CallejoIncUser user, CustomerUserViewDTO userDto)
+        {
+            if (user == null)
+            {
+                return false;
+            }
+
+
+            // Update basic user fields.
+            user.FirstName = userDto.FirstName;
+            user.LastName = userDto.LastName;
+            user.Email = userDto.Email;
+            user.Address = userDto.Address;
+            user.City = userDto.City;
+            user.State = userDto.State;
+            user.ZipCode = userDto.ZipCode;
+
+            // Update primary phone (type 1) – assuming primary is required.
+            if (userDto.PrimaryPhoneNumber != null)
+            {
+                var primaryPhone = user.PhoneNumbers.FirstOrDefault(p => p.FkType == 1);
+                if (primaryPhone != null)
+                {
+                    primaryPhone.AreaCode = userDto.PrimaryPhoneNumber.AreaCode;
+                    primaryPhone.Prefix = userDto.PrimaryPhoneNumber.Prefix;
+                    primaryPhone.LastFour = userDto.PrimaryPhoneNumber.LastFour;
+                }
+                else
+                {
+                    var newPrimaryPhone = new PhoneNumber
+                    {
+                        FkUsers = user.Id,
+                        FkType = 1,
+                        AreaCode = userDto.PrimaryPhoneNumber.AreaCode,
+                        Prefix = userDto.PrimaryPhoneNumber.Prefix,
+                        LastFour = userDto.PrimaryPhoneNumber.LastFour
+                    };
+                    _context.PhoneNumbers.Add(newPrimaryPhone);
+                }
+            }
+
+            // Update secondary phone (type 2) only if the DTO field is not null.
+            if (userDto.SecondaryPhoneNumber != null)
+            {
+                var secondaryPhone = user.PhoneNumbers.FirstOrDefault(p => p.FkType == 2);
+                if (secondaryPhone != null)
+                {
+                    secondaryPhone.AreaCode = userDto.SecondaryPhoneNumber.AreaCode;
+                    secondaryPhone.Prefix = userDto.SecondaryPhoneNumber.Prefix;
+                    secondaryPhone.LastFour = userDto.SecondaryPhoneNumber.LastFour;
+                }
+                else
+                {
+                    var newSecondaryPhone = new PhoneNumber
+                    {
+                        FkUsers = user.Id,
+                        FkType = 2,
+                        AreaCode = userDto.SecondaryPhoneNumber.AreaCode,
+                        Prefix = userDto.SecondaryPhoneNumber.Prefix,
+                        LastFour = userDto.SecondaryPhoneNumber.LastFour
+                    };
+                    _context.PhoneNumbers.Add(newSecondaryPhone);
+                }
+            }
+            // If SecondaryPhoneNumber is null, no action is taken for that field.
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"updateUser exception: {ex}");
+                return false;
+            }
+        }
+
+        public async Task<bool> updateEmergencyContact(EmergencyContact emergencyContact, EmergencyContactDTO emergencyDto)
+        {
+            emergencyContact.FirstName = emergencyDto.FirstName;
+            emergencyContact.LastName = emergencyDto.LastName;
+            emergencyContact.Relationship = emergencyDto.Relationship;
+
+            // Update emergency primary phone (type 3).
+            if (emergencyDto.PrimaryPhoneNumber != null)
+            {
+                var emergencyPrimary = await _context.PhoneNumbers
+                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.FkUsers && p.FkType == 3);
+                if (emergencyPrimary != null)
+                {
+                    emergencyPrimary.AreaCode = emergencyDto.PrimaryPhoneNumber.AreaCode;
+                    emergencyPrimary.Prefix = emergencyDto.PrimaryPhoneNumber.Prefix;
+                    emergencyPrimary.LastFour = emergencyDto.PrimaryPhoneNumber.LastFour;
+                }
+                else
+                {
+                    var newEmergencyPrimary = new PhoneNumber
+                    {
+                        FkUsers = emergencyContact.FkUsers,
+                        FkType = 3,
+                        AreaCode = emergencyDto.PrimaryPhoneNumber.AreaCode,
+                        Prefix = emergencyDto.PrimaryPhoneNumber.Prefix,
+                        LastFour = emergencyDto.PrimaryPhoneNumber.LastFour
+                    };
+                    _context.PhoneNumbers.Add(newEmergencyPrimary);
+                }
+            }
+
+            // Update emergency secondary phone (type 4) only if the DTO field is not null.
+            if (emergencyDto.SecondaryPhoneNumber != null)
+            {
+                var emergencySecondary = await _context.PhoneNumbers
+                                            .FirstOrDefaultAsync(p => p.FkUsers == emergencyContact.FkUsers && p.FkType == 4);
+                if (emergencySecondary != null)
+                {
+                    emergencySecondary.AreaCode = emergencyDto.SecondaryPhoneNumber.AreaCode;
+                    emergencySecondary.Prefix = emergencyDto.SecondaryPhoneNumber.Prefix;
+                    emergencySecondary.LastFour = emergencyDto.SecondaryPhoneNumber.LastFour;
+                }
+                else
+                {
+                    var newEmergencySecondary = new PhoneNumber
+                    {
+                        FkUsers = emergencyContact.FkUsers,
+                        FkType = 4,
+                        AreaCode = emergencyDto.SecondaryPhoneNumber.AreaCode,
+                        Prefix = emergencyDto.SecondaryPhoneNumber.Prefix,
+                        LastFour = emergencyDto.SecondaryPhoneNumber.LastFour
+                    };
+                    _context.PhoneNumbers.Add(newEmergencySecondary);
+                }
+            }
+            // If SecondaryPhoneNumber is null in emergencyDto, then no update is performed.
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                // Optionally log the exception.
+                return false;
+            }
+        }
+
+        public async Task<bool> updateChild(Child child, ChildDTO childDTO)
+        {
+            if (child == null || childDTO == null)
+                return false;
+
+            try
+            {
+                // Update the child.
+                child.FirstName = childDTO.FirstName;
+                child.MiddleName = childDTO.MiddleName;
+                child.LastName = childDTO.LastName;
+                child.Age = childDTO.Age;
+
+                // Mark the entity as modified.
+                _context.Children.Update(child);
+
+                // Save the changes to the database.
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+       
+
     }
 
 }
