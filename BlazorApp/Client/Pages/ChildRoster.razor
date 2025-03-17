@@ -8,29 +8,40 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<h1>Child Information Overview</h1>
+<div class="child-roster-container">
+    <!-- Page Title -->
+    <div class="child-roster-header">
+        <h1>Child Roster</h1>
+    </div>
 
-@if (children == null)
-{
-    <p>Loading...</p>
-}
-else
-{
-    @foreach (var child in children)
+    @if (children == null)
     {
-        <div class="child-overview">
-            <div class="child-photo-container">
-                <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
-            </div>
-            <div class="child-details">
-                <p><strong>First Name:</strong> @child.FirstName</p>
-                <p><strong>Middle Name:</strong> @child.MiddleName</p>
-                <p><strong>Last Name:</strong> @child.LastName</p>
-                <p><strong>Age:</strong> @child.Age</p>
-            </div>
-        </div>
+        <p class="loading-text">Loading data...</p>
     }
-}
+    else if (!children.Any())
+    {
+        <p class="no-data-text">No children found.</p>
+    }
+    else
+    {
+        <ul class="child-list">
+            @foreach (var child in children)
+            {
+                <li class="child-item">
+                    <div class="child-photo-wrapper">
+                        <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
+                    </div>
+                    <div class="child-info">
+                        <p><strong>First Name:</strong> @child.FirstName</p>
+                        <p><strong>Middle Name:</strong> @(string.IsNullOrEmpty(@child.MiddleName) ? "N/A" : @child.MiddleName)</p>
+                        <p><strong>Last Name:</strong> @child.LastName</p>
+                        <p><strong>Age:</strong> @child.Age</p>
+                    </div>
+                </li>
+            }
+        </ul>
+    }
+</div>
 
 
 @code {
@@ -50,4 +61,4 @@ else
 }
 
 
-}
+
