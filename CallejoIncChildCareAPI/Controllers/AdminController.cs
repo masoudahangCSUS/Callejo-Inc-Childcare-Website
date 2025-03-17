@@ -255,7 +255,6 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
 
-
         //  GET: api/admin/get-latest-image
         [HttpGet("get-latest-image")]
         public async Task<ActionResult<APIResponse>> GetLatestImage()
