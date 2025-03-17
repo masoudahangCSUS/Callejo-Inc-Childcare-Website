@@ -26,9 +26,10 @@ namespace Common.Services.DailySchedule
             try
             {
                 Models.Data.DailySchedule dailySchedule = new Models.Data.DailySchedule();
-                dailySchedule.Day = dailyScheduleView.Day;
-                dailySchedule.Month = dailyScheduleView.Month;
-                dailySchedule.Year = dailyScheduleView.Year;
+                //dailySchedule.Day = dailyScheduleView.Day;
+                //dailySchedule.Month = dailyScheduleView.Month;
+                //dailySchedule.Year = dailyScheduleView.Year;
+                dailySchedule.CreatedAt = DateTime.Now;
                 dailySchedule.Description = dailyScheduleView.Description;
                 if (dailyScheduleView.Description != null)
                 {

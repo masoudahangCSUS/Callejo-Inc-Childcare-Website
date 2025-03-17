@@ -41,7 +41,7 @@ public partial class CallejoSystemDbContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=.\\;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True");
+        => optionsBuilder.UseSqlServer("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -139,11 +139,11 @@ public partial class CallejoSystemDbContext : DbContext
             entity.ToTable("Daily_Schedule");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.Day).HasColumnName("day");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("datetime")
+                .HasColumnName("created_at");
             entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
             entity.Property(e => e.Description).HasColumnName("description");
-            entity.Property(e => e.Month).HasColumnName("month");
-            entity.Property(e => e.Year).HasColumnName("year");
         });
 
         modelBuilder.Entity<EmergencyContact>(entity =>

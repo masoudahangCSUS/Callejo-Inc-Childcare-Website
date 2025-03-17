@@ -5,7 +5,7 @@ namespace Common.Models.Data;
 
 public partial class InterestedParent
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; }
 
     public string Name { get; set; } = null!;
 
@@ -15,5 +15,5 @@ public partial class InterestedParent
 
     public string Phone { get; set; } = null!;
 
-    public DateTime? Datetime { get; set; } = DateTime.UtcNow;
+    public DateTime? Datetime { get; set; }
 }
