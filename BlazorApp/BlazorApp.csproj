@@ -48,6 +48,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\CallejoIncChildcareAPI\CallejoIncChildcareAPI.csproj" />
     <ProjectReference Include="..\Common\Common.csproj" />
   </ItemGroup>
 

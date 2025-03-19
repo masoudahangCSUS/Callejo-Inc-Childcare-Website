@@ -23,6 +23,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
+    public virtual DbSet<FileUpload> FileUploads { get; set; }
+
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -173,6 +175,18 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasForeignKey(d => d.FkUsers)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Callejo_Inc_Users");
+        });
+
+        modelBuilder.Entity<FileUpload>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__FileUplo__3214EC07E2B87D88");
+
+            entity.Property(e => e.ContentType).HasMaxLength(100);
+            entity.Property(e => e.DocumentType).HasMaxLength(255);
+            entity.Property(e => e.FileName).HasMaxLength(255);
+            entity.Property(e => e.UploadDate)
+                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<HolidaysVacation>(entity =>
