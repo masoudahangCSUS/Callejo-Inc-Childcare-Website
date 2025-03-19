@@ -9,9 +9,9 @@ namespace Common.View
     public class FileUploadDTO
     {
         public string FileName { get; set; }
-        public string FileType { get; set; }
+        public string ContentType { get; set; }
         public long FileSize { get; set; }
-        public string FileUrl { get; set; }  // Can be the path to the file in your storage
-        public byte[] FileContent { get; set; }  // Store the actual content (bytes)
+        public string DocumentType { get; set; }
+        public DateTime UploadDate { get; set; }
     }
 }

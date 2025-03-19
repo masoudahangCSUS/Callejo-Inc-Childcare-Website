@@ -1,90 +1,187 @@
 ﻿@page "/NewParentDocs"
 @using System.Net.Http.Json
+@using BlazorApp.Client.Services
+@using Common.View
+@using Common.Services.User
 @inject HttpClient Http
+@rendermode InteractiveServer
 
 <h3>Document Upload for Prospective Parents</h3>
-<br><br>
+<br>
+<br>
 
 <div class="new-parent-docs">
+    <!-- Identification Info Section -->
     <div class="identify-info-upload">
         <label for="identify-info-upload">Identification/Emergency Contact Information</label><br>
-        <InputFile OnChange="@(e => HandleFileSelected(e, "IndentificationInfo"))" class="file-input" />
-        <button class="identify-upload-btn">Submit</button><br><br>
+        <InputFile OnChange="HandleIdentificationInfoFileSelected" class="file-input" />
+        <button class="identify-upload-btn" @onclick="SubmitIdentificationInfo">Submit Identification Info</button><br><br>
     </div>
 
-
+    <!-- Consent EMT Section -->
     <div class="consent-emt">
         <label for="consent-emt">Consent for Emergency Medical Treatment</label><br>
+        <InputFile OnChange="HandleConsentEMTFileSelected" class="file-input" />
+        <button class="consent-emt-upload-btn" @onclick="SubmitConsentEMT">Submit EMT Consent</button><br><br>
     </div>
-    <InputFile OnChange="@(e => HandleFileSelected(e, "ConsentEMT"))" class="file-input" />
-    <button class="consent-emt-upload-btn">Submit</button><br><br>
 
+    <!-- Additional Children Section -->
     <div class="additional-children">
         <label for="additional-children">Notification for Additional Children in Care</label><br>
+        <InputFile OnChange="HandleAdditionalChildrenFileSelected" class="file-input" />
+        <button class="additional-children-upload-btn" @onclick="SubmitAdditionalChildren">Submit Additional Children</button><br><br>
     </div>
-    <InputFile OnChange="@(e => HandleFileSelected(e, "AdditionalChildren"))" class="file-input" />
-    <button class="additional-children-upload-btn">Submit</button><br><br>
 
+    <!-- Parent Rights Section -->
     <div class="parent-rights-acknowledgement">
         <label for="parent-rights-acknowledgement">Acknowledgement of Notification of Parent's Rights</label><br>
+        <InputFile OnChange="HandleParentRightsFileSelected" class="file-input" />
+        <button class="parent-rights-upload-btn" @onclick="SubmitParentRights">Submit Parent Rights</button><br><br>
     </div>
-    <InputFile OnChange="@(e => HandleFileSelected(e, "ParentRights"))" class="file-input" />
-    <button class="parent-rights-upload-btn">Submit</button><br><br>
 
+    <!-- Immunization Card Section -->
     <div class="immunization-card">
         <label for="immunization-card">Immunization Card</label><br>
+        <InputFile OnChange="HandleImmunizationCardFileSelected" class="file-input" />
+        <button class="immunization-card-upload-btn" @onclick="SubmitImmunizationCard">Submit Immunization Card</button><br><br>
     </div>
-    <InputFile OnChange="@(e => HandleFileSelected(e, "ImmunizationCard"))" class="file-input" />
-    <button class="immunization-card-upload-btn">Submit</button><br><br>
-    
-
 </div>
-@code {
-    private IBrowserFile? selectedFile;
-    private string? selectedDocumentType;
-    private string statusMessage = string.Empty;
 
-    private readonly List<string> documentTypes = new()
+@if (!string.IsNullOrEmpty(StatusMessage))
+{
+    <p style="color: green">@StatusMessage</p>
+}
+
+@if (LogMessages.Any())
+{
+    <div style="background-color: #f8f8f8; border: 1px solid #ccc; padding: 10px; margin-top: 20px;">
+        <h4>Debug Log:</h4>
+        @foreach (var msg in LogMessages)
+        {
+            <p>@msg</p>
+        }
+    </div>
+}
+
+@code {
+    private Dictionary<string, IBrowserFile?> SelectedFiles = new()
     {
-        "Identification/Emergency Contact",
-        "Consent for Emergency Treatment",
-        "Additional Children",
-        "Parent Rights",
-        "Immunization Card"
+        { "IdentificationInfo", null },
+        { "ConsentEMT", null },
+        { "AdditionalChildren", null },
+        { "ParentRights", null },
+        { "ImmunizationCard", null }
     };
 
-    private void HandleFileSelected(InputFileChangeEventArgs e, string documentType)
+    private string StatusMessage = string.Empty;
+
+    private List<string> LogMessages = new List<string>();
+
+    // Helper method to add a log entry and force UI update
+    private void AddLog(string message)
     {
-        selectedFile = e.File;
-        selectedDocumentType = documentType;
-        Console.WriteLine($"Selected file: {selectedFile.Name} for {selectedDocumentType}");
+        LogMessages.Add(message);
+        StateHasChanged();
     }
 
-    private async Task UploadFile(string documentType)
+    private void HandleIdentificationInfoFileSelected(InputFileChangeEventArgs e)
     {
-        if (selectedFile != null)
+        HandleFileSelected("IdentificationInfo", e);
+    }
+
+    private void HandleConsentEMTFileSelected(InputFileChangeEventArgs e)
+    {
+        HandleFileSelected("ConsentEMT", e);
+    }
+
+    private void HandleAdditionalChildrenFileSelected(InputFileChangeEventArgs e)
+    {
+        HandleFileSelected("AdditionalChildren", e);
+    }
+
+    private void HandleParentRightsFileSelected(InputFileChangeEventArgs e)
+    {
+        HandleFileSelected("ParentRights", e);
+    }
+
+    private void HandleImmunizationCardFileSelected(InputFileChangeEventArgs e)
+    {
+        HandleFileSelected("ImmunizationCard", e);
+    }
+
+    private void HandleFileSelected(string documentType, InputFileChangeEventArgs e)
+    {
+        SelectedFiles[documentType] = e.File;
+        Console.WriteLine($"Selected file: {e.File?.Name} for {documentType}");
+    }
+
+    private async Task SubmitIdentificationInfo()
+    {
+        await SubmitFile("IdentificationInfo");
+    }
+
+    private async Task SubmitConsentEMT()
+    {
+        await SubmitFile("ConsentEMT");
+    }
+
+    private async Task SubmitAdditionalChildren()
+    {
+        await SubmitFile("AdditionalChildren");
+    }
+
+    private async Task SubmitParentRights()
+    {
+        await SubmitFile("ParentRights");
+    }
+
+    private async Task SubmitImmunizationCard()
+    {
+        await SubmitFile("ImmunizationCard");
+    }
+
+    private async Task SubmitFile(string documentType)
+    {
+        AddLog($"SubmitFile triggered for: {documentType}");
+        if (!SelectedFiles.TryGetValue(documentType, out var file) || file == null)
         {
-            try
+            StatusMessage = $"No file selected for {documentType}.";
+            AddLog(StatusMessage);
+            return;
+        }
+
+        try
+        {
+            AddLog($"Preparing upload for file: {file.Name}");
+            using var stream = file.OpenReadStream(maxAllowedSize: 10_000_000);
+            var content = new MultipartFormDataContent
             {
-                var content = new MultipartFormDataContent();
-                var fileStream = selectedFile.OpenReadStream(maxAllowedSize: 10_000_000);
-                var fileContent = new StreamContent(fileStream);
-                fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(selectedFile.ContentType);
-                content.Add(fileContent, "file", selectedFile.Name);
-                content.Add(new StringContent(documentType), "documentType");
+                { new StreamContent(stream), "file", file.Name },
+                { new StringContent(documentType), "documentType" }
+            };
 
-                var response = await Http.PostAsync("api/files", content);
+            var response = await Http.PostAsync("api/admin/file-upload", content);
 
-                statusMessage = response.IsSuccessStatusCode ? "File uploaded successfully!" : "Upload failed.";
+            AddLog($"Response Status Code: {response.StatusCode}");
+            var responseBody = await response.Content.ReadAsStringAsync();
+            AddLog($"Response Body: {responseBody}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                StatusMessage = $"File uploaded successfully for {documentType}.";
+                AddLog(StatusMessage);
+                SelectedFiles[documentType] = null; // Clear after successful upload
             }
-            catch (Exception ex)
+            else
             {
-                statusMessage = $"Error: {ex.Message}";
+                StatusMessage = $"Failed to upload file for {documentType}.";
+                AddLog(StatusMessage);
             }
         }
-        else
+        catch (Exception ex)
         {
-            statusMessage = "No file selected.";
+            StatusMessage = $"Error uploading file for {documentType}: {ex.Message}";
+            AddLog(StatusMessage);
         }
     }
 }

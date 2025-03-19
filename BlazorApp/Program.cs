@@ -15,9 +15,8 @@ using Syncfusion.Blazor;
 using Common.Services.Submit;
 using BlazorApp;
 
+using CallejoIncChildcareAPI.Filters;
 using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.SwaggerGen;
-
 
 
 
@@ -106,13 +105,14 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Callejo API",
-        Version = "v1"
+        Version = "v1",
+        Description = "API documentation for Callejo Inc Childcare system, including file upload support."
     });
 
     // Enable file upload support in Swagger
     options.OperationFilter<SwaggerFileUploadOperationFilter>();
 
-    // Support for authorization in Swagger if needed later
+    // Support for authorization in Swagger (if needed)
     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -149,6 +149,12 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
+    // Enable Swagger in development
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Callejo API V1");
+    });
 }
 
 
