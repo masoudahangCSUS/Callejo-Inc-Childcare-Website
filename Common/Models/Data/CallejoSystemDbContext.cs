@@ -23,6 +23,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
+    public virtual DbSet<Expense> Expenses { get; set; }
+
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -173,6 +175,22 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasForeignKey(d => d.FkUsers)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Callejo_Inc_Users");
+        });
+
+        modelBuilder.Entity<Expense>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Receipt).HasColumnName("receipt");
+            entity.Property(e => e.Amount)
+                .HasColumnName("amount")
+                .HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Category)
+                .HasMaxLength(15)
+                .HasColumnName("category");
+            entity.Property(e => e.Note)
+                .HasMaxLength(300)
+                .HasColumnName("note");
         });
 
         modelBuilder.Entity<HolidaysVacation>(entity =>
