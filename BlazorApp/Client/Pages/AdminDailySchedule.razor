@@ -16,8 +16,6 @@
     <div class="events-container" id="display-date">
         <span>Selected Day : @SelectedValue</span>
         <h3>Daily schedule on @SelectedValue</h3>
-        @* <input type="text" @bind="newDailySchedule" placeholder="Enter the schedule" />
-        <button @onclick="AddDailySchedule">Add Schedule</button> *@
 
         <textarea type="text" @bind="newDailySchedule" class="form-control" rows="5" cols="50"></textarea>
         <br />
@@ -26,18 +24,6 @@
         <textarea type="text" @bind="specialEvents" class="form-control" rows="5" cols="50"></textarea>
         <br />
         <button @onclick="AddDailySchedule" class="btn btn-primary">Submit</button>
-
-        <p>You entered:</p>
-        @if (!string.IsNullOrEmpty(displayedText))
-        {
-            <pre>@displayedText</pre>
-        }
-
-        <p>You entered:</p>
-        @if (!string.IsNullOrEmpty(displayedTextSpecial))
-        {
-            <pre>@displayedTextSpecial</pre>
-        }
     </div>
 </div>
 
@@ -45,10 +31,6 @@
 @code {
     public DateTime? SelectedDate { get; set; } = DateTime.Now;
     public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
-    //public DateTime? CurrentDate { get; set; } = DateTime.Now;
-    // public int CurrentMonth = 0;
-    // public int CurrentDay = 0;
-    // public int CurrentYear = 0;
 
     private string inputText = string.Empty;
     private string displayedText = string.Empty;
@@ -59,70 +41,40 @@
 
     private Common.View.ListDailySchedule listDailySchedule;
     private Common.View.DailyScheduleView dailySchedule;
-    //private Common.View.
     private string newDailySchedule;
     private string specialEvents;
 
-    /*private async Task GetRoleById()
-    {
-    roleInfo = string.Empty;
-    listRoles = await RoleService.GetRole(roleId);
-
-    foreach (var role in listRoles.roles)
-        {
-        roleInfo += @"<br/><br/><b>Role Description</b>: " + role.Description + "<br/><br/><br/>";
-    }
-    }*/
-
-
     private async Task AddDailySchedule()
     {
+        Console.WriteLine($"Selected Date: {SelectedDate}");
         dailyScheduleIdCurrentlyBeingEdited = 0;
 
-        DailyScheduleView dailyScheduleInfo = new DailyScheduleView();
-        // dailyScheduleInfo.Month = (short)SelectedDate.Value.Month;
-        // dailyScheduleInfo.Day = (short)SelectedDate.Value.Day;
-        // dailyScheduleInfo.Year = (short)SelectedDate.Value.Year;
-        dailyScheduleInfo.Description = newDailySchedule;
-        dailyScheduleInfo.CreatedAt = SelectedDate;
-        if(specialEvents != null)
-        {
-            dailyScheduleInfo.Desc_special = specialEvents;
-        }
+        DailyScheduleView dailyScheduleInfo = new DailyScheduleView
+            {
+                Description = newDailySchedule,
+                CreatedAt = SelectedDate,
+                Desc_special = specialEvents
+            };
         var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
 
-        if(response.Success)
+        if (response.Success)
         {
-            //listDailySchedule = await DailyScheduleService.GetDailySchedule();
             newDailySchedule = string.Empty;
             specialEvents = string.Empty;
+            SelectedDate = DateTime.Now;
             displayedText = inputText;
-            //dailyScheduleIdCurrentlyBeingEdited = Convert.ToInt64(response.Data);
         }
     }
-    
-    private void AddSpeicalEventsDescription()
-    {
-        displayedTextSpecial = inputTextSpecial;
-    }
 
-    private async Task OnChange(ChangedEventArgs<DateTime?> args)
-    {
-        var Count = 0;
-        var dailyScheduleInfo = string.Empty;
-        //CurrentMonth = SelectedDate.Value.Month;
-        //CurrentDay = SelectedDate.Value.Day;
-        //CurrentYear = SelectedDate.Value.Year;
 
+    private void OnChange(ChangedEventArgs<DateTime?> args)
+    {
         if (args.Value.Value.Month == SelectedDate.Value.Month && args.Value.Value.Day == SelectedDate.Value.Day && args.Value.Value.Year == SelectedDate.Value.Year)
         {
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy") + " (Personal appointment)";
-            //listDailySchedule = await DailyScheduleService.GetDailySchedule(dailyScheduleId);
-            Count++;
-        }
-        if (Count == 0)
-        {
             this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
+            //listDailySchedule = await DailyScheduleService.GetDailySchedule(dailyScheduleId);
         }
+        // SelectedDate = args.Value;
+        // StateHasChanged();
     }
 }
