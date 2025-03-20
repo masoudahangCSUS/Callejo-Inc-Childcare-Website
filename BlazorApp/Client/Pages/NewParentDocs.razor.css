@@ -1,0 +1,77 @@
+﻿h3 {
+    text-align: center;
+}
+
+.new-parent-docs {
+    text-align: center;
+}
+
+.identify-upload-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+.consent-emt-upload-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+.additional-children-upload-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+.parent-rights-upload-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+.immunization-card-upload-btn {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    padding: 15px 30px; /* Increased padding for larger button */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1.2rem; /* Increased font size */
+    font-weight: bold;
+    text-align: center;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
