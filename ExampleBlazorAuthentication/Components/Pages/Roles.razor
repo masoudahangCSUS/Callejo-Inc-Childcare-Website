@@ -1,0 +1,142 @@
+﻿@page "/roles"
+@using Service
+@inject RoleService RoleService
+@inject IHttpContextAccessor HttpContextAccessor
+
+<h3>Roles</h3>
+
+<table>
+    <tr>
+        <td>
+            <br />
+            <h3>Existing roles</h3>
+            <label>@((MarkupString)allroles)</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <br /><br /><br />
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Get a Role</h3>
+            <input type="number" @bind="roleId" placeholder="Enter Role ID" />
+            <button @onclick="GetRoleById">Get Role</button>
+            <br /><label>@((MarkupString)roleInfo)</label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Add a Role</h3>
+            <input type="text" @bind="newRoleName" placeholder="Enter Role Name" />
+            <button @onclick="AddRole">Add Role</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Update a Role</h3>
+            <input type="number" @bind="updateRoleId" placeholder="Enter Role ID" />
+            <input type="text" @bind="updateRoleName" placeholder="Enter New Role Name" />
+            <button @onclick="UpdateRole">Update Role</button>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <h3>Delete a Role</h3>
+            <input type="number" @bind="deleteRoleId" placeholder="Enter Role ID" />
+            <button @onclick="DeleteRole">Delete Role</button>
+        </td>
+    </tr>
+</table>
+
+@code {
+    private Common.View.ListRoles listRoles;
+    private Common.View.RoleView role;
+    private int roleId;
+    private string newRoleName;
+    private int updateRoleId;
+    private string updateRoleName;
+    private int deleteRoleId;
+    private string roleInfo;
+    private string allroles;
+    private string authGuid;
+    private string userName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (HttpContextAccessor.HttpContext != null)
+        {
+            authGuid = HttpContextAccessor.HttpContext.Request.Cookies["AuthGUID"];
+            userName = HttpContextAccessor.HttpContext.Request.Cookies["AuthUserName"];
+
+            //listRoles = Task.Run(() => RoleService.GetAllRoles(userName, authGuid)).Result;
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+            if (listRoles != null)
+                BuildHtmlTable();
+        }
+    }
+    private void BuildHtmlTable()
+    {
+        allroles = "<table>";
+        allroles += "<tr><th>ID</th><th>Role Description</th></tr>";
+
+        foreach (var role in listRoles.roles)
+        {
+            allroles += "<tr>";
+            allroles += "<td>" + role.Id.ToString() + "</td>";
+            allroles += "<td>" + role.Description + "</td>";
+            allroles += "</tr>";
+        }
+
+        allroles += "</table>";
+    }
+    private async Task GetRoleById()
+    {
+        roleInfo = string.Empty;
+        listRoles = await RoleService.GetRole(roleId, userName, authGuid);
+
+        foreach (var role in listRoles.roles)
+        {
+            roleInfo += @"<br/><br/><b>Role Description</b>: " + role.Description + "<br/><br/><br/>";
+        }
+    }
+
+    private async Task AddRole()
+    {
+        var roleInfo = new Common.View.RoleView { Description = newRoleName };
+        var response = await RoleService.InsertRole(roleInfo, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+            newRoleName = string.Empty;
+        }
+        BuildHtmlTable();
+    }
+
+    private async Task UpdateRole()
+    {
+        var roleInfo = new Common.View.RoleView { Id = updateRoleId, Description = updateRoleName };
+        var response = await RoleService.UpdateRole(roleInfo, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+            updateRoleId = 0;
+            updateRoleName = string.Empty;
+        }
+        BuildHtmlTable();
+    }
+
+    private async Task DeleteRole()
+    {
+        var response = await RoleService.DeleteRole(deleteRoleId, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+            deleteRoleId = 0;
+        }
+        BuildHtmlTable();
+    }
+
+
+}

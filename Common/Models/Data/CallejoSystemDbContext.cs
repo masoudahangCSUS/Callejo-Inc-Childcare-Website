@@ -29,6 +29,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<InterestedParent> InterestedParents { get; set; }
 
+    public virtual DbSet<Login> Logins { get; set; }
+
     public virtual DbSet<Notification> Notifications { get; set; }
 
     public virtual DbSet<PhoneNumber> PhoneNumbers { get; set; }
@@ -236,6 +238,27 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("reason_for_inquiry");
+        });
+
+        modelBuilder.Entity<Login>(entity =>
+        {
+            entity.HasKey(e => e.Username);
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("username");
+            entity.Property(e => e.FkCallejoIncUser).HasColumnName("fkCallejoIncUser");
+            entity.Property(e => e.LastLogin).HasColumnType("datetime");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("password");
+
+            entity.HasOne(d => d.FkCallejoIncUserNavigation).WithMany(p => p.Logins)
+                .HasForeignKey(d => d.FkCallejoIncUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Logins_Callejo_Inc_Users");
         });
 
         modelBuilder.Entity<Notification>(entity =>
