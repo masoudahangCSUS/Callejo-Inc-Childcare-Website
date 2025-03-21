@@ -7,64 +7,76 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<div>
-    <h3>Users</h3>
-    <button @onclick="() => AddUser()">ADD</button>
-</div>
+<div class="admin-account-container">
+    <!-- Main Title -->
+    <div class="account-title">
+        <h1>Accounts</h1>
+    </div>
 
-@if (users == null)
-{
-    <p>Loading data...</p>
-}
-else if (users.Count == 0)
-{
-    <p>No users found.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Address</th>
-                <th>City</th>
-                <th>ZIP</th>
-                <th>Registration</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in users)
-            {
+    <!-- Header -->
+    <div class="account-header">
+        <h2>Users</h2>
+        <button class="add-btn" @onclick="() => AddUser()">Add User</button>
+    </div>
+
+    @if (users == null)
+    {
+        <p class="loading-text">Loading data...</p>
+    }
+    else if (users.Count == 0)
+    {
+        <p class="no-data-text">No users found.</p>
+    }
+    else
+    {
+        <table class="account-table">
+            <thead>
                 <tr>
-                    <td>@user.FirstName</td>
-                    <td>@user.LastName</td>
-                    <td>@user.Address</td>
-                    <td>@user.City</td>
-                    <td>@user.ZipCode</td>
-                    <td>
-                        @if (user.RegistrationDocument != null) {
-                            <button @onclick="() => DownloadFile(user.Id, user.FirstName, user.LastName)">Download</button>
-                            <button @onclick = "() => DeleteFile(user.Id)">Delete</button>
-                        }
-                        else{
-                            <InputFile OnChange="e => HandleFileSelected(e, user.Id)" />
-                            <button @onclick="() => UploadFile(user.Id)">Upload</button>
-                        }
-                    </td>
-                    <td>
-                        <button @onclick = "() => EditUser(user)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteUser(user.Id)">Delete</button>
-                    </td>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Address</th>
+                    <th>City</th>
+                    <th>ZIP</th>
+                    <th>Registration</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var user in users)
+                {
+                    <tr>
+                        <td>@user.FirstName</td>
+                        <td>@user.LastName</td>
+                        <td>@user.Address</td>
+                        <td>@user.City</td>
+                        <td>@user.ZipCode</td>
+                        <td>
+                            @if (user.RegistrationDocument != null)
+                            {
+                                <button class="download-btn" @onclick="() => DownloadFile(user.Id, user.FirstName, user.LastName)">Download</button>
+                                <button class="delete-btn" @onclick="() => DeleteFile(user.Id)">Delete</button>
+                            }
+                            else
+                            {
+                                <InputFile OnChange="e => HandleFileSelected(e, user.Id)" class="input-file" />
+                                <button class="upload-btn" @onclick="() => UploadFile(user.Id)">Upload</button>
+                            }
+                        </td>
+                        <td>
+                            <button class="edit-btn" @onclick="() => EditUser(user)">Edit</button>
+                            <button class="delete-btn" @onclick="() => ConfirmDeleteUser(user.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
 
-<Modal Title="@GetModalTitle()" IsVisible="@isProfileModalVisible" OnClose="CloseProfileModal">
-    <ProfileForm OnUserCreated="LoadUsers" OnSuccess="CloseProfileModal" Mode="@formMode" ExistingUser="@selectedUser" />
-</Modal>
+    <!-- Modal -->
+    <Modal Title="@GetModalTitle()" IsVisible="@isProfileModalVisible" OnClose="CloseProfileModal">
+        <ProfileForm OnUserCreated="LoadUsers" OnSuccess="CloseProfileModal" Mode="@formMode" ExistingUser="@selectedUser" />
+    </Modal>
+</div>
 
 @code {
     private List<AdminUserCreationDTO> users;

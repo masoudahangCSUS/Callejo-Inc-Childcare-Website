@@ -1,7 +1,13 @@
 ﻿@using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Roles = "Admin")]
 
-<div class="content">
+<div class="admin-overview">
+    <!-- Page Title -->
+    <div class="overview-header">
+        <h2>Overview</h2>
+        <p>Welcome back, Admin! Here's a summary of your childcare center's performance.</p>
+    </div>
+
     <div class="grid">
         <!-- Company Facts -->
         <div class="card">
@@ -11,41 +17,41 @@
                 <!-- Placeholder for chart component -->
                 <p>Employee List (2024)</p>
             </div>
-            <ul>
-                <br />
-                <br />
-                <br />
-                <br />
+        </div>
 
-            </ul>
+        <!-- Total Revenue -->
+        <div class="card highlight-card">
+            <h5>Total Revenue</h5>
+            <p>$125,000</p>
+            <p>Last Updated: March 18, 2025</p>
+        </div>
+
+        <!-- Total Active Children -->
+        <div class="card highlight-card">
+            <h5>Total Active Children</h5>
+            <p>48</p>
+            <p>Includes infants, toddlers, and preschoolers</p>
         </div>
 
         <!-- Statistics -->
         <div class="card">
             <h5>Statistics</h5>
-            <p>Projects by account</p>
-            <div>
-            </div>
+            <p>Projects by Account</p>
             <ul>
-                <li>Nothing to report.</li>
-                <br />
-                <br />
-                <br />
-                <br />
-
+                <li>No active projects at the moment.</li>
             </ul>
         </div>
 
         <!-- Assigned Risks -->
         <div class="card">
             <h5>Assigned Risks</h5>
-            <p>There are no risks assigned.</p>
+            <p>No risks currently assigned.</p>
         </div>
 
         <!-- Assigned Action Items -->
         <div class="card">
             <h5>Assigned Action Items</h5>
-            <p>There are no action items assigned.</p>
+            <p>No action items assigned.</p>
         </div>
     </div>
 </div>

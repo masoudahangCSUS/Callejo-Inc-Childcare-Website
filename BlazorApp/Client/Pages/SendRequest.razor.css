@@ -23,6 +23,8 @@
     display: flex;
     justify-content: center;
     margin-top: 40px;
+    position: relative; /* Ensures layout consistency for flex positioning */
+    z-index: 1;
 }
 
 .rq-submit-btn {
@@ -37,6 +39,10 @@
     text-align: center;
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
     box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+    position: relative; /* Retains normal button layout */
+    z-index: 10; /* Brings button to the foreground */
+    pointer-events: auto;
+    outline: 2px solid red; /* For debugging purposes only */
 }
 
 a.rq-cancel-btn {
