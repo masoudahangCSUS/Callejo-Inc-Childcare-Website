@@ -8,6 +8,8 @@ namespace Common.Services.Expenses
         Task<ExpenseDTO> CreateExpenseAsync(ExpenseDTO expenseDto);
         Task<bool> DeleteExpenseAsync(int id);
         Task<bool> UpdateExpenseAsync(ExpenseDTO expenseDto);
-        Task<int> GetChildrenCountAsync(); 
+        Task<int> GetChildrenCountAsync();
+        Task<decimal> GetTotalExpensesAsync();
+
     }
 }
