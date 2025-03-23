@@ -25,6 +25,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<FileUpload> FileUploads { get; set; }
 
+    public virtual DbSet<Expense> Expenses { get; set; }
+
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -187,6 +189,22 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.UploadDate)
                 .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Expense>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Receipt).HasColumnName("receipt");
+            entity.Property(e => e.Amount)
+                .HasColumnName("amount")
+                .HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Category)
+                .HasMaxLength(15)
+                .HasColumnName("category");
+            entity.Property(e => e.Note)
+                .HasMaxLength(300)
+                .HasColumnName("note");
         });
 
         modelBuilder.Entity<HolidaysVacation>(entity =>

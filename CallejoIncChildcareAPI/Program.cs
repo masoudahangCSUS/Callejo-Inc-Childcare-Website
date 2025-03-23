@@ -1,5 +1,6 @@
 using Common.Models.Data;
 using Common.Services.DailySchedule;
+using Common.Services.Expenses;
 using Common.Services.Registration;
 using Common.Services.Role;
 using Common.Services.SQL;
@@ -34,6 +35,7 @@ builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IRegService, RegService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
 
 builder.Services.AddHttpClient();
 
