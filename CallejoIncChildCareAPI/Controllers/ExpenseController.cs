@@ -27,6 +27,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(count); // count is a simple int, easily serializable
         }
 
+        [HttpGet("expenses/total")]
+        public async Task<IActionResult> GetTotalExpenses()
+        {
+            var total = await _expenseService.GetTotalExpensesAsync();
+            return Ok(total);
+        }
+
+
 
         // POST: api/Expenses/Upload
         [HttpPost("Upload")]

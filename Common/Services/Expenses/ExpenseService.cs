@@ -103,6 +103,12 @@ namespace Common.Services.Expenses
             return await _dbContext.Children.CountAsync();
         }
 
+        public async Task<decimal> GetTotalExpensesAsync()
+        {
+            return await _dbContext.Expenses.SumAsync(e => e.Amount);
+        }
+
+
 
 
     }

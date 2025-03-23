@@ -14,8 +14,8 @@
     <div class="summary-section">
         <div class="summary-card">
             <h3>Total Profit</h3>
-            <input type="text" id="total-profit" class="summary-input" placeholder="$0.00">
-            <button class="confirm-btn" onclick="confirmInput('total-profit')">✔</button>
+            <input type="text" class="summary-input" @bind="FormattedProfit" readonly />
+            <button class="confirm-btn" @onclick="TotalProfit">✔</button>
         </div>
         <div class="summary-card">
             <h3>Total Revenue</h3>
@@ -24,13 +24,8 @@
         </div>
         <div class="summary-card">
             <h3>Total Expenses</h3>
-            <input type="text" id="total-expenses" class="summary-input" placeholder="$0.00">
-            <button class="confirm-btn" onclick="confirmInput('total-expenses')">✔</button>
-        </div>
-        <div class="summary-card">
-            <h3>Employee Costs</h3>
-            <input type="text" id="employee-costs" class="summary-input" placeholder="$0.00">
-            <button class="confirm-btn" onclick="confirmInput('employee-costs')">✔</button>
+            <input type="text" id="total-expenses" class="summary-input" @bind="FormattedTotalExpenses" readonly>
+            <button class="confirm-btn" @onclick="LoadTotalExpenses">✔</button>
         </div>
     </div>
 
@@ -152,6 +147,7 @@
         IsExpenseModalOpen = false;
         newExpense = new ExpenseDTO(); // Reset form
         ReceiptData = null;
+        StateHasChanged();
     }
 
     private async Task HandleFileSelected(InputFileChangeEventArgs e)
@@ -208,6 +204,9 @@
     protected override async Task OnInitializedAsync()
     {
         await UpdateTotalRevenue();
+        await LoadTotalExpenses(); 
+        await TotalProfit();
+
     }
 
     private async Task UpdateTotalRevenue()
@@ -216,5 +215,27 @@
         var revenue = totalRevenue * 1000;
         formattedRevenue = $"${revenue:N2}";
     }
+
+    private string FormattedTotalExpenses;
+    private string FormattedProfit;
+
+    private async Task LoadTotalExpenses()
+    {
+        var total = await ExpenseService.GetTotalExpensesAsync();
+        FormattedTotalExpenses = $"${total:N2}";
+
+    }
+
+    private async Task TotalProfit()
+    {
+        // Remove currency symbols and commas for parsing
+        var revenueValue = decimal.Parse(formattedRevenue.Replace("$", "").Replace(",", ""));
+        var expenseValue = decimal.Parse(FormattedTotalExpenses.Replace("$", "").Replace(",", ""));
+
+        var profit = revenueValue - expenseValue;
+        FormattedProfit = $"${profit:N2}";
+    }
+    }
+
 
 }
