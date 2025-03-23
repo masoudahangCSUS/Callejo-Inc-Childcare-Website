@@ -18,8 +18,8 @@
             <button class="confirm-btn" onclick="confirmInput('total-profit')">✔</button>
         </div>
         <div class="summary-card">
-            <h3>Operating Costs</h3>
-            <input type="text" id="operating-costs" class="summary-input" placeholder="$0.00">
+            <h3>Total Revenue</h3>
+            <input type="text" id="operating-costs" class="summary-input" @bind="formattedRevenue" readonly />
             <button class="confirm-btn" onclick="confirmInput('operating-costs')">✔</button>
         </div>
         <div class="summary-card">
@@ -202,4 +202,19 @@
             Console.WriteLine("[Blazor] Failed to upload expense");
         }
     }
+
+    private string formattedRevenue;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await UpdateTotalRevenue();
+    }
+
+    private async Task UpdateTotalRevenue()
+    {
+        var totalRevenue = await ExpenseService.GetChildrenCountAsync();
+        var revenue = totalRevenue * 1000;
+        formattedRevenue = $"${revenue:N2}";
+    }
+
 }

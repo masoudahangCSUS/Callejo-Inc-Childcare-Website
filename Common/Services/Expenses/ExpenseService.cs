@@ -1,5 +1,6 @@
 ﻿using Common.Models.Data;
 using Common.View;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace Common.Services.Expenses
@@ -96,5 +97,13 @@ namespace Common.Services.Expenses
             await _dbContext.SaveChangesAsync();
             return true;
         }
+
+        public async Task<int> GetChildrenCountAsync()
+        {
+            return await _dbContext.Children.CountAsync();
+        }
+
+
+
     }
 }
