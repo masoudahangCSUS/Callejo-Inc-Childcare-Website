@@ -1,5 +1,11 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@page "/admin-expenses"
+@using Microsoft.AspNetCore.Authorization
+@using Common.View
+@using Common.Services.Expenses
+@using System.Globalization
+@inject IExpenseService ExpenseService
 @attribute [Authorize(Roles = "Admin")]
+@rendermode InteractiveServer
 
 <div class="expenses-page">
     <h2>Expenses Overview</h2>
@@ -26,6 +32,13 @@
             <input type="text" id="employee-costs" class="summary-input" placeholder="$0.00">
             <button class="confirm-btn" onclick="confirmInput('employee-costs')">✔</button>
         </div>
+    </div>
+
+    <!-- Button to add new expense -->
+    <div class="d-flex justify-content-end mb-3">
+        <button class="modal-btn" @onclick="ShowExpenseModal">
+            + New Expense
+        </button>
     </div>
 
     <!-- Detailed Expenses Section -->
@@ -83,4 +96,110 @@
         <h3>Expenses Analysis</h3>
         <p>Use the inputs above to update expense details.</p>
     </div>
+
+    <!-- Add Expense Modal -->
+    @if (IsExpenseModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>New Expense Entry</h4>
+
+                <label>Amount:</label>
+                <input type="number" @bind="newExpense.Amount" />
+
+                <label>Date:</label>
+                <input type="date" @bind="newExpense.Date" />
+
+                <label>Category</label>
+                <select @bind="newExpense.Category">
+                    <option value="Groceries">Groceries</option>
+                    <option value="Supplies">Supplies</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label>Notes</label>
+                <textarea @bind="newExpense.Note"></textarea>
+
+                <label>Receipt</label>
+                <InputFile OnChange="@HandleFileSelected" />
+
+                <div class="modal-actions">
+                    <button class="save-btn" @onclick="SubmitExpense">Save</button>
+                    <button class="cancel-btn" @onclick="CloseExpenseModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
 </div>
+
+@code
+{
+    private bool IsExpenseModalOpen = false;
+    private ExpenseDTO newExpense = new ExpenseDTO();
+    private byte[]? ReceiptData;
+
+    private void ShowExpenseModal()
+    {
+        // Pre-assign date and category values when opening modal
+        newExpense.Date = DateOnly.FromDateTime(DateTime.UtcNow);
+        newExpense.Category = "Groceries";
+        IsExpenseModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void CloseExpenseModal()
+    {
+        IsExpenseModalOpen = false;
+        newExpense = new ExpenseDTO(); // Reset form
+        ReceiptData = null;
+    }
+
+    private async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        if (file != null)
+        {
+            // Confirm file is PDF
+            if (file.ContentType != "application/pdf" && !file.Name.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.WriteLine("[Blazor] Invalid file type. Only PDFs are allowed");
+                return;
+            }
+
+            using var memoryStream = new MemoryStream();
+            await file.OpenReadStream(maxAllowedSize: 5 * 1024 * 1024).CopyToAsync(memoryStream);
+            ReceiptData = memoryStream.ToArray();
+        }
+    }
+
+    private async Task SubmitExpense()
+    {
+        // File must be present when creating expense
+        if (ReceiptData == null)
+        {
+            Console.WriteLine("[Blazor] No file selected");
+            return;
+        }
+
+        // Amount must be positive
+        if (newExpense.Amount <= 0)
+        {
+            Console.WriteLine("[Blazor] Positive amounts only");
+            return;
+        }
+
+        // Assign ReceiptData to the receipt variable in the DTO, then create expense entry in DB
+        newExpense.Receipt = ReceiptData;
+        var createdExpense = await ExpenseService.CreateExpenseAsync(newExpense);
+
+        if (createdExpense != null)
+        {
+            Console.WriteLine("[Blazor] Expense uploaded successfully");
+            newExpense = new ExpenseDTO(); // Reset form
+            IsExpenseModalOpen = false;
+        } else
+        {
+            Console.WriteLine("[Blazor] Failed to upload expense");
+        }
+    }
+}
