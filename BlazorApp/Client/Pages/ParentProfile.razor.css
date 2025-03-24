@@ -183,8 +183,9 @@ h2 {
     background: white;
 }
 
-.form-group{
-    margin-bottom:1%;
+.form-group {
+    margin-bottom: 1%;
+}
 
 /* File upload button styling */
 .file-upload-container {

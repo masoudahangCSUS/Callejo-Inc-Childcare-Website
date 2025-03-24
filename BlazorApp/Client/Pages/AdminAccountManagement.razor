@@ -151,7 +151,7 @@
         formMode = FormMode.Create;
         ShowProfileModal();
     }
-   
+
 
 
     // Download registration file
@@ -226,8 +226,17 @@
             return;
         }
 
+        // Retrieve selected file and confirm size is within 5MB requirement
         var selectedFile = fileUploads[userId];
-        using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880); // 5MB
+        const long maxFileSize = 5242880; // 5MB
+        if (selectedFile.Size > maxFileSize)
+        {
+            Console.WriteLine($"[Blazor] File size exceeds 5MB limit. File's size: {selectedFile.Size} bytes");
+            return;
+        }
+
+        // Convert file into byte array
+        using var stream = selectedFile.OpenReadStream(maxAllowedSize: maxFileSize);
         using var memoryStream = new MemoryStream();
         await stream.CopyToAsync(memoryStream);
         byte[] fileData = memoryStream.ToArray();
