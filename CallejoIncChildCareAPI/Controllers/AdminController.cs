@@ -85,7 +85,7 @@ namespace CallejoIncChildcareAPI.Controllers
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
             var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
-            if (user == null || !PasswordService.VerifyPassword(loginInfo.Password, user.Password))
+            if (user == null || user.Password != loginInfo.Password)
             {
                 return Unauthorized(new APIResponse
                 {
