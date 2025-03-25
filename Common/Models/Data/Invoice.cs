@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace Common.Models.Data
 {
@@ -7,11 +6,20 @@ namespace Common.Models.Data
     {
         public Guid InvoiceId { get; set; }
         public Guid GuardianId { get; set; }
+
+        public string GuardianName { get; set; } = "";
+        public string ChildNames { get; set; } = "";
         public DateTime DueDate { get; set; }
         public string Status { get; set; } = "Pending";
-        public DateTime CreatedAt { get; set; }
         public string? Notes { get; set; }
-        public virtual ICollection<InvoiceItem> Items { get; set; } = new List<InvoiceItem>();
-        public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();
+
+        public decimal TotalAmount { get; set; }
+        public decimal AmountPaid { get; set; }
+
+        public string? PaymentMethod { get; set; }
+        public string? TransactionReference { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime? LastPaymentDate { get; set; }
     }
 }

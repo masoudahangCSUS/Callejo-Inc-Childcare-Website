@@ -43,8 +43,6 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Invoice> Invoices { get; set; }
-    public virtual DbSet<InvoiceItem> InvoiceItems { get; set; }
-    public virtual DbSet<Payment> Payments { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -368,6 +366,12 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.GuardianId)
                   .IsRequired();
 
+            entity.Property(e => e.GuardianName)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.ChildNames)
+                  .HasMaxLength(255);
+
             entity.Property(e => e.DueDate)
                   .HasColumnType("date");
 
@@ -376,11 +380,26 @@ public partial class CallejoSystemDbContext : DbContext
                   .IsUnicode(false)
                   .HasDefaultValue("Pending");
 
-            entity.Property(e => e.CreatedAt)
-                  .HasDefaultValueSql("(getdate())")
-                  .HasColumnType("datetime");
-
             entity.Property(e => e.Notes);
+
+            entity.Property(e => e.TotalAmount)
+                  .HasColumnType("decimal(10, 2)");
+
+            entity.Property(e => e.AmountPaid)
+                  .HasColumnType("decimal(10, 2)");
+
+            entity.Property(e => e.PaymentMethod)
+                  .HasMaxLength(50);
+
+            entity.Property(e => e.TransactionReference)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("datetime")
+                  .HasDefaultValueSql("(getdate())");
+
+            entity.Property(e => e.LastPaymentDate)
+                  .HasColumnType("datetime");
 
             entity.HasOne<CallejoIncUser>()
                   .WithMany()
@@ -389,69 +408,7 @@ public partial class CallejoSystemDbContext : DbContext
                   .HasConstraintName("FK_Invoices_GuardianUsers");
         });
 
-        modelBuilder.Entity<InvoiceItem>(entity =>
-        {
-            entity.ToTable("InvoiceItems");
 
-            entity.HasKey(e => e.ItemId);
-
-            entity.Property(e => e.ItemId)
-                  .ValueGeneratedOnAdd();
-
-            entity.Property(e => e.Description)
-                  .HasMaxLength(255);
-
-            entity.Property(e => e.Amount)
-                  .HasColumnType("decimal(10,2)");
-
-            entity.HasOne<Invoice>()
-                  .WithMany(i => i.Items)
-                  .HasForeignKey(e => e.InvoiceId)
-                  .OnDelete(DeleteBehavior.Cascade)
-                  .HasConstraintName("FK_InvoiceItems_Invoice");
-
-            entity.HasOne<Child>()
-                  .WithMany()
-                  .HasForeignKey(e => e.ChildId)
-                  .OnDelete(DeleteBehavior.Cascade)
-                  .HasConstraintName("FK_InvoiceItems_Children");
-        });
-
-        modelBuilder.Entity<Payment>(entity =>
-        {
-            entity.ToTable("Payments");
-
-            entity.HasKey(e => e.PaymentId);
-
-            entity.Property(e => e.PaymentId)
-                  .ValueGeneratedOnAdd();
-
-            entity.Property(e => e.PaymentMethod)
-                  .IsRequired()
-                  .HasMaxLength(20)
-                  .IsUnicode(false);
-
-            entity.Property(e => e.TransactionReference)
-                  .HasMaxLength(255);
-
-            entity.Property(e => e.AmountPaid)
-                  .HasColumnType("decimal(10,2)");
-
-            entity.Property(e => e.PaymentStatus)
-                  .HasMaxLength(20)
-                  .IsUnicode(false)
-                  .HasDefaultValue("Completed");
-
-            entity.Property(e => e.PaymentDate)
-                  .HasColumnType("datetime")
-                  .HasDefaultValueSql("(getdate())");
-
-            entity.HasOne<Invoice>()
-                  .WithMany(i => i.Payments)
-                  .HasForeignKey(e => e.InvoiceId)
-                  .OnDelete(DeleteBehavior.Cascade)
-                  .HasConstraintName("FK_Payments_Invoices");
-        });
 
         OnModelCreatingPartial(modelBuilder);
     }

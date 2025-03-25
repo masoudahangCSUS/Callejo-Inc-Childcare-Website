@@ -32,13 +32,13 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IDailyScheduleService, DailyScheduleService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IRegService, RegService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<Common.Services.Invoice.IInvoiceService, Common.Services.Invoice.InvoiceService>();
 
 builder.Services.AddHttpClient();
-
 
 // Creates a shared encryption key for both the API and Website
 // In order for this to work, you need to create the SharedKeys folder in your C: drive
