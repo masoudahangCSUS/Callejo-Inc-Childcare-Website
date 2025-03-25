@@ -1,4 +1,117 @@
-﻿/* Modal Styles */
+﻿/* Container Styling */
+.admin-account-container {
+    padding: 20px;
+}
+
+/* Main Title Styling */
+.account-title h1 {
+    font-size: 28px;
+    color: black;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 5px;
+}
+
+/* Header Styling */
+.account-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007BFF;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.account-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.add-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+/* Table Styling */
+.account-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.account-table th,
+.account-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.account-table th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+/* Button Styling */
+.edit-btn,
+.delete-btn,
+.view-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #007bff;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.view-btn {
+    background-color: #e0a800;
+}
+
+.view-btn:hover {
+    background-color: #c99700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .account-table th,
+    .account-table td {
+        padding: 8px;
+    }
+
+    .account-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Modal Styles */
 .modal {
     display: flex;
     justify-content: center;
