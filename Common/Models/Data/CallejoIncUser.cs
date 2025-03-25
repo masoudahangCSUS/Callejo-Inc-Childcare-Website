@@ -37,5 +37,7 @@ public partial class CallejoIncUser
 
     public virtual ICollection<PhoneNumber> PhoneNumbers { get; set; } = new List<PhoneNumber>();
 
+    public virtual UserSecret? UserSecret { get; set; }
+
     public virtual ICollection<Child> FkChildren { get; set; } = new List<Child>();
 }

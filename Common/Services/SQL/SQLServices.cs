@@ -558,6 +558,54 @@ namespace Common.Services.SQL
             }
         }
        
+        public async Task<bool> updatePassowrd(SettingsDTO settings)
+        {
+            // Retrieve the user by Id from the database.
+            var user = await _context.CallejoIncUsers.FindAsync(settings.Id);
+            if (user == null)
+            {
+                return false;
+            }
+
+            // Update the password field using the value from SettingsDTO.
+            user.Password = settings.Password;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                // Consider logging the exception in a real-world scenario.
+                return false;
+            }
+        }
+
+        public async Task<bool> updateEmail(SettingsDTO settings)
+        {
+
+            // Retrieve the user by Id from the database.
+            var user = await _context.CallejoIncUsers.FindAsync(settings.Id);
+            if (user == null)
+            {
+                return false;
+            }
+
+            // Update the email field using the value from SettingsDTO.
+            user.Email = settings.Email;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                // Consider logging the exception in a real-world scenario.
+                return false;
+            }
+        }
 
     }
 
