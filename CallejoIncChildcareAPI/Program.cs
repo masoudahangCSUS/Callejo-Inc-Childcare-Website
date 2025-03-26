@@ -36,6 +36,7 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IRegService, RegService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<PasswordService>();
 
 builder.Services.AddHttpClient();
 
