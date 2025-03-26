@@ -8,17 +8,14 @@ using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
 using Common.Services.User;
-
 using Microsoft.AspNetCore.DataProtection;
-
 using Syncfusion.Blazor;
 using Common.Services.Submit;
 using BlazorApp;
-
 using CallejoIncChildcareAPI.Filters;
 using Microsoft.OpenApi.Models;
-
-
+using Common.Services.Expenses;
+using Common.Services.Invoice;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -59,6 +56,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<DailyScheduleService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license

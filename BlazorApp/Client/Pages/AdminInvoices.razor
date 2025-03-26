@@ -1,0 +1,357 @@
+﻿@using Common.View
+@using Microsoft.AspNetCore.Authorization
+
+@inject HttpClient Http
+@inject IJSRuntime JS
+@rendermode InteractiveServer
+@inject AdminService AdminService
+
+@attribute [Authorize(Roles = "Admin")]
+
+<div class="admin-account-container">
+    <div class="account-title">
+        <h1>Invoices</h1>
+    </div>
+
+    <div class="account-header">
+        <h2>All Invoices</h2>
+        <button class="add-btn" @onclick="OpenCreateModal">Create New Invoice</button>
+    </div>
+
+    <table class="account-table">
+        <thead>
+            <tr>
+                <th>Invoice ID</th>
+                <th>Guardian</th>
+                <th>Children</th>
+                <th>Due Date</th>
+                <th>Status</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Method</th>
+                <th>Last Payment</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        @if (invoices != null && invoices.Any())
+        {
+            <tbody>
+                @foreach (var invoice in invoices)
+                {
+                    <tr>
+                        <td>@invoice.InvoiceId</td>
+                        <td>@invoice.GuardianName</td>
+                        <td>@invoice.ChildNames</td>
+                        <td>@invoice.DueDate.ToShortDateString()</td>
+                        <td>
+                            <span class="status-badge @invoice.Status.ToLower()">@invoice.Status</span>
+                        </td>
+                        <td>$@invoice.TotalAmount</td>
+                        <td>$@invoice.AmountPaid</td>
+                        <td>@invoice.PaymentMethod</td>
+                        <td>@invoice.LastPaymentDate?.ToShortDateString()</td>
+                        <td>
+                            <button class="edit-btn" @onclick="() => EditInvoice(invoice.InvoiceId)">Edit</button>
+                            <button class="view-btn" @onclick="() => ViewInvoice(invoice.InvoiceId)">View</button>
+                            <button class="delete-btn" @onclick="() => DeleteInvoice(invoice.InvoiceId)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        }
+    </table>
+
+    @if (isCreateModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>Create Invoice</h4>
+
+                <label>Guardian ID:</label>
+                <input type="text" @bind="newInvoice.GuardianId" />
+
+                <label>Guardian Name:</label>
+                <input type="text" @bind="newInvoice.GuardianName" />
+
+                <label>Child Names:</label>
+                <input type="text" @bind="newInvoice.ChildNames" />
+
+                <label>Due Date:</label>
+                <input type="date" @bind="newInvoice.DueDate" />
+
+                <label>Notes:</label>
+                <textarea @bind="newInvoice.Notes"></textarea>
+
+                <label>Total Amount:</label>
+                <input type="number" step="0.01" @bind="newInvoice.TotalAmount" />
+
+                <label>Amount Paid:</label>
+                <input type="number" step="0.01" @bind="newInvoice.AmountPaid" />
+
+                <label>Payment Method:</label>
+                <select @bind="newInvoice.PaymentMethod">
+                    <option value="">Select Payment Method</option>
+                    <option>Cash</option>
+                    <option>Check</option>
+                    <option>Venmo</option>
+                    <option>CashApp</option>
+                    <option>Zelle</option>
+                    <option>Other</option>
+                </select>
+
+                <label>Transaction Reference:</label>
+                <input type="text" @bind="newInvoice.TransactionReference" />
+
+                <label>Last Payment Date:</label>
+                <input type="date" @bind="newInvoice.LastPaymentDate" />
+
+                <div class="modal-actions">
+                    <button @onclick="CreateInvoice" class="save-btn">Create</button>
+                    <button @onclick="CloseCreateModal" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isEditModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>Edit Invoice</h4>
+
+                <label>Guardian ID:</label>
+                <input type="text" @bind="editingInvoice.GuardianId" />
+
+                <label>Guardian Name:</label>
+                <input type="text" @bind="editingInvoice.GuardianName" />
+
+                <label>Child Names:</label>
+                <input type="text" @bind="editingInvoice.ChildNames" />
+
+                <label>Due Date:</label>
+                <input type="date" @bind="editingInvoice.DueDate" />
+
+                <label>Status:</label>
+                <select @bind="editingInvoice.Status">
+                    <option>Pending</option>
+                    <option>Paid</option>
+                    <option>Overdue</option>
+                </select>
+
+                <label>Notes:</label>
+                <textarea @bind="editingInvoice.Notes"></textarea>
+
+                <label>Total Amount:</label>
+                <input type="number" step="0.01" @bind="editingInvoice.TotalAmount" />
+
+                <label>Amount Paid:</label>
+                <input type="number" step="0.01" @bind="editingInvoice.AmountPaid" />
+
+                <label>Payment Method:</label>
+                <select @bind="editingInvoice.PaymentMethod">
+                    <option value="">Select Payment Method</option>
+                    <option>Cash</option>
+                    <option>Check</option>
+                    <option>Venmo</option>
+                    <option>CashApp</option>
+                    <option>Zelle</option>
+                    <option>Other</option>
+                </select>
+
+                <label>Transaction Reference:</label>
+                <input type="text" @bind="editingInvoice.TransactionReference" />
+
+                <label>Last Payment Date:</label>
+                <input type="date" @bind="editingInvoice.LastPaymentDate" />
+
+                <div class="modal-actions">
+                    <button @onclick="async () => await SaveEditedInvoice()" class="save-btn">Save</button>
+                    <button @onclick="CloseEditModal" class="cancel-btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (isViewModalOpen)
+    {
+        <div class="modal">
+            <div class="modal-content">
+                <h4>Invoice Details</h4>
+
+                <p><strong>Invoice ID:</strong> @viewingInvoice.InvoiceId</p>
+                <p><strong>Guardian:</strong> @viewingInvoice.GuardianName</p>
+                <p><strong>Children:</strong> @viewingInvoice.ChildNames</p>
+                <p><strong>Due Date:</strong> @viewingInvoice.DueDate.ToShortDateString()</p>
+                <p><strong>Status:</strong> @viewingInvoice.Status</p>
+                <p><strong>Notes:</strong> @viewingInvoice.Notes</p>
+                <p><strong>Total Amount:</strong> $@viewingInvoice.TotalAmount</p>
+                <p><strong>Amount Paid:</strong> $@viewingInvoice.AmountPaid</p>
+                <p><strong>Payment Method:</strong> @viewingInvoice.PaymentMethod</p>
+                <p><strong>Transaction Reference:</strong> @viewingInvoice.TransactionReference</p>
+                <p><strong>Last Payment Date:</strong> @viewingInvoice.LastPaymentDate?.ToShortDateString()</p>
+
+                <div class="modal-actions">
+                    <button @onclick="CloseViewModal" class="cancel-btn">Close</button>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private List<InvoiceDTO> invoices;
+    private bool isCreateModalOpen = false;
+    private bool isEditModalOpen = false;
+    private bool isViewModalOpen = false;
+
+    private InvoiceDTO newInvoice = new();
+    private InvoiceDTO editingInvoice = new();
+    private InvoiceDTO viewingInvoice = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        invoices = await AdminService.GetAllInvoicesAsync();
+    }
+
+    private void OpenCreateModal()
+    {
+        newInvoice = new InvoiceDTO
+            {
+                InvoiceId = Guid.NewGuid(),
+                GuardianId = Guid.Empty,
+                GuardianName = "",
+                ChildNames = "",
+                DueDate = DateTime.Today.AddDays(7),
+                Notes = "",
+                TotalAmount = 0,
+                AmountPaid = 0,
+                Status = "Pending",
+                PaymentMethod = "",
+                TransactionReference = "",
+                LastPaymentDate = null
+            };
+
+        isCreateModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void CloseCreateModal()
+    {
+        isCreateModalOpen = false;
+        newInvoice = new InvoiceDTO();
+    }
+
+    private async Task CreateInvoice()
+    {
+        newInvoice.InvoiceId = Guid.NewGuid();
+        newInvoice.Status = "Pending";
+        newInvoice.CreatedAt = DateTime.UtcNow;
+
+        var response = await AdminService.SaveInvoiceAsync(newInvoice);
+
+        if (response.IsSuccessStatusCode)
+        {
+            invoices = await AdminService.GetAllInvoicesAsync();
+            CloseCreateModal();
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] Failed to create invoice.");
+        }
+    }
+
+    private void EditInvoice(Guid invoiceId)
+    {
+        var invoice = invoices.FirstOrDefault(i => i.InvoiceId == invoiceId);
+        if (invoice == null) return;
+
+        editingInvoice = new InvoiceDTO
+            {
+                InvoiceId = invoice.InvoiceId,
+                GuardianId = invoice.GuardianId,
+                GuardianName = invoice.GuardianName,
+                ChildNames = invoice.ChildNames,
+                DueDate = invoice.DueDate,
+                Notes = invoice.Notes,
+                TotalAmount = invoice.TotalAmount,
+                AmountPaid = invoice.AmountPaid,
+                Status = invoice.Status,
+                PaymentMethod = invoice.PaymentMethod,
+                TransactionReference = invoice.TransactionReference,
+                LastPaymentDate = invoice.LastPaymentDate
+            };
+
+        isEditModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void CloseEditModal()
+    {
+        isEditModalOpen = false;
+        editingInvoice = new InvoiceDTO();
+    }
+
+    private async Task SaveEditedInvoice()
+    {
+        var response = await AdminService.UpdateInvoiceAsync(editingInvoice);
+
+        if (response.IsSuccessStatusCode)
+        {
+            invoices = await AdminService.GetAllInvoicesAsync();
+            CloseEditModal();
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] Failed to update invoice.");
+        }
+    }
+
+    private void ViewInvoice(Guid invoiceId)
+    {
+        var invoice = invoices.FirstOrDefault(i => i.InvoiceId == invoiceId);
+        if (invoice == null) return;
+
+        viewingInvoice = new InvoiceDTO
+            {
+                InvoiceId = invoice.InvoiceId,
+                GuardianId = invoice.GuardianId,
+                GuardianName = invoice.GuardianName,
+                ChildNames = invoice.ChildNames,
+                DueDate = invoice.DueDate,
+                Notes = invoice.Notes,
+                TotalAmount = invoice.TotalAmount,
+                AmountPaid = invoice.AmountPaid,
+                Status = invoice.Status,
+                PaymentMethod = invoice.PaymentMethod,
+                TransactionReference = invoice.TransactionReference,
+                LastPaymentDate = invoice.LastPaymentDate
+            };
+
+        isViewModalOpen = true;
+        StateHasChanged();
+    }
+
+    private void CloseViewModal()
+    {
+        isViewModalOpen = false;
+        viewingInvoice = new InvoiceDTO();
+    }
+
+    private async Task DeleteInvoice(Guid invoiceId)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this invoice?");
+        if (!confirmed) return;
+
+        var response = await AdminService.DeleteInvoiceAsync(invoiceId);
+        if (response.IsSuccessStatusCode)
+        {
+            invoices = await AdminService.GetAllInvoicesAsync();
+        }
+        else
+        {
+            Console.WriteLine("[Blazor] Failed to delete invoice.");
+        }
+    }
+
+}

@@ -15,12 +15,12 @@ namespace BlazorApp.Client.Services
         {
             _client = new RestClient(apiSettings.Value.BaseAddress);
         }
-        public async Task<ListDailySchedule> GetDailySchedule(long id)
-        {
-            var request = new RestRequest($"DailySchedule/{id}", Method.Get);
-            var response = await _client.ExecuteAsync<ListDailySchedule>(request);
-            return response.Data;
-        }
+        //public async Task<ListDailySchedule> GetDailySchedule(long id)
+        //{
+        //    var request = new RestRequest($"DailySchedule/{id}", Method.Get);
+        //    var response = await _client.ExecuteAsync<ListDailySchedule>(request);
+        //    return response.Data;
+        //}
 
         public async Task<APIResponse> InsertDailySchedule(DailyScheduleView dailyScheduleView)
         {
@@ -33,6 +33,14 @@ namespace BlazorApp.Client.Services
             var response = await _client.ExecuteAsync<APIResponse>(request);
             return response.Data;
         }
+
+        public async Task<ListDailySchedule> GetDailyScheduleByDate(DateTime date)
+        {
+            var request = new RestRequest($"DailySchedule/{date.ToString("yyyy-MM-dd")}", Method.Get);
+            var response = await _client.ExecuteAsync<ListDailySchedule>(request);
+            return response.Data;
+        }
+        
 
         /*public async Task<ListDailySchedule> GetAllRoles()
         {

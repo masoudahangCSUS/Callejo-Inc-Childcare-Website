@@ -27,11 +27,15 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<FileUpload> FileUploads { get; set; }
 
+    public virtual DbSet<Expense> Expenses { get; set; }
+
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
 
     public virtual DbSet<InterestedParent> InterestedParents { get; set; }
+
+    public virtual DbSet<Login> Logins { get; set; }
 
     public virtual DbSet<Notification> Notifications { get; set; }
 
@@ -42,6 +46,7 @@ public partial class CallejoSystemDbContext : DbContext
     public virtual DbSet<Registration> Registrations { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+    public virtual DbSet<Invoice> Invoices { get; set; }
 
     public virtual DbSet<UserSecret> UserSecrets { get; set; }
 
@@ -145,9 +150,7 @@ public partial class CallejoSystemDbContext : DbContext
             entity.ToTable("Daily_Schedule");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
             entity.Property(e => e.Description).HasColumnName("description");
         });
@@ -198,6 +201,22 @@ public partial class CallejoSystemDbContext : DbContext
             entity.Property(e => e.DocumentType).HasMaxLength(100);
             entity.Property(e => e.FileName).HasMaxLength(255);
             entity.Property(e => e.UploadDate).HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Expense>(entity =>
+        {
+            entity.Property(e => e.Id).ValueGeneratedOnAdd();
+            entity.Property(e => e.Receipt).HasColumnName("receipt");
+            entity.Property(e => e.Amount)
+                .HasColumnName("amount")
+                .HasColumnType("decimal(10,2)");
+            entity.Property(e => e.Date).HasColumnName("date");
+            entity.Property(e => e.Category)
+                .HasMaxLength(15)
+                .HasColumnName("category");
+            entity.Property(e => e.Note)
+                .HasMaxLength(300)
+                .HasColumnName("note");
         });
 
         modelBuilder.Entity<HolidaysVacation>(entity =>
@@ -261,6 +280,27 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("reason_for_inquiry");
+        });
+
+        modelBuilder.Entity<Login>(entity =>
+        {
+            entity.HasKey(e => e.Username);
+
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("username");
+            entity.Property(e => e.FkCallejoIncUser).HasColumnName("fkCallejoIncUser");
+            entity.Property(e => e.LastLogin).HasColumnType("datetime");
+            entity.Property(e => e.Password)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("password");
+
+            entity.HasOne(d => d.FkCallejoIncUserNavigation).WithMany(p => p.Logins)
+                .HasForeignKey(d => d.FkCallejoIncUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Logins_Callejo_Inc_Users");
         });
 
         modelBuilder.Entity<Notification>(entity =>
@@ -345,6 +385,7 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasColumnName("description");
         });
 
+
         modelBuilder.Entity<UserSecret>(entity =>
         {
             entity.HasKey(e => e.FkUser);
@@ -362,6 +403,64 @@ public partial class CallejoSystemDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_UserSecrets_CallejoIncUsers");
         });
+
+
+        modelBuilder.Entity<Invoice>(entity =>
+        {
+            entity.ToTable("Invoices");
+
+            entity.HasKey(e => e.InvoiceId);
+
+            entity.Property(e => e.InvoiceId)
+                  .HasColumnName("InvoiceId")
+                  .ValueGeneratedOnAdd();
+
+            entity.Property(e => e.GuardianId)
+                  .IsRequired();
+
+            entity.Property(e => e.GuardianName)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.ChildNames)
+                  .HasMaxLength(255);
+
+            entity.Property(e => e.DueDate)
+                  .HasColumnType("date");
+
+            entity.Property(e => e.Status)
+                  .HasMaxLength(20)
+                  .IsUnicode(false)
+                  .HasDefaultValue("Pending");
+
+            entity.Property(e => e.Notes);
+
+            entity.Property(e => e.TotalAmount)
+                  .HasColumnType("decimal(10, 2)");
+
+            entity.Property(e => e.AmountPaid)
+                  .HasColumnType("decimal(10, 2)");
+
+            entity.Property(e => e.PaymentMethod)
+                  .HasMaxLength(50);
+
+            entity.Property(e => e.TransactionReference)
+                  .HasMaxLength(100);
+
+            entity.Property(e => e.CreatedAt)
+                  .HasColumnType("datetime")
+                  .HasDefaultValueSql("(getdate())");
+
+            entity.Property(e => e.LastPaymentDate)
+                  .HasColumnType("datetime");
+
+            entity.HasOne<CallejoIncUser>()
+                  .WithMany()
+                  .HasForeignKey(e => e.GuardianId)
+                  .OnDelete(DeleteBehavior.Cascade)
+                  .HasConstraintName("FK_Invoices_GuardianUsers");
+        });
+
+
 
         OnModelCreatingPartial(modelBuilder);
     }
