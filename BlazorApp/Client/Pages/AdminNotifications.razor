@@ -38,7 +38,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    @foreach (var notif in notifications)
+                    @foreach (var notif in PagedNotifications)
                         {
                             <tr>
                                 <td>@notif.FkParentId</td>
@@ -53,6 +53,17 @@
                         }
                     </tbody>
                 </table>
+                <div class="pagination-controls">
+                    @if (currentPage > 1)
+                    {
+                        <button @onclick="GoToPreviousPage" class="pagination-btn">Previous</button>
+                    }
+                    <span class="page-number">Page @currentPage of @Math.Ceiling((double)notifications.Count / pageSize)</span>
+                    @if ((currentPage * pageSize) < notifications.Count)
+                    {
+                        <button @onclick="GoToNextPage" class="pagination-btn">Next</button>
+                    }
+                </div>
             </div>
         }
     </div>
@@ -98,9 +109,6 @@
                 <label>Message:</label>
                 <textarea @bind="newNotification.Message"></textarea>
 
-                <label>Sent On:</label>
-                <input type="datetime-local" @bind="newFormattedSentOn" />
-
                 <div class="modal-actions">
                     <button @onclick="CreateNotification" class="save-btn">Create</button>
                     <button @onclick="CloseCreateModal" class="cancel-btn">Cancel</button>
@@ -124,6 +132,28 @@ else
     private DateTime? formattedSentOn = null;
     private DateTime? newFormattedSentOn = null;
 
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private IEnumerable<NotificationView> PagedNotifications =>
+        notifications.Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+    private void GoToNextPage()
+    {
+        if ((currentPage * pageSize) < notifications.Count)
+        {
+            currentPage++;
+        }
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
         if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
@@ -142,14 +172,14 @@ else
         if (notification == null) return;
 
         editingNotification = new NotificationView
-            {
-                Id = notification.Id,
-                FkParentId = notification.FkParentId,
-                Title = notification.Title,
-                Message = notification.Message,
-                SentOn = notification.SentOn,
-                IsRead = notification.IsRead
-            };
+        {
+            Id = notification.Id,
+            FkParentId = notification.FkParentId,
+            Title = notification.Title,
+            Message = notification.Message,
+            SentOn = notification.SentOn,
+            IsRead = notification.IsRead
+        };
 
         formattedSentOn = notification.SentOn;
         isEditModalOpen = true;

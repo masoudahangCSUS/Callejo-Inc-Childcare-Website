@@ -70,6 +70,15 @@
         border-bottom: 1px solid #ddd;
     }
 
+    .notifications-table tbody tr {
+        border-bottom: 1px solid #ddd;
+    }
+
+        .notifications-table tbody tr:last-child {
+            border-bottom: 1px solid #ddd; /* Ensure full border even on last row */
+        }
+
+
     .notifications-table th {
         background-color: #f4f4f4;
         font-weight: bold;
@@ -211,3 +220,52 @@
     .cancel-btn:hover {
         background-color: #c82333;
     }
+
+
+/* Pagination Container */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+/* Pagination Button Style */
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Active Page Button */
+    .pagination-btn.active {
+        background-color: #0056b3;
+        font-weight: bold;
+        cursor: default;
+    }
+
+/* Page Info Text */
+.page-info {
+    font-size: 0.95rem;
+    color: #555;
+    margin-top: 10px;
+    text-align: center;
+    width: 100%;
+}
+
+/* Fix gray line under Edit/Delete */
+.notifications-table td:last-child {
+    border-bottom: none;
+}
+

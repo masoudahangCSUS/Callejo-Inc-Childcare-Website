@@ -26,7 +26,7 @@
     else
     {
         <div class="notifications-container">
-            @foreach (var notification in notifications)
+            @foreach (var notification in PagedNotifications)
             {
                 <div class="notification-card @(notification.IsRead ? "read" : "unread")"
                      @onclick="() => ToggleNotification(notification)">
@@ -36,27 +36,45 @@
                     @if (notification.IsExpanded)
                     {
                         <p>@notification.Message</p>
-                        <span class="read-indicator">Read</span>
+                        <span class="read-indicator">✅ Read</span>
                     }
                     else
                     {
                         @if (notification.IsRead)
                         {
-                            <p class="read-label">Read</p>
+                            <p class="read-label">✅ Read</p>
                         }
                         else
                         {
-                            <p class="click-to-read">Click to Read</p>
+                            <p class="click-to-read">🔔 Click to Read</p>
                         }
                     }
                 </div>
             }
+
+            <div class="pagination-wrapper">
+                <p class="page-number">Page @currentPage of @Math.Ceiling((double)notifications.Count / pageSize)</p>
+
+                <div class="pagination-controls">
+                    @if (currentPage > 1)
+                    {
+                        <button @onclick="GoToPreviousPage" class="pagination-btn">← Previous</button>
+                    }
+                    @if ((currentPage * pageSize) < notifications.Count)
+                    {
+                        <button @onclick="GoToNextPage" class="pagination-btn">Next →</button>
+                    }
+                </div>
+            </div>
         </div>
     }
 </div>
 
 @code {
     private List<NotificationView> notifications = new();
+
+    private int currentPage = 1;
+    private int pageSize = 5;
 
     protected override async Task OnInitializedAsync()
     {
@@ -65,16 +83,8 @@
             if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 3)
             {
                 Guid parentId = UserSession.UserId.Value;
-                Console.WriteLine($"DEBUG: Fetching notifications for Parent ID: {parentId}");
-
                 notifications = await NotificationService.GetNotificationsByParentId(parentId);
-                notifications.ForEach(n => n.IsExpanded = false); // Ensure all notifications are collapsed initially
-
-                Console.WriteLine($"DEBUG: Fetched {notifications.Count} notifications.");
-            }
-            else
-            {
-                Console.WriteLine("DEBUG: User is not logged in or UserId is missing.");
+                notifications.ForEach(n => n.IsExpanded = false);
             }
         }
         catch (Exception ex)
@@ -87,17 +97,12 @@
     {
         if (!notification.IsRead)
         {
-            Console.WriteLine($"DEBUG: Marking notification {notification.Id} as read...");
             try
             {
                 var success = await NotificationService.MarkAsRead(notification.Id);
                 if (success)
                 {
                     notification.IsRead = true;
-                }
-                else
-                {
-                    Console.WriteLine($"DEBUG: Failed to mark notification {notification.Id} as read.");
                 }
             }
             catch (Exception ex)
@@ -106,8 +111,26 @@
             }
         }
 
-        // Toggle expand/collapse state
         notification.IsExpanded = !notification.IsExpanded;
         StateHasChanged();
+    }
+
+    private IEnumerable<NotificationView> PagedNotifications =>
+        notifications.Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+    private void GoToNextPage()
+    {
+        if ((currentPage * pageSize) < notifications.Count)
+        {
+            currentPage++;
+        }
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
     }
 }
