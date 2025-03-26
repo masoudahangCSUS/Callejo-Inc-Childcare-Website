@@ -1,386 +1,38 @@
 @page "/profile"
 
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Common.View
 @using Common.Services.User
-@using Common.Services.Invoice
 @using Common.Models.Data
 @using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
-@using BlazorApp.Client.Services
-@using Microsoft.AspNetCore.Components.Forms
+@using System.Text.RegularExpressions;
+@using Common.Services.Invoice;
+
 
 @inject HttpClient Http
-@inject IJSRuntime JS
-@rendermode InteractiveServer
-@attribute [Authorize(Roles = "User")]
 @inject NavigationManager Navigation
 @inject IUserService userService
+@inject IJSRuntime JS
+@inject IInvoiceService invoiceService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
-@inject ProfileService profileService;
-@inject IInvoiceService invoiceService
+@inject ProfileService profileService
+@rendermode InteractiveServer
 
+@attribute [Authorize(Roles = "User")]
 
-@code {
-    private bool showUploadDialog = false;
-    private IBrowserFile? selectedFile;
-    private CustomerUserViewDTO? userViewDTO;
-    private EmergencyContactDTO? emergencyDTO;
-    private PhoneNumberDTO? UserPrimaryNumber, UserSecondaryNumber, EmergencyPrimaryNumber, EmergencySecondaryNumber;
-    private int currentCardIndex = 0;
-    private bool showEditCard = false;
-    private string userPrimary, userSecondary, emergencyPrimary, emergencySecondary;
-    private CustomerUserViewDTO updatedUser;
-    private EmergencyContactDTO updatedEmergency;
-    private EditContext editContext;
-
-    private bool showInvoiceReminder = false;
-    private bool hasRenderedReminder = false;
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await Task.Delay(100);
-
-            if (showInvoiceReminder && !hasRenderedReminder)
-            {
-                hasRenderedReminder = true;
-                Console.WriteLine("showing alert");
-                await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
-            }
-        }
-    }
-
-
-    void ShowFileUploadDialog()
-    {
-        showUploadDialog = true;
-    }
-
-    void CancelUpload()
-    {
-        showUploadDialog = false;
-    }
-
-    async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        selectedFile = e.File;
-    }
-
-    async Task UploadFile()
-    {
-        if (selectedFile is not null)
-        {
-            // Confirm selected file is within 5MB requirement
-            const long maxFileSize = 5242880; // 5MB
-            if (selectedFile.Size > maxFileSize)
-            {
-                Console.WriteLine($"[Blazor] File size exceeds 5MB limit. File's size: {selectedFile.Size} bytes");
-                return;
-            }
-
-            // Convert file into byte array
-            using var stream = selectedFile.OpenReadStream(maxAllowedSize: maxFileSize);
-            using var memoryStream = new MemoryStream();
-            await stream.CopyToAsync(memoryStream);
-            byte[] fileData = memoryStream.ToArray();
-
-            // Set up payloads, specifying the filetype as PDF
-            var content = new MultipartFormDataContent();
-            var fileContent = new ByteArrayContent(fileData);
-            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
-            content.Add(fileContent, "file", selectedFile.Name);
-
-            // Declare API URL
-            var user = await profileService.GetUserByID(UserSession.UserId);
-            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={user.Id}";
-            Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
-
-            // Call API
-            var response = await Http.PostAsync(apiUrl, content);
-
-            Console.WriteLine($"[Blazor] Response Status: {response.StatusCode}");
-            Console.WriteLine($"[Blazor] Response Content: {await response.Content.ReadAsStringAsync()}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                Console.WriteLine("[Blazor] File uploaded successfully");
-            }
-            else
-            {
-                Console.WriteLine("[Blazor] File upload failed");
-            }
-
-            showUploadDialog = false;
-        }
-    }
-
-    protected override async Task OnInitializedAsync()
-    {
-        await GetUserView();
-        if (userViewDTO != null)
-        {
-            // Initialize updatedUser to a copy of userViewDTO
-            updatedUser = new CustomerUserViewDTO
-                {
-                    FirstName = userViewDTO.FirstName,
-                    LastName = userViewDTO.LastName,
-                    Email = userViewDTO.Email,
-                    Address = userViewDTO.Address,
-                    City = userViewDTO.City,
-                    State = userViewDTO.State,
-                    ZipCode = userViewDTO.ZipCode,
-                    PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
-                    SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber,
-                    Children = new List<ChildView>(userViewDTO.Children)
-                };
-
-            editContext = new EditContext(updatedUser);
-        }
-    }
-
-
-    async Task GetUserView(){
-
-        // Get user information
-        // Store the number in a DTO
-        var user = await profileService.GetUserByID(UserSession.UserId);
-
-        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
-        Console.WriteLine(UserSession.UserId.Value);
-        foreach (var invoice in invoices)
-        {
-            Console.WriteLine($"Invoice ID: {invoice.InvoiceId}, Status: {invoice.Status}");
-        }
-        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
-
-        PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
-        PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
-
-        UserPrimaryNumber = new PhoneNumberDTO
-        {
-            Id = PrimaryPhoneNumber.Id,
-            AreaCode = PrimaryPhoneNumber.AreaCode,
-            Prefix = PrimaryPhoneNumber.Prefix,
-            LastFour = PrimaryPhoneNumber.LastFour,
-            Fk_users = PrimaryPhoneNumber.FkUsers,
-            Type = PrimaryPhoneNumber.FkType
-        };
-        UserSecondaryNumber = new PhoneNumberDTO
-        {
-            Id = SecondaryPhoneNumber.Id,
-            AreaCode = SecondaryPhoneNumber.AreaCode,
-            Prefix = SecondaryPhoneNumber.Prefix,
-            LastFour = SecondaryPhoneNumber.LastFour,
-            Fk_users = SecondaryPhoneNumber.FkUsers,
-            Type = SecondaryPhoneNumber.FkType
-        };
-
-        // Get ermgency contact information
-        //Store the number in a DTO
-        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
-        PhoneNumber EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
-        PhoneNumber EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
-        EmergencyPrimaryNumber = new PhoneNumberDTO
-        {
-            Id = EmergencyPrimary.Id,
-            AreaCode = EmergencyPrimary.AreaCode,
-            Prefix = EmergencyPrimary.Prefix,
-            LastFour = EmergencyPrimary.LastFour,
-            Fk_users = EmergencyPrimary.FkUsers,
-            Type = EmergencyPrimary.FkType
-        };
-        if (EmergencySecondaryNumber != null)
-        {
-            EmergencySecondaryNumber = new PhoneNumberDTO
-            {
-                Id = EmergencySecondary.Id,
-                AreaCode = EmergencySecondary.AreaCode,
-                Prefix = EmergencySecondary.Prefix,
-                LastFour = EmergencySecondary.LastFour,
-                Fk_users = EmergencySecondary.FkUsers,
-                Type = EmergencySecondary.FkType
-            };
-        }
-
-        userViewDTO = new CustomerUserViewDTO
-        {
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            MiddleName = user.MiddleName,
-            Email = user.Email,
-            PrimaryPhoneNumber = UserPrimaryNumber,
-            SecondaryPhoneNumber = UserSecondaryNumber,
-            Address = user.Address,
-            City = user.City,
-            State = user.State,
-            ZipCode = user.ZipCode,
-
-        };
-        emergencyDTO = new EmergencyContactDTO
-        {
-            FirstName = emergencyContact.FirstName,
-            LastName = emergencyContact.LastName,
-            PrimaryPhoneNumber = EmergencyPrimaryNumber,
-            SecondaryPhoneNumber = EmergencySecondaryNumber,
-            Relationship = emergencyContact.Relationship
-        };
-        Console.WriteLine("Upcoming value: " + upcoming);
-        if (upcoming != null)
-        {
-            Console.WriteLine("ticking value to true");
-            showInvoiceReminder = true;
-        }
-
-        StateHasChanged();
-    }
-
-    private void NextCard()
-    {
-        currentCardIndex = (currentCardIndex + 1) % 2;
-    }
-
-    private void PreviousCard()
-    {
-        currentCardIndex = (currentCardIndex - 1 + 2) % 2;
-    }
-
-    private void ShowEditProfileCard()
-    {
-        userPrimary = profileService.numberToString(userViewDTO.PrimaryPhoneNumber);
-        userSecondary = profileService.numberToString(userViewDTO.SecondaryPhoneNumber);
-        updatedUser = new CustomerUserViewDTO
-            {
-                Id = UserSession.UserId,
-                FirstName = userViewDTO.FirstName,
-                LastName = userViewDTO.LastName,
-                MiddleName = userViewDTO.MiddleName,
-                Email = userViewDTO.Email,
-                Address = userViewDTO.Address,
-                City = userViewDTO.City,
-                State = userViewDTO.State,
-                ZipCode = userViewDTO.ZipCode,
-                PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
-                SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber
-            };
-
-        emergencyPrimary = profileService.numberToString(emergencyDTO.PrimaryPhoneNumber);
-        emergencySecondary = profileService.numberToString(emergencyDTO.SecondaryPhoneNumber);
-        updatedEmergency = new EmergencyContactDTO
-            {
-                FirstName = emergencyDTO.FirstName,
-                LastName = emergencyDTO.LastName,
-                PrimaryPhoneNumber = emergencyDTO.PrimaryPhoneNumber,
-                SecondaryPhoneNumber = emergencyDTO.SecondaryPhoneNumber,
-                Relationship = emergencyDTO.Relationship
-            };
-        showEditCard = true;
-    }
-
-
-    private async Task HandleValidSubmit()
-    {
-        // Create separate field identifiers for each DTO
-        var userSecondaryField = new FieldIdentifier(updatedUser, nameof(updatedUser.SecondaryPhoneNumber));
-        var emergencySecondaryField = new FieldIdentifier(updatedEmergency, nameof(updatedEmergency.SecondaryPhoneNumber));
-
-        bool isUserSecondaryModified = editContext.IsModified(userSecondaryField);
-        if (!isUserSecondaryModified)
-        {
-            updatedUser.SecondaryPhoneNumber = null;
-            updatedEmergency.SecondaryPhoneNumber = null;
-        }
-
-        var decodedUserPrimary = profileService.PhoneNumberDecode(userPrimary);
-        var decodedUserSeconodary = profileService.PhoneNumberDecode(userSecondary);
-        var decodedEmergencyPrimary = profileService.PhoneNumberDecode(emergencyPrimary);
-        var decodedEmergencySecondary = profileService.PhoneNumberDecode(emergencySecondary);
-
-        PhoneNumberDTO updateUserPrimary = new PhoneNumberDTO
-            {
-                Id = userViewDTO.PrimaryPhoneNumber.Id,
-                AreaCode = decodedUserPrimary.AreaCode,
-                Prefix = decodedUserPrimary.Prefix,
-                LastFour = decodedUserPrimary.LastFour,
-                Type = userViewDTO.PrimaryPhoneNumber.Type,
-                Fk_users = userViewDTO.PrimaryPhoneNumber.Fk_users
-            };
-        PhoneNumberDTO updatedUserSecondary = new PhoneNumberDTO
-            {
-                Id = userViewDTO.SecondaryPhoneNumber.Id,
-                AreaCode = decodedUserSeconodary.AreaCode,
-                Prefix = decodedUserSeconodary.Prefix,
-                LastFour = decodedUserSeconodary.LastFour,
-                Type = userViewDTO.SecondaryPhoneNumber.Type,
-                Fk_users = userViewDTO.SecondaryPhoneNumber.Fk_users
-            };
-        updatedUser.PrimaryPhoneNumber = updateUserPrimary;
-        updatedUser.SecondaryPhoneNumber = updatedUserSecondary;
-
-        PhoneNumberDTO updatedEmergencyPrimary = new PhoneNumberDTO
-            {
-                Id = emergencyDTO.PrimaryPhoneNumber.Id,
-                AreaCode = decodedEmergencyPrimary.AreaCode,
-                Prefix = decodedEmergencyPrimary.Prefix,
-                LastFour = decodedEmergencyPrimary.LastFour,
-                Type = emergencyDTO.PrimaryPhoneNumber.Type,
-                Fk_users = emergencyDTO.PrimaryPhoneNumber.Fk_users
-            };
-        PhoneNumberDTO updatedEmergencySecondary = new PhoneNumberDTO
-            {
-                Id = emergencyDTO.SecondaryPhoneNumber.Id,
-                AreaCode = decodedEmergencySecondary.AreaCode,
-                Prefix = decodedEmergencySecondary.Prefix,
-                LastFour = decodedEmergencySecondary.LastFour,
-                Type = emergencyDTO.SecondaryPhoneNumber.Type,
-                Fk_users = emergencyDTO.SecondaryPhoneNumber.Fk_users
-            };
-        updatedEmergency.PrimaryPhoneNumber = updatedEmergencyPrimary;
-        updatedEmergency.SecondaryPhoneNumber = updatedEmergencySecondary;
-
-
-
-        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, updatedUser);
-        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, updatedEmergency);
-
-        if (!userUpdateStatus)
-            Console.WriteLine("Debug: user update failed");
-        else
-            Console.WriteLine("Debug: user update succesful");
-
-        if (!emergencyUpdateStatus)
-            Console.WriteLine("Debug: emergency contact update failed");
-        else
-            Console.WriteLine("Debug: emergnecy contact update successful");
-
-        // Optionally, handle the statuses (e.g. show messages) before hiding the edit UI.
-        HideCards();
-        await GetUserView();
-        StateHasChanged();
-    }
-
-    private void HideCards()
-    {
-        currentCardIndex = 0;
-        showEditCard = false;
-    }
-
-    private void Navigate()
-    {
-        Navigation.NavigateTo("/parent_status");
-    }
-}
-
-
-@if(userViewDTO == null || emergencyDTO == null){
+@if (userViewDTO == null || emergencyDTO == null)
+{
     <p>Loading profile...</p>
 }
-else{
+else
+{
     <div class="parent-profile-page">
-        <h1>Profile</h1>
+        <!-- Read-only profile display -->
         <div class="profile-overview">
             <div class="profile-photo-container">
                 <img src="images/parent-placeholder.png" alt="Parent photo" class="profile-photo" />
@@ -389,21 +41,26 @@ else{
                 <div class="profile-details">
                     <div class="profile-info">
                         <div class="profile-column">
-                            <p><strong>First Name:</strong> @userViewDTO?.FirstName</p>
+                            <p><strong>First Name:</strong> @userViewDTO.FirstName</p>
                             <p><strong>Last Name:</strong> @userViewDTO.LastName</p>
                             <p><strong>Email Address:</strong> @userViewDTO.Email</p>
-                            <p><strong>Primary Phone Number:</strong> (@userViewDTO.PrimaryPhoneNumber.AreaCode) @userViewDTO.PrimaryPhoneNumber.Prefix - @userViewDTO.PrimaryPhoneNumber.LastFour</p>  
-                            <p><strong>Secondary Phone Number: </strong>
+                            <p>
+                                <strong>Primary Phone Number:</strong>
+                                (@userViewDTO.PrimaryPhoneNumber.AreaCode)
+                                @userViewDTO.PrimaryPhoneNumber.Prefix -
+                                @userViewDTO.PrimaryPhoneNumber.LastFour
+                            </p>
+                            <p>
+                                <strong>Secondary Phone Number:</strong>
                                 @if (userViewDTO.SecondaryPhoneNumber != null)
                                 {
                                     @($"({userViewDTO.SecondaryPhoneNumber.AreaCode}) {userViewDTO.SecondaryPhoneNumber.Prefix} - {userViewDTO.SecondaryPhoneNumber.LastFour}")
                                 }
                                 else
                                 {
-                                    <em> </em>
+                                    <em>None</em>
                                 }
-
-                            </p>  
+                            </p>
                         </div>
                         <div class="profile-column">
                             <p><strong>Street Address:</strong> @userViewDTO.Address</p>
@@ -425,17 +82,23 @@ else{
                         <div class="emergency-column">
                             <p><strong>First Name:</strong> @emergencyDTO.FirstName</p>
                             <p><strong>Last Name:</strong> @emergencyDTO.LastName</p>
-                            <p><strong>Primary Phone Number:</strong>(@emergencyDTO.PrimaryPhoneNumber.AreaCode) @emergencyDTO.PrimaryPhoneNumber.Prefix - @emergencyDTO.PrimaryPhoneNumber.LastFour</p>
-                            <p><strong> Secondary Phone Number: </strong>
+                            <p>
+                                <strong>Primary Phone Number:</strong>
+                                (@emergencyDTO.PrimaryPhoneNumber.AreaCode)
+                                @emergencyDTO.PrimaryPhoneNumber.Prefix -
+                                @emergencyDTO.PrimaryPhoneNumber.LastFour
+                            </p>
+                            <p>
+                                <strong>Secondary Phone Number:</strong>
                                 @if (emergencyDTO.SecondaryPhoneNumber != null)
                                 {
                                     @($"({emergencyDTO.SecondaryPhoneNumber.AreaCode}) {emergencyDTO.SecondaryPhoneNumber.Prefix} - {emergencyDTO.SecondaryPhoneNumber.LastFour}")
                                 }
-                                else{
-                                    <em> </em>
+                                else
+                                {
+                                    <em>None</em>
                                 }
                             </p>
-
                             <p><strong>Relationship to Child:</strong> @emergencyDTO.Relationship</p>
                         </div>
                     </div>
@@ -443,117 +106,485 @@ else{
             </div>
         </div>
 
-        <!-- Registraion Options -->
         <div class="button-group">
             <button class="btn-edit" @onclick="ShowEditProfileCard">Edit Profile</button>
             <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
-            <button class="btn-regupload" @onclick="Navigate"> Registration Status</button>
+            <button class="btn-regupload" @onclick="Navigate">Registration Status</button>
         </div>
     </div>
-
-
 }
 
-@if (showEditCard) {
-    <div class="card-carousel">
-        @if (currentCardIndex == 0)
-        {
-            <div class="card">
-                <h3>Edit Profile</h3>
-                <EditForm Model="updatedUser" OnValidSubmit="HandleValidSubmit">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
+@if (showEditCard)
+{
+    <!-- Wrap both the Profile and Emergency Contact edits in one EditForm -->
+    <EditForm Model="editModel" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="card-carousel">
+            @if (currentCardIndex == 0)
+            {
+                <div class="card">
+                    <h3>Edit Profile</h3>
                     <div class="form-group">
                         <label>First Name:</label>
-                        <InputText @bind-Value="updatedUser.FirstName" class="form-control" />
+                        <InputText @bind-Value="editModel.FirstName" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.FirstName)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Middle Name:</label>
+                        <InputText @bind-Value="editModel.MiddleName" class="form-control" />
                     </div>
                     <div class="form-group">
                         <label>Last Name:</label>
-                        <InputText @bind-Value="updatedUser.LastName" class="form-control" />
+                        <InputText @bind-Value="editModel.LastName" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.LastName)" />
                     </div>
                     <div class="form-group">
                         <label>Email:</label>
-                        <InputText @bind-Value="updatedUser.Email" class="form-control" />
+                        <InputText @bind-Value="editModel.Email" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.Email)" />
                     </div>
                     <div class="form-group">
                         <label>Primary Phone Number:</label>
-                        <InputText @bind-Value="userPrimary" class="form-control" />
+                        <InputText @bind-Value="editModel.PrimaryPhoneNumber" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.PrimaryPhoneNumber)" />
                     </div>
                     <div class="form-group">
-                        <label> Secondary Phone Number:</label>
-                        <InputText @bind-Value="userSecondary" class="form-control" />
+                        <label>Secondary Phone Number:</label>
+                        <InputText @bind-Value="editModel.SecondaryPhoneNumber" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.SecondaryPhoneNumber)" />
                     </div>
                     <div class="form-group">
                         <label>Street Address:</label>
-                        <InputText @bind-Value="updatedUser.Address" class="form-control" />
+                        <InputText @bind-Value="editModel.Address" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.Address)" />
                     </div>
                     <div class="form-group">
                         <label>City:</label>
-                        <InputText @bind-Value="updatedUser.City" class="form-control" />
+                        <InputText @bind-Value="editModel.City" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.City)" />
                     </div>
                     <div class="form-group">
                         <label>State:</label>
-                        <InputText @bind-Value="updatedUser.State" class="form-control" />
+                        <InputText @bind-Value="editModel.State" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.State)" />
                     </div>
                     <div class="form-group">
                         <label>ZIP:</label>
-                        <InputText @bind-Value="updatedUser.ZipCode" class="form-control" />
+                        <InputText @bind-Value="editModel.ZipCode" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.ZipCode)" />
                     </div>
-                </EditForm>
-
-                <!-- Navigation buttons to scroll between cards -->
-                <div class="card-footer">
-                    <button @onclick="PreviousCard" class="btn-arrow">←</button>
-                    <button @onclick="NextCard" class="btn-arrow">→</button>
                 </div>
+            }
+            else if (currentCardIndex == 1)
+            {
+                <div class="card">
+                    <h3>Emergency Contact</h3>
+                    <div class="form-group">
+                        <label>First Name:</label>
+                        <InputText @bind-Value="editModel.EmergencyFirstName" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.EmergencyFirstName)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name:</label>
+                        <InputText @bind-Value="editModel.EmergencyLastName" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.EmergencyLastName)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Primary Phone Number:</label>
+                        <InputText @bind-Value="editModel.EmergencyPrimaryPhoneNumber" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.EmergencyPrimaryPhoneNumber)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Secondary Phone Number:</label>
+                        <InputText @bind-Value="editModel.EmergencySecondaryPhoneNumber" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.EmergencySecondaryPhoneNumber)" />
+                    </div>
+                    <div class="form-group">
+                        <label>Relation To Child:</label>
+                        <InputText @bind-Value="editModel.EmergencyRelationship" class="form-control" />
+                        <ValidationMessage For="@(() => editModel.EmergencyRelationship)" />
+                    </div>
+                </div>
+            }
+            <div class="card-footer">
+                <button @onclick="PreviousCard" type="button" class="btn-arrow">←</button>
+                <button @onclick="NextCard" type="button" class="btn-arrow">→</button>
             </div>
-        }
-        else if (currentCardIndex == 1)
-        {
-            <div class="card">
-                <h3>Emergency Contact</h3>
-                <div class="form-group">
-                    <label>First Name:</label>
-                    <InputText @bind-Value="updatedEmergency.FirstName" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>Last Name:</label>
-                    <InputText @bind-Value="updatedEmergency.LastName" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>Primary Phone Number:</label>
-                    <InputText @bind-Value="emergencyPrimary" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label> Secondary Phone Number:</label>
-                    <InputText @bind-Value="emergencySecondary" class="form-control" />
-                </div>
-                <div class="form-group">
-                    <label>Relation To Child:</label>
-                    <InputText @bind-Value="updatedEmergency.Relationship" class="form-control"/>
-                </div>
-                <div class="card-footer">
-                    <button @onclick="PreviousCard" class="btn-arrow">←</button>
-                    <button @onclick="NextCard" class="btn-arrow">→</button>
-                </div>
+            <div class="button-group">
+                <button type="submit" class="btn-save">Save</button>
+                <button type="button" class="btn-cancel" @onclick="HideCards">Cancel</button>
             </div>
-        }
-        <div class="button-group">
-            <button type="submit" class="btn-save" @onclick ="HandleValidSubmit">Save</button>
-            <button type="button" class="btn-cancel" @onclick="HideCards">Cancel</button>
         </div>
-    </div>
-
+    </EditForm>
 }
 
 @if (showUploadDialog)
 {
-    // Display file selection button above upload and cancel buttons
-    <div class="file-select-container">
-        <InputFile OnChange="HandleFileSelected" class="btn-regupload" />
+    <div>
+        <InputFile OnChange="HandleFileSelected" />
+        <button class="btn-upload" @onclick="UploadFile">Upload</button>
+        <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
     </div>
-    <div class="file-upload-container">
-        <button class="btn-regupload" @onclick="UploadFile">Upload</button>
-        <button class="btn-regupload" @onclick="CancelUpload">Cancel</button>
-    </div>
+}
+
+@code {
+    // Edit model for profile and emergency contact fields
+    public class ParentProfileEditModel
+    {
+        [Required(ErrorMessage = "First Name is required")]
+        public string FirstName { get; set; }
+        // Optional - default to empty string if null
+        public string MiddleName { get; set; } = "";
+        [Required(ErrorMessage = "Last Name is required")]
+        public string LastName { get; set; }
+        [Required(ErrorMessage = "Email is required")]
+        [EmailAddress(ErrorMessage = "Invalid email address")]
+        public string Email { get; set; }
+        [Required(ErrorMessage = "Street Address is required")]
+        public string Address { get; set; }
+        [Required(ErrorMessage = "City is required")]
+        public string City { get; set; }
+        [Required(ErrorMessage = "State is required")]
+        public string State { get; set; }
+        [Required(ErrorMessage = "ZIP code is required")]
+        public string ZipCode { get; set; }
+        [Required(ErrorMessage = "Primary phone number is required")]
+        [PhoneNumberValidation(ErrorMessage = "Invalid phone number format")]
+        public string PrimaryPhoneNumber { get; set; }
+        // Optional secondary phone number - default to empty string
+        [PhoneNumberValidation(AllowEmpty = true, ErrorMessage = "Invalid phone number format")]
+        public string SecondaryPhoneNumber { get; set; } = "";
+        // Emergency Contact Fields
+        [Required(ErrorMessage = "Emergency contact first name is required")]
+        public string EmergencyFirstName { get; set; }
+        [Required(ErrorMessage = "Emergency contact last name is required")]
+        public string EmergencyLastName { get; set; }
+        [Required(ErrorMessage = "Relationship is required")]
+        public string EmergencyRelationship { get; set; }
+        [Required(ErrorMessage = "Emergency primary phone number is required")]
+        [PhoneNumberValidation(ErrorMessage = "Invalid phone number format")]
+        public string EmergencyPrimaryPhoneNumber { get; set; }
+        // Optional secondary phone number - default to empty string
+        [PhoneNumberValidation(AllowEmpty = true, ErrorMessage = "Invalid phone number format")]
+        public string EmergencySecondaryPhoneNumber { get; set; } = "";
+    }
+
+    // Custom validator to ensure phone numbers contain only digits and at least 10 digits.
+    public class PhoneNumberValidationAttribute : ValidationAttribute
+    {
+        public bool AllowEmpty { get; set; } = false;
+
+        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        {
+            var phoneStr = value as string;
+            if (string.IsNullOrWhiteSpace(phoneStr))
+            {
+                if (AllowEmpty)
+                    return ValidationResult.Success;
+                return new ValidationResult("This field is required.");
+            }
+
+            // Remove all non-digit characters (spaces, hyphens, parentheses, etc.)
+            string digits = Regex.Replace(phoneStr, @"\D", "");
+            if (digits.Length < 10)
+            {
+                return new ValidationResult("Invalid phone number format");
+            }
+
+            return ValidationResult.Success;
+        }
+    }
+
+
+    private CustomerUserViewDTO? userViewDTO;
+    private EmergencyContactDTO? emergencyDTO;
+    private ParentProfileEditModel editModel = new ParentProfileEditModel();
+    private bool showEditCard = false;
+    private int currentCardIndex = 0;
+    private bool showUploadDialog = false;
+    private IBrowserFile? selectedFile;
+    private bool showInvoiceReminder = false;
+    private bool hasRenderedReminder = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+
+            if (showInvoiceReminder && !hasRenderedReminder)
+            {
+                hasRenderedReminder = true;
+                Console.WriteLine("showing alert");
+                await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
+            }
+        }
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        await GetUserView();
+    }
+
+    private async Task ShowEditProfileCard()
+    {
+        if (userViewDTO != null && emergencyDTO != null)
+        {
+            editModel.FirstName = userViewDTO.FirstName;
+            editModel.MiddleName = userViewDTO.MiddleName ?? "";
+            editModel.LastName = userViewDTO.LastName;
+            editModel.Email = userViewDTO.Email;
+            editModel.Address = userViewDTO.Address;
+            editModel.City = userViewDTO.City;
+            editModel.State = userViewDTO.State;
+            editModel.ZipCode = userViewDTO.ZipCode;
+            editModel.PrimaryPhoneNumber = profileService.numberToString(userViewDTO.PrimaryPhoneNumber);
+            editModel.SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber != null
+                ? profileService.numberToString(userViewDTO.SecondaryPhoneNumber)
+                : "";
+            editModel.EmergencyFirstName = emergencyDTO.FirstName;
+            editModel.EmergencyLastName = emergencyDTO.LastName;
+            editModel.EmergencyRelationship = emergencyDTO.Relationship;
+            editModel.EmergencyPrimaryPhoneNumber = profileService.numberToString(emergencyDTO.PrimaryPhoneNumber);
+            editModel.EmergencySecondaryPhoneNumber = emergencyDTO.SecondaryPhoneNumber != null
+                ? profileService.numberToString(emergencyDTO.SecondaryPhoneNumber)
+                : "";
+        }
+        showEditCard = true;
+    }
+
+    private void ShowFileUploadDialog()
+    {
+        showUploadDialog = true;
+    }
+
+   
+    private async Task HandleValidSubmit()
+    {
+        // Always decode required phone numbers.
+        var decodedUserPrimary = profileService.PhoneNumberDecode(editModel.PrimaryPhoneNumber);
+        var decodedEmergencyPrimary = profileService.PhoneNumberDecode(editModel.EmergencyPrimaryPhoneNumber);
+
+        // Only decode optional numbers if they are not empty.
+        var decodedUserSecondary = string.IsNullOrWhiteSpace(editModel.SecondaryPhoneNumber)
+            ? ((string AreaCode, string Prefix, string LastFour)?)null
+            : profileService.PhoneNumberDecode(editModel.SecondaryPhoneNumber);
+
+        var decodedEmergencySecondary = string.IsNullOrWhiteSpace(editModel.EmergencySecondaryPhoneNumber)
+            ? ((string AreaCode, string Prefix, string LastFour)?)null
+            : profileService.PhoneNumberDecode(editModel.EmergencySecondaryPhoneNumber);
+
+
+        // Update the user DTO.
+        userViewDTO.FirstName = editModel.FirstName;
+        userViewDTO.MiddleName = editModel.MiddleName;
+        userViewDTO.LastName = editModel.LastName;
+        userViewDTO.Email = editModel.Email;
+        userViewDTO.Address = editModel.Address;
+        userViewDTO.City = editModel.City;
+        userViewDTO.State = editModel.State;
+        userViewDTO.ZipCode = editModel.ZipCode;
+        userViewDTO.PrimaryPhoneNumber = new PhoneNumberDTO
+            {
+                Id = userViewDTO.PrimaryPhoneNumber.Id,
+                AreaCode = decodedUserPrimary.AreaCode,
+                Prefix = decodedUserPrimary.Prefix,
+                LastFour = decodedUserPrimary.LastFour,
+                Type = userViewDTO.PrimaryPhoneNumber.Type,
+                Fk_users = userViewDTO.PrimaryPhoneNumber.Fk_users
+            };
+        userViewDTO.SecondaryPhoneNumber = decodedUserSecondary != null
+            ? new PhoneNumberDTO
+                {
+                    Id = userViewDTO.SecondaryPhoneNumber?.Id ?? 0,
+                    AreaCode = decodedUserSecondary.Value.AreaCode,
+                    Prefix = decodedUserSecondary.Value.Prefix,
+                    LastFour = decodedUserSecondary.Value.LastFour,
+                    Type = userViewDTO.SecondaryPhoneNumber?.Type ?? 0,
+                    Fk_users = userViewDTO.SecondaryPhoneNumber?.Fk_users ?? Guid.Empty
+                }
+            : null;
+
+        // Update the emergency contact DTO.
+        emergencyDTO.FirstName = editModel.EmergencyFirstName;
+        emergencyDTO.LastName = editModel.EmergencyLastName;
+        emergencyDTO.Relationship = editModel.EmergencyRelationship;
+        emergencyDTO.PrimaryPhoneNumber = new PhoneNumberDTO
+            {
+                Id = emergencyDTO.PrimaryPhoneNumber.Id,
+                AreaCode = decodedEmergencyPrimary.AreaCode,
+                Prefix = decodedEmergencyPrimary.Prefix,
+                LastFour = decodedEmergencyPrimary.LastFour,
+                Type = emergencyDTO.PrimaryPhoneNumber.Type,
+                Fk_users = emergencyDTO.PrimaryPhoneNumber.Fk_users
+            };
+        emergencyDTO.SecondaryPhoneNumber = decodedEmergencySecondary != null
+            ? new PhoneNumberDTO
+                {
+                    Id = emergencyDTO.SecondaryPhoneNumber?.Id ?? 0,
+                    AreaCode = decodedEmergencySecondary.Value.AreaCode,
+                    Prefix = decodedEmergencySecondary.Value.Prefix,
+                    LastFour = decodedEmergencySecondary.Value.LastFour,
+                    Type = emergencyDTO.SecondaryPhoneNumber?.Type ?? 0,
+                    Fk_users = emergencyDTO.SecondaryPhoneNumber?.Fk_users ?? Guid.Empty
+                }
+            : null;
+
+        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, userViewDTO);
+        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, emergencyDTO);
+
+        if (!userUpdateStatus)
+            Console.WriteLine("Debug: user update failed");
+        else
+            Console.WriteLine("Debug: user update successful");
+
+        if (!emergencyUpdateStatus)
+            Console.WriteLine("Debug: emergency contact update failed");
+        else
+            Console.WriteLine("Debug: emergency contact update successful");
+
+        HideCards();
+        await GetUserView();
+        StateHasChanged();
+    }
+
+    
+
+    private void HideCards()
+    {
+        currentCardIndex = 0;
+        showEditCard = false;
+    }
+
+    private void NextCard()
+    {
+        currentCardIndex = (currentCardIndex + 1) % 2;
+    }
+
+    private void PreviousCard()
+    {
+        currentCardIndex = (currentCardIndex - 1 + 2) % 2;
+    }
+
+    async Task HandleFileSelected(InputFileChangeEventArgs e)
+    {
+        selectedFile = e.File;
+    }
+
+    async Task UploadFile()
+    {
+        if (selectedFile is not null)
+        {
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880);
+            using var memoryStream = new MemoryStream();
+            await stream.CopyToAsync(memoryStream);
+            byte[] fileData = memoryStream.ToArray();
+
+            var content = new MultipartFormDataContent();
+            var fileContent = new ByteArrayContent(fileData);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
+            content.Add(fileContent, "file", selectedFile.Name);
+
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={UserSession.UserId}";
+            var response = await Http.PostAsync(apiUrl, content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("[Blazor] File uploaded successfully");
+            }
+            else
+            {
+                Console.WriteLine("[Blazor] File upload failed");
+            }
+
+            showUploadDialog = false;
+        }
+    }
+
+    void CancelUpload()
+    {
+        showUploadDialog = false;
+    }
+
+    async Task GetUserView()
+    {
+        var user = await profileService.GetUserByID(UserSession.UserId);
+        var PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
+        var SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
+
+
+        userViewDTO = new CustomerUserViewDTO
+            {
+                FirstName = user.FirstName,
+                MiddleName = user.MiddleName,
+                LastName = user.LastName,
+                Email = user.Email,
+                Address = user.Address,
+                City = user.City,
+                State = user.State,
+                ZipCode = user.ZipCode,
+                PrimaryPhoneNumber = new PhoneNumberDTO
+                {
+                    Id = PrimaryPhoneNumber.Id,
+                    AreaCode = PrimaryPhoneNumber.AreaCode,
+                    Prefix = PrimaryPhoneNumber.Prefix,
+                    LastFour = PrimaryPhoneNumber.LastFour,
+                    Fk_users = PrimaryPhoneNumber.FkUsers,
+                    Type = PrimaryPhoneNumber.FkType
+                },
+                SecondaryPhoneNumber = SecondaryPhoneNumber != null ? new PhoneNumberDTO
+                {
+                    Id = SecondaryPhoneNumber.Id,
+                    AreaCode = SecondaryPhoneNumber.AreaCode,
+                    Prefix = SecondaryPhoneNumber.Prefix,
+                    LastFour = SecondaryPhoneNumber.LastFour,
+                    Fk_users = SecondaryPhoneNumber.FkUsers,
+                    Type = SecondaryPhoneNumber.FkType
+                } : null,
+            };
+
+        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
+        var EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
+        var EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+        emergencyDTO = new EmergencyContactDTO
+            {
+                FirstName = emergencyContact.FirstName,
+                LastName = emergencyContact.LastName,
+                Relationship = emergencyContact.Relationship,
+                PrimaryPhoneNumber = new PhoneNumberDTO
+                {
+                    Id = EmergencyPrimary.Id,
+                    AreaCode = EmergencyPrimary.AreaCode,
+                    Prefix = EmergencyPrimary.Prefix,
+                    LastFour = EmergencyPrimary.LastFour,
+                    Fk_users = EmergencyPrimary.FkUsers,
+                    Type = EmergencyPrimary.FkType
+                },
+                SecondaryPhoneNumber = EmergencySecondary != null ? new PhoneNumberDTO
+                {
+                    Id = EmergencySecondary.Id,
+                    AreaCode = EmergencySecondary.AreaCode,
+                    Prefix = EmergencySecondary.Prefix,
+                    LastFour = EmergencySecondary.LastFour,
+                    Fk_users = EmergencySecondary.FkUsers,
+                    Type = EmergencySecondary.FkType
+                } : null
+            };
+
+        if (upcoming != null)
+        {
+            Console.WriteLine("ticking value to true");
+            showInvoiceReminder = true;
+        }
+
+        StateHasChanged();
+    }
+
+    void Navigate()
+    {
+        Navigation.NavigateTo("/parent_status");
+    }
 }
