@@ -1,0 +1,166 @@
+﻿@page "/NewParentDocViewing"
+@using System.Net.Http.Json
+@using Common.Models.Data
+@inject HttpClient Http
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<h3>Available Documents for Prospective Parents</h3>
+<br>
+
+@if (ParentDocuments.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>File Name</th>
+                <th>Document Type</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var document in ParentDocuments)
+            {
+                <tr>
+                    <td>@document.FileName</td>
+                    <td>@document.DocumentType</td>
+                    <td>
+                        <!-- Preview Button -->
+                        <button class="btn btn-secondary" @onclick="() => HandlePreviewClick(document.Id)">Preview</button>
+                        <!-- Download Button -->
+                        <button class="btn btn-primary" @onclick="() => HandleDownloadClick(document.Id, document.FileName)">Download</button>
+                    </td>
+                </tr>
+                @if (CurrentPreviewDocumentId == document.Id)
+                {
+                    <tr>
+                        <td colspan="3">
+                            <iframe src="@PreviewDataUrl" style="width:100%; height:600px;" frameborder="0"></iframe>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No documents available.</p>
+}
+
+<h4>Debug Messages:</h4>
+<div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
+    <ul>
+        @foreach (var message in DebugMessages)
+        {
+            <li>@message</li>
+        }
+    </ul>
+</div>
+
+<script src="JavaScript/RegDownloadHelper.js"></script>
+<script src="JavaScript/CustomDownloadHelper.js"></script>
+
+@code {
+    private List<FileUpload> ParentDocuments = new();
+    private int? CurrentPreviewDocumentId = null;
+    private string PreviewDataUrl = string.Empty;
+
+    // Debug messages to display on the page
+    private List<string> DebugMessages = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            AddDebugMessage("OnInitializedAsync: Retrieving documents...");
+            var documents = await Http.GetFromJsonAsync<List<FileUpload>>("api/parent/documents");
+
+            var orderMapping = new Dictionary<string, int>
+            {
+                { "IdentificationInfo", 1 },
+                { "ConsentEMT", 2 },
+                { "AdditionalChildren", 3 },
+                { "ParentRights", 4 },
+                { "ImmunizationCard", 5 }
+            };
+
+            ParentDocuments = (documents ?? new List<FileUpload>())
+                              .OrderBy(doc => orderMapping.TryGetValue(doc.DocumentType, out int order) ? order : int.MaxValue)
+                              .ToList();
+            AddDebugMessage($"OnInitializedAsync: Retrieved {ParentDocuments.Count} documents.");
+        }
+        catch (Exception ex)
+        {
+            ParentDocuments = new List<FileUpload>();
+            AddDebugMessage($"OnInitializedAsync: Error retrieving documents: {ex.Message}");
+        }
+    }
+
+    private async Task HandlePreviewClick(int documentId)
+    {
+        AddDebugMessage($"HandlePreviewClick: Initiating preview for documentId: {documentId}");
+
+        if (CurrentPreviewDocumentId == documentId)
+        {
+            CurrentPreviewDocumentId = null;
+            PreviewDataUrl = string.Empty;
+            AddDebugMessage("Preview toggled off.");
+            return;
+        }
+
+        try
+        {
+            var response = await Http.GetAsync($"api/admin/file-upload/preview/{documentId}");
+            response.EnsureSuccessStatusCode();
+
+            var contentType = response.Content.Headers.ContentType?.MediaType ?? "application/octet-stream";
+            var fileBytes = await response.Content.ReadAsByteArrayAsync();
+            AddDebugMessage($"LoadPreviewAsync: Received {fileBytes.Length} bytes with content type {contentType}");
+
+            if (contentType == "application/pdf" || contentType == "image/jpeg")
+            {
+                var base64 = Convert.ToBase64String(fileBytes);
+                PreviewDataUrl = $"data:{contentType};base64,{base64}";
+                CurrentPreviewDocumentId = documentId;
+                AddDebugMessage($"Preview loaded for documentId: {documentId}, ContentType: {contentType}.");
+            }
+            else
+            {
+                AddDebugMessage($"Unsupported preview content type: {contentType}");
+            }
+        }
+        catch (Exception ex)
+        {
+            AddDebugMessage($"LoadPreviewAsync: Error loading preview: {ex.Message}");
+        }
+    }
+
+    private async Task HandleDownloadClick(int documentId, string fileName)
+    {
+        AddDebugMessage($"HandleDownloadClick: Initiating download for documentId: {documentId}, fileName: {fileName}");
+
+        try
+        {
+            var response = await Http.GetAsync($"api/admin/file-upload/download/{documentId}");
+            response.EnsureSuccessStatusCode();
+
+            var fileBytes = await response.Content.ReadAsByteArrayAsync();
+            var base64String = Convert.ToBase64String(fileBytes);
+            var contentType = response.Content.Headers.ContentType?.MediaType;
+
+            AddDebugMessage($"Downloading file: {fileName}, ContentType: {contentType}.");
+            await JSRuntime.InvokeVoidAsync("customDownloadFile", fileName, base64String, contentType);
+        }
+        catch (Exception ex)
+        {
+            AddDebugMessage($"Error downloading file: {ex.Message}");
+        }
+    }
+
+    private void AddDebugMessage(string message)
+    {
+        DebugMessages.Add(message);
+        StateHasChanged();
+    }
+}
