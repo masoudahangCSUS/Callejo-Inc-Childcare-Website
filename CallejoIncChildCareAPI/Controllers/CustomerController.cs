@@ -164,7 +164,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 Console.WriteLine("Child not found");
                 return NotFound("Child not found.");
             }
-            // Call the update method on your SQL service.
+            // call sqlServiices to updare child
             bool updateStatus = await _sqlServices.updateChild(child, childDto);
             if (updateStatus)
             {
@@ -174,6 +174,44 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return BadRequest("Child update failed.");
             }
+        }
+
+        [HttpPut("update-password")]
+        public async Task<IActionResult> UpdatePassword([FromBody] SettingsDTO settings)
+        {
+            // make sure the data is valid
+            if (settings == null || settings.Id == Guid.Empty)
+            {
+                return BadRequest("Invalid settings data provided.");
+            }
+
+            // call sqlServices to update passowrd
+            bool updateReults = await _sqlServices.updatePassowrd(settings);
+            if (!updateReults)
+            {
+                return StatusCode(500, "An error has ocurred whule updating the password");
+            }
+           
+            return Ok("Password updated successfully.");
+        }
+
+        [HttpPut("update-email")]
+        public async Task<IActionResult> UpdateEmail([FromBody] SettingsDTO settings)
+        {   
+            // validate the data
+            if (settings == null || settings.Id == Guid.Empty)
+            {
+                return BadRequest("Invalid settings data provided.");
+            }
+
+            // call sqlServices to update the email
+            bool updateResults = await _sqlServices.updateEmail(settings);
+            if (!updateResults)
+            {
+                return StatusCode(500, "An error has ocurred while updating the passowrd");
+            }
+
+            return Ok("Email updated successfully.");
         }
 
         //[HttpPost]

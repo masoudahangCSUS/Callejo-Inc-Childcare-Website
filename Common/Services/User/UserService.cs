@@ -453,7 +453,12 @@ namespace Common.Services.User
         {
             return await _context.Children.ToListAsync();
         }
-
+           
+        public async Task<CallejoIncUser> GetPasswordAsync(Guid id)
+        {
+            return await _context.CallejoIncUsers
+               .FirstOrDefaultAsync(user => user.Id == id);
+        }
 
 
     }

@@ -58,4 +58,28 @@ public class AdminService
         var response = await _httpClient.DeleteAsync($"https://localhost:7139/api/admin/delete-user?userId={userId}");
         return response;
     }
+
+    public async Task<List<InvoiceDTO>> GetAllInvoicesAsync()
+    {
+        var response = await _httpClient.GetFromJsonAsync<List<InvoiceDTO>>("https://localhost:7139/api/invoices/all");
+        return response ?? new List<InvoiceDTO>();
+    }
+
+    public async Task<HttpResponseMessage> SaveInvoiceAsync(InvoiceDTO invoice)
+    {
+        var apiUrl = "https://localhost:7139/api/invoices/save";
+        return await _httpClient.PostAsJsonAsync(apiUrl, invoice);
+    }
+
+    public async Task<HttpResponseMessage> UpdateInvoiceAsync(InvoiceDTO invoice)
+    {
+        var apiUrl = "https://localhost:7139/api/invoices/update";
+        return await _httpClient.PutAsJsonAsync(apiUrl, invoice);
+    }
+    public async Task<HttpResponseMessage> DeleteInvoiceAsync(Guid invoiceId)
+    {
+        return await _httpClient.DeleteAsync($"https://localhost:7139/api/invoices/delete/{invoiceId}");
+    }
+
+
 }

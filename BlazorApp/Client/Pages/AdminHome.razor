@@ -79,6 +79,12 @@
                         <img src="images/calendar.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Daily Schedule
                     </button>
                 </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(NewParentDocs), "New-Parent-Docs")'
+                            class="btn-link @(ActivePage == "NewParentDocs" ? "active" : "")">
+                        <img src="images/upload-Documents-Icon.png" alt="Upload Documents" class="nav-icon" /> New Parent Docs
+                    </button>
+                </li>
             </ul>
         </nav>
 

@@ -26,12 +26,10 @@ namespace Common.Services.DailySchedule
             try
             {
                 Models.Data.DailySchedule dailySchedule = new Models.Data.DailySchedule();
-                //dailySchedule.Day = dailyScheduleView.Day;
-                //dailySchedule.Month = dailyScheduleView.Month;
-                //dailySchedule.Year = dailyScheduleView.Year;
-                dailySchedule.CreatedAt = DateTime.Now;
+
+                dailySchedule.CreatedAt = dailyScheduleView.CreatedAt;
                 dailySchedule.Description = dailyScheduleView.Description;
-                if (dailyScheduleView.Description != null)
+                if (!string.IsNullOrEmpty(dailyScheduleView.Desc_special))
                 {
                     dailySchedule.DescSpecial = dailyScheduleView.Desc_special;
                 }
@@ -55,12 +53,47 @@ namespace Common.Services.DailySchedule
             return response;
         }
 
+        public ListDailySchedule GetDailyScheduleByDate(DateOnly date)
+        {
+            ListDailySchedule listDailySchedule = new ListDailySchedule();
+
+            try
+            {
+                var dailyScheduleRec = _context.DailySchedules.Where(r => r.CreatedAt == date).FirstOrDefault();
+
+                if (dailyScheduleRec != null)
+                {
+                    DailyScheduleView dailyScheduleViewRec = new DailyScheduleView();
+                    dailyScheduleViewRec.Id = dailyScheduleRec.Id;
+                    dailyScheduleViewRec.Description = dailyScheduleRec.Description;
+                    dailyScheduleViewRec.Desc_special = dailyScheduleRec.DescSpecial;
+                    dailyScheduleViewRec.CreatedAt = dailyScheduleRec.CreatedAt;
+
+                    listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
+                    listDailySchedule.Message = "Retrieved daily schedule record that matched date " + date.ToString();
+                }
+                else
+                {
+                    listDailySchedule.Status = "No record matching id " + date.ToString() + " was found";
+                }
+                listDailySchedule.Success = true;
+            }
+            catch (Exception ex)
+            {
+                listDailySchedule.Success = false;
+                listDailySchedule.Message = "Problems retrieve daily schedule record " + date.ToString() + ". Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+            }
+
+            return listDailySchedule;
+        }
+
+
         /// <summary>
         /// Retrieve a daily schedule record
         /// </summary>
         /// <param name="id">Primary key for daily schedule record</param>
         /// <returns></returns>
-        public ListDailySchedule GetDailySchedule(long id)
+        public ListDailySchedule GetDailyScheduleById(long id)
         {
             ListDailySchedule listDailySchedule = new ListDailySchedule();
 
@@ -73,6 +106,8 @@ namespace Common.Services.DailySchedule
                     DailyScheduleView dailyScheduleViewRec = new DailyScheduleView();
                     dailyScheduleViewRec.Id = dailyScheduleRec.Id;
                     dailyScheduleViewRec.Description = dailyScheduleRec.Description;
+                    dailyScheduleViewRec.Desc_special = dailyScheduleRec.DescSpecial;
+                    dailyScheduleViewRec.CreatedAt = dailyScheduleRec.CreatedAt;
 
                     listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
                     listDailySchedule.Message = "Retrieved daily schedule record that matched id " + id.ToString();
