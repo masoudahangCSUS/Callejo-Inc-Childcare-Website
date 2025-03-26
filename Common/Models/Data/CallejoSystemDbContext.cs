@@ -27,8 +27,6 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<FileUpload> FileUploads { get; set; }
 
-    public virtual DbSet<Expense> Expenses { get; set; }
-
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
