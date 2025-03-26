@@ -50,6 +50,13 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("guardian/{guardianId}")]
+        public IActionResult GetInvoicesByGuardianId(Guid guardianId)
+        {
+            var invoices = _invoiceService.GetInvoicesByGuardianId(guardianId);
+            return Ok(invoices);
+        }
+
 
     }
 }

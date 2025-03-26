@@ -153,5 +153,16 @@ namespace BlazorApp.Client.Services
 
                 return (areaCode, prefix, lastFour);    
             }
+
+        public async Task<List<InvoiceDTO>> GetInvoicesByGuardianId(Guid guardianId)
+        {
+            var response = await _httpClient.GetAsync($"api/invoices/guardian/{guardianId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<InvoiceDTO>>() ?? new();
+            }
+            return new List<InvoiceDTO>();
         }
+
     }
+}

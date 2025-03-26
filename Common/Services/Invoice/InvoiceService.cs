@@ -106,6 +106,28 @@ namespace Common.Services.Invoice
             return new APIResponse { Success = true, Message = "Invoice deleted successfully." };
         }
 
+        public List<InvoiceDTO> GetInvoicesByGuardianId(Guid guardianId)
+        {
+            return _context.Invoices
+                .Where(i => i.GuardianId == guardianId)
+                .Select(i => new InvoiceDTO
+                {
+                    InvoiceId = i.InvoiceId,
+                    GuardianId = i.GuardianId,
+                    GuardianName = i.GuardianName,
+                    ChildNames = i.ChildNames,
+                    DueDate = i.DueDate,
+                    Status = i.Status,
+                    Notes = i.Notes,
+                    TotalAmount = i.TotalAmount,
+                    AmountPaid = i.AmountPaid,
+                    PaymentMethod = i.PaymentMethod,
+                    TransactionReference = i.TransactionReference,
+                    CreatedAt = i.CreatedAt,
+                    LastPaymentDate = i.LastPaymentDate
+                })
+                .ToList();
+        }
 
 
     }

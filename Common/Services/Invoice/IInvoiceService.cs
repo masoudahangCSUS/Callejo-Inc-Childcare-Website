@@ -14,6 +14,7 @@ namespace Common.Services.Invoice
         APIResponse InsertInvoice(InvoiceDTO invoice);
         APIResponse UpdateInvoice(InvoiceDTO invoice);
         APIResponse DeleteInvoice(Guid invoiceId);
+        List<InvoiceDTO> GetInvoicesByGuardianId(Guid guardianId);
     }
 
 }

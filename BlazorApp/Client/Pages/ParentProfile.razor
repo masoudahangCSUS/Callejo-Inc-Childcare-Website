@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Common.View
 @using Common.Services.User
+@using Common.Services.Invoice
 @using Common.Models.Data
 @using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
@@ -11,6 +12,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject HttpClient Http
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "User")]
 @inject NavigationManager Navigation
@@ -18,6 +20,7 @@
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
 @inject ProfileService profileService;
+@inject IInvoiceService invoiceService
 
 
 @code {
@@ -32,6 +35,25 @@
     private CustomerUserViewDTO updatedUser;
     private EmergencyContactDTO updatedEmergency;
     private EditContext editContext;
+
+    private bool showInvoiceReminder = false;
+    private bool hasRenderedReminder = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+
+            if (showInvoiceReminder && !hasRenderedReminder)
+            {
+                hasRenderedReminder = true;
+                Console.WriteLine("showing alert");
+                await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
+            }
+        }
+    }
+
 
     void ShowFileUploadDialog()
     {
@@ -126,8 +148,18 @@
         // Get user information
         // Store the number in a DTO
         var user = await profileService.GetUserByID(UserSession.UserId);
+
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        Console.WriteLine(UserSession.UserId.Value);
+        foreach (var invoice in invoices)
+        {
+            Console.WriteLine($"Invoice ID: {invoice.InvoiceId}, Status: {invoice.Status}");
+        }
+        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
+
         PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
         PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+
         UserPrimaryNumber = new PhoneNumberDTO
         {
             Id = PrimaryPhoneNumber.Id,
@@ -137,16 +169,15 @@
             Fk_users = PrimaryPhoneNumber.FkUsers,
             Type = PrimaryPhoneNumber.FkType
         };
-
         UserSecondaryNumber = new PhoneNumberDTO
-            {
-                Id = SecondaryPhoneNumber.Id,
-                AreaCode = SecondaryPhoneNumber.AreaCode,
-                Prefix = SecondaryPhoneNumber.Prefix,
-                LastFour = SecondaryPhoneNumber.LastFour,
-                Fk_users = SecondaryPhoneNumber.FkUsers,
-                Type = SecondaryPhoneNumber.FkType
-            };
+        {
+            Id = SecondaryPhoneNumber.Id,
+            AreaCode = SecondaryPhoneNumber.AreaCode,
+            Prefix = SecondaryPhoneNumber.Prefix,
+            LastFour = SecondaryPhoneNumber.LastFour,
+            Fk_users = SecondaryPhoneNumber.FkUsers,
+            Type = SecondaryPhoneNumber.FkType
+        };
 
         // Get ermgency contact information
         //Store the number in a DTO
@@ -162,22 +193,18 @@
             Fk_users = EmergencyPrimary.FkUsers,
             Type = EmergencyPrimary.FkType
         };
-
-        if(EmergencySecondary != null){
+        if (EmergencySecondaryNumber != null)
+        {
             EmergencySecondaryNumber = new PhoneNumberDTO
-                {
-                    Id = EmergencySecondary.Id,
-                    AreaCode = EmergencySecondary.AreaCode,
-                    Prefix = EmergencySecondary.Prefix,
-                    LastFour = EmergencySecondary.LastFour,
-                    Fk_users = EmergencySecondary.FkUsers,
-                    Type = EmergencySecondary.FkType
-                };
+            {
+                Id = EmergencySecondary.Id,
+                AreaCode = EmergencySecondary.AreaCode,
+                Prefix = EmergencySecondary.Prefix,
+                LastFour = EmergencySecondary.LastFour,
+                Fk_users = EmergencySecondary.FkUsers,
+                Type = EmergencySecondary.FkType
+            };
         }
-
-
-
-
 
         userViewDTO = new CustomerUserViewDTO
         {
@@ -193,7 +220,6 @@
             ZipCode = user.ZipCode,
 
         };
-
         emergencyDTO = new EmergencyContactDTO
         {
             FirstName = emergencyContact.FirstName,
@@ -202,6 +228,13 @@
             SecondaryPhoneNumber = EmergencySecondaryNumber,
             Relationship = emergencyContact.Relationship
         };
+        Console.WriteLine("Upcoming value: " + upcoming);
+        if (upcoming != null)
+        {
+            Console.WriteLine("ticking value to true");
+            showInvoiceReminder = true;
+        }
+
         StateHasChanged();
     }
 
