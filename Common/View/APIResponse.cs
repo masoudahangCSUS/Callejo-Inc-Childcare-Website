@@ -17,6 +17,8 @@ namespace Common.View
         public string Code { get; set; }
         public string Message { get; set; }
         public object? Data { get; set; }
+        public object Token { get; set; }
+
     }
 
 }

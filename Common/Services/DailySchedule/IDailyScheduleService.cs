@@ -10,6 +10,7 @@ namespace Common.Services.DailySchedule
     public interface IDailyScheduleService
     {
         APIResponse InsertDailySchedule(DailyScheduleView dailyScheduleView);
-        ListDailySchedule GetDailySchedule(long id);
+        ListDailySchedule GetDailyScheduleById(long id);
+        ListDailySchedule GetDailyScheduleByDate(DateOnly date);
     }
 }

@@ -11,5 +11,5 @@ public partial class DailySchedule
 
     public string? DescSpecial { get; set; }
 
-    public DateTime? CreatedAt { get; set; }
+    public DateOnly? CreatedAt { get; set; }
 }
