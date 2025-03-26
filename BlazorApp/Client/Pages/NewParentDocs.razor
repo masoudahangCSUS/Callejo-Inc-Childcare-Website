@@ -3,8 +3,10 @@
 @using BlazorApp.Client.Services
 @using Common.View
 @using Common.Services.User
+@using Microsoft.AspNetCore.Authorization
 @inject HttpClient Http
 @rendermode InteractiveServer
+@attribute [Authorize(Roles = "Admin")]
 
 <h3>Document Upload for Prospective Parents</h3>
 <br>
