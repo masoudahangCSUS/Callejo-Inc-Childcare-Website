@@ -1,0 +1,260 @@
+﻿@page "/settings"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.Components.Authorization
+@using Common.View
+@using BlazorApp.Client.Services
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserSessionService user
+@inject ProfileService profileService
+@rendermode InteractiveServer
+
+
+<div class="user-settings-page">
+    <h1>Settings</h1>
+
+    <!-- Email Section -->
+    <div class="settings-card">
+        <div class="settings-info-column">
+            <div class="email-container">
+                <p><strong>Email:</strong> @updatedDTO.Email</p>
+                <button class="email-button" @onclick="ToggleEmailModal">Change Email</button>
+                @if (isEditingEmail)
+                {
+                    <input type="text" @bind="newEmail" placeholder="Enter new email" class="form-control" />
+                    <button class="btn btn-primary mt-2" @onclick="SubmitEmailChange">Submit Email Change</button>
+                }
+            </div>
+            <!-- Password Section -->
+            <div class="password-container mt-4">
+                <p><strong>Password:</strong> *******</p>
+                <button class="password-button" @onclick="TogglePasswordModal">Change Password</button>
+                @if (isEditingPassword)
+                {
+                    <input type="password" @bind="newPassword" placeholder="Enter new password" class="form-control" />
+                    <button class="btn btn-primary mt-2" @onclick="SubmitPasswordChange">Submit Password Change</button>
+                }
+            </div>
+            <button class="MA-button mt-4" @onclick="MAConnect">Connect With Authenticator</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Email Validation -->
+@if (showEmailValidationModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Validate Email Change</h5>
+                    <button type="button" class="btn-close" @onclick="CloseEmailModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please enter your authenticator code to change your email.</p>
+                    <input type="text" @bind="emailTotpCode" placeholder="Enter authenticator code" class="form-control" />
+                    @if (!string.IsNullOrEmpty(emailValidationMessage))
+                    {
+                        <p class="text-danger mt-2">@emailValidationMessage</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="ValidateEmailModal">Validate</button>
+                    <button class="btn btn-secondary" @onclick="CloseEmailModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- Modal for Password Validation -->
+@if (showPasswordValidationModal)
+{
+    <div class="modal show d-block" tabindex="-1" style="background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Validate Password Change</h5>
+                    <button type="button" class="btn-close" @onclick="ClosePasswordModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Please enter your authenticator code to change your password.</p>
+                    <input type="text" @bind="passwordTotpCode" placeholder="Enter authenticator code" class="form-control" />
+                    @if (!string.IsNullOrEmpty(passwordValidationMessage))
+                    {
+                        <p class="text-danger mt-2">@passwordValidationMessage</p>
+                    }
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="ValidatePasswordModal">Validate</button>
+                    <button class="btn btn-secondary" @onclick="ClosePasswordModal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+<div class="qr-container mt-4">
+    @if (!string.IsNullOrEmpty(qrCodeImage))
+    {
+        <img src="@qrCodeImage" alt="QR Code" class="img-fluid" />
+        <p>Scan the QR code to connect your profile to your authenticator app</p>
+    }
+</div>
+
+@code {
+    string email, qrCodeImage, newEmail, newPassword;
+    // Totp codes for validation in modals
+    string emailTotpCode, passwordTotpCode;
+    SettingsDTO settingsDTO, updatedDTO;
+    bool isEditingEmail = false, isEditingPassword = false;
+    // Modal flags and validation messages
+    bool showEmailValidationModal = false, showPasswordValidationModal = false;
+    string emailValidationMessage, passwordValidationMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await GetSettingsView();
+    }
+
+    async Task GetSettingsView()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authState.User;
+        email = userClaims.FindFirst(ClaimTypes.Email)?.Value;
+        settingsDTO = new SettingsDTO
+            {
+                Password = "*******",
+                Email = email,
+                Id = (Guid)user.UserId
+            };
+
+        updatedDTO = settingsDTO;
+    }
+
+    // Show modal for email change validation
+    void ToggleEmailModal()
+    {
+        showEmailValidationModal = true;
+        emailTotpCode = string.Empty;
+        emailValidationMessage = string.Empty;
+    }
+
+    // Show modal for password change validation
+    void TogglePasswordModal()
+    {
+        showPasswordValidationModal = true;
+        passwordTotpCode = string.Empty;
+        passwordValidationMessage = string.Empty;
+    }
+
+    async Task ValidateEmailModal()
+    {
+        var validationRequest = new ValidationDTO
+            {
+                UserId = (Guid)user.UserId,
+                TotpCode = emailTotpCode
+            };
+
+        bool isValid = await profileService.Validate(validationRequest);
+        if (isValid)
+        {
+            isEditingEmail = true;
+            showEmailValidationModal = false;
+        }
+        else
+        {
+            emailValidationMessage = "Invalid authenticator code. Please try again.";
+        }
+    }
+
+    async Task ValidatePasswordModal()
+    {
+        var validationRequest = new ValidationDTO
+            {
+                UserId = (Guid)user.UserId,
+                TotpCode = passwordTotpCode
+            };
+
+        bool isValid = await profileService.Validate(validationRequest);
+        if (isValid)
+        {
+            isEditingPassword = true;
+            showPasswordValidationModal = false;
+        }
+        else
+        {
+            passwordValidationMessage = "Invalid authenticator code. Please try again.";
+        }
+    }
+
+    void CloseEmailModal()
+    {
+        showEmailValidationModal = false;
+    }
+
+    void ClosePasswordModal()
+    {
+        showPasswordValidationModal = false;
+    }
+
+    async Task SubmitEmailChange()
+    {
+        updatedDTO.Email = newEmail;
+        bool updateResult = await profileService.UpdateEmail(updatedDTO);
+        if (!updateResult)
+        {
+            Console.Error.WriteLine("Email update has failed.");
+        }
+        isEditingEmail = false;
+        newEmail = string.Empty;
+    }
+
+    async Task SubmitPasswordChange()
+    {
+        updatedDTO.Password = newPassword;
+        bool updateResult = await profileService.UpdatePassword(updatedDTO);
+        if (!updateResult)
+        {
+            Console.Error.WriteLine("Password update has failed.");
+        }
+        isEditingPassword = false;
+        newPassword = string.Empty;
+    }
+
+    async Task MAConnect()
+    {
+        if (string.IsNullOrEmpty(email))
+        {
+            Console.Error.WriteLine("Email claim not found.");
+            return;
+        }
+        Guid userId = (Guid)user.UserId;
+        var apiUrl = $"https://localhost:7139/api/MA/QRGenerate/{userId}?email={Uri.EscapeDataString(email)}";
+        try
+        {
+            var response = await Http.GetAsync(apiUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<QrCodeResponse>();
+                if (result != null)
+                {
+                    qrCodeImage = result.QrCodeImage;
+                }
+            }
+            else
+            {
+                Console.Error.WriteLine($"Error retrieving QR code: {response.StatusCode}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"Exception while retrieving QR code: {ex.Message}");
+        }
+    }
+
+    public class QrCodeResponse
+    {
+        public string QrCodeImage { get; set; }
+    }
+}

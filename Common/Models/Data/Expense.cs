@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Common.Models.Data;
 
 public partial class Expense
 {
+
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; } // Primary key -- auto-incremented
+
 
     public byte[] Receipt { get; set; } = null!;
 
