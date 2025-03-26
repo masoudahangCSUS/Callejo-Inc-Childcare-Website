@@ -28,8 +28,10 @@ namespace CallejoIncChildcareAPI.Controllers
         private readonly IConfiguration _configuration;
         private readonly ISQLServices _sqlService;
         private readonly CallejoSystemDbContext _context;
+        private readonly PasswordService _passwordService;
 
-   
+
+
 
         public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration, CallejoSystemDbContext context)
         {
@@ -43,6 +45,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
+            userInfo.Password = PasswordService.HashPassword(userInfo.Password);
             var result = _userService.InsertUser(userInfo);
             return result.Success ? Ok(result) : BadRequest(result);
         }
@@ -252,7 +255,6 @@ namespace CallejoIncChildcareAPI.Controllers
                 });
             }
         }
-
 
 
 

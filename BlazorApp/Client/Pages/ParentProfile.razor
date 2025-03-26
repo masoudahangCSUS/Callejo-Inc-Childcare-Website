@@ -1,10 +1,10 @@
 @page "/profile"
 
-
 @using BlazorApp.Client.Services
 @using Microsoft.AspNetCore.Components.Forms
 @using Common.View
 @using Common.Services.User
+@using Common.Services.Invoice
 @using Common.Models.Data
 @using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
@@ -12,27 +12,47 @@
 @using Microsoft.AspNetCore.Components.Forms
 
 @inject HttpClient Http
+@inject IJSRuntime JS
 @rendermode InteractiveServer
-
 @attribute [Authorize(Roles = "User")]
-
 @inject NavigationManager Navigation
-
-
 @inject IUserService userService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
 @inject ProfileService profileService;
+@inject IInvoiceService invoiceService
 
 
 @code {
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
-    Guid CurrentUserId = new Guid("67E9D9B5-E283-492D-A533-F6BE68D725F2");      // Temporary testing parameter to a parent account ~ delete once file upload is working
     private CustomerUserViewDTO? userViewDTO;
     private EmergencyContactDTO? emergencyDTO;
     private PhoneNumberDTO? UserPrimaryNumber, UserSecondaryNumber, EmergencyPrimaryNumber, EmergencySecondaryNumber;
+    private int currentCardIndex = 0;
+    private bool showEditCard = false;
+    private string userPrimary, userSecondary, emergencyPrimary, emergencySecondary;
+    private CustomerUserViewDTO updatedUser;
+    private EmergencyContactDTO updatedEmergency;
+    private EditContext editContext;
 
+    private bool showInvoiceReminder = false;
+    private bool hasRenderedReminder = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+
+            if (showInvoiceReminder && !hasRenderedReminder)
+            {
+                hasRenderedReminder = true;
+                Console.WriteLine("showing alert");
+                await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
+            }
+        }
+    }
 
 
     void ShowFileUploadDialog()
@@ -54,7 +74,16 @@
     {
         if (selectedFile is not null)
         {
-            using var stream = selectedFile.OpenReadStream(maxAllowedSize: 5242880); // 5MB
+            // Confirm selected file is within 5MB requirement
+            const long maxFileSize = 5242880; // 5MB
+            if (selectedFile.Size > maxFileSize)
+            {
+                Console.WriteLine($"[Blazor] File size exceeds 5MB limit. File's size: {selectedFile.Size} bytes");
+                return;
+            }
+
+            // Convert file into byte array
+            using var stream = selectedFile.OpenReadStream(maxAllowedSize: maxFileSize);
             using var memoryStream = new MemoryStream();
             await stream.CopyToAsync(memoryStream);
             byte[] fileData = memoryStream.ToArray();
@@ -66,7 +95,8 @@
             content.Add(fileContent, "file", selectedFile.Name);
 
             // Declare API URL
-            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={CurrentUserId}";
+            var user = await profileService.GetUserByID(UserSession.UserId);
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={user.Id}";
             Console.WriteLine($"[Blazor] Sending message to: {apiUrl}");
 
             // Call API
@@ -118,8 +148,18 @@
         // Get user information
         // Store the number in a DTO
         var user = await profileService.GetUserByID(UserSession.UserId);
+
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        Console.WriteLine(UserSession.UserId.Value);
+        foreach (var invoice in invoices)
+        {
+            Console.WriteLine($"Invoice ID: {invoice.InvoiceId}, Status: {invoice.Status}");
+        }
+        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
+
         PhoneNumber PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
         PhoneNumber SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+
         UserPrimaryNumber = new PhoneNumberDTO
         {
             Id = PrimaryPhoneNumber.Id,
@@ -129,16 +169,15 @@
             Fk_users = PrimaryPhoneNumber.FkUsers,
             Type = PrimaryPhoneNumber.FkType
         };
-
         UserSecondaryNumber = new PhoneNumberDTO
-            {
-                Id = SecondaryPhoneNumber.Id,
-                AreaCode = SecondaryPhoneNumber.AreaCode,
-                Prefix = SecondaryPhoneNumber.Prefix,
-                LastFour = SecondaryPhoneNumber.LastFour,
-                Fk_users = SecondaryPhoneNumber.FkUsers,
-                Type = SecondaryPhoneNumber.FkType
-            };
+        {
+            Id = SecondaryPhoneNumber.Id,
+            AreaCode = SecondaryPhoneNumber.AreaCode,
+            Prefix = SecondaryPhoneNumber.Prefix,
+            LastFour = SecondaryPhoneNumber.LastFour,
+            Fk_users = SecondaryPhoneNumber.FkUsers,
+            Type = SecondaryPhoneNumber.FkType
+        };
 
         // Get ermgency contact information
         //Store the number in a DTO
@@ -154,22 +193,18 @@
             Fk_users = EmergencyPrimary.FkUsers,
             Type = EmergencyPrimary.FkType
         };
-
-        if(EmergencySecondary != null){
+        if (EmergencySecondaryNumber != null)
+        {
             EmergencySecondaryNumber = new PhoneNumberDTO
-                {
-                    Id = EmergencySecondary.Id,
-                    AreaCode = EmergencySecondary.AreaCode,
-                    Prefix = EmergencySecondary.Prefix,
-                    LastFour = EmergencySecondary.LastFour,
-                    Fk_users = EmergencySecondary.FkUsers,
-                    Type = EmergencySecondary.FkType
-                };
+            {
+                Id = EmergencySecondary.Id,
+                AreaCode = EmergencySecondary.AreaCode,
+                Prefix = EmergencySecondary.Prefix,
+                LastFour = EmergencySecondary.LastFour,
+                Fk_users = EmergencySecondary.FkUsers,
+                Type = EmergencySecondary.FkType
+            };
         }
-
-
-
-
 
         userViewDTO = new CustomerUserViewDTO
         {
@@ -185,7 +220,6 @@
             ZipCode = user.ZipCode,
 
         };
-
         emergencyDTO = new EmergencyContactDTO
         {
             FirstName = emergencyContact.FirstName,
@@ -194,7 +228,149 @@
             SecondaryPhoneNumber = EmergencySecondaryNumber,
             Relationship = emergencyContact.Relationship
         };
+        Console.WriteLine("Upcoming value: " + upcoming);
+        if (upcoming != null)
+        {
+            Console.WriteLine("ticking value to true");
+            showInvoiceReminder = true;
+        }
+
         StateHasChanged();
+    }
+
+    private void NextCard()
+    {
+        currentCardIndex = (currentCardIndex + 1) % 2;
+    }
+
+    private void PreviousCard()
+    {
+        currentCardIndex = (currentCardIndex - 1 + 2) % 2;
+    }
+
+    private void ShowEditProfileCard()
+    {
+        userPrimary = profileService.numberToString(userViewDTO.PrimaryPhoneNumber);
+        userSecondary = profileService.numberToString(userViewDTO.SecondaryPhoneNumber);
+        updatedUser = new CustomerUserViewDTO
+            {
+                Id = UserSession.UserId,
+                FirstName = userViewDTO.FirstName,
+                LastName = userViewDTO.LastName,
+                MiddleName = userViewDTO.MiddleName,
+                Email = userViewDTO.Email,
+                Address = userViewDTO.Address,
+                City = userViewDTO.City,
+                State = userViewDTO.State,
+                ZipCode = userViewDTO.ZipCode,
+                PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
+                SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber
+            };
+
+        emergencyPrimary = profileService.numberToString(emergencyDTO.PrimaryPhoneNumber);
+        emergencySecondary = profileService.numberToString(emergencyDTO.SecondaryPhoneNumber);
+        updatedEmergency = new EmergencyContactDTO
+            {
+                FirstName = emergencyDTO.FirstName,
+                LastName = emergencyDTO.LastName,
+                PrimaryPhoneNumber = emergencyDTO.PrimaryPhoneNumber,
+                SecondaryPhoneNumber = emergencyDTO.SecondaryPhoneNumber,
+                Relationship = emergencyDTO.Relationship
+            };
+        showEditCard = true;
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        // Create separate field identifiers for each DTO
+        var userSecondaryField = new FieldIdentifier(updatedUser, nameof(updatedUser.SecondaryPhoneNumber));
+        var emergencySecondaryField = new FieldIdentifier(updatedEmergency, nameof(updatedEmergency.SecondaryPhoneNumber));
+
+        bool isUserSecondaryModified = editContext.IsModified(userSecondaryField);
+        if (!isUserSecondaryModified)
+        {
+            updatedUser.SecondaryPhoneNumber = null;
+            updatedEmergency.SecondaryPhoneNumber = null;
+        }
+
+        var decodedUserPrimary = profileService.PhoneNumberDecode(userPrimary);
+        var decodedUserSeconodary = profileService.PhoneNumberDecode(userSecondary);
+        var decodedEmergencyPrimary = profileService.PhoneNumberDecode(emergencyPrimary);
+        var decodedEmergencySecondary = profileService.PhoneNumberDecode(emergencySecondary);
+
+        PhoneNumberDTO updateUserPrimary = new PhoneNumberDTO
+            {
+                Id = userViewDTO.PrimaryPhoneNumber.Id,
+                AreaCode = decodedUserPrimary.AreaCode,
+                Prefix = decodedUserPrimary.Prefix,
+                LastFour = decodedUserPrimary.LastFour,
+                Type = userViewDTO.PrimaryPhoneNumber.Type,
+                Fk_users = userViewDTO.PrimaryPhoneNumber.Fk_users
+            };
+        PhoneNumberDTO updatedUserSecondary = new PhoneNumberDTO
+            {
+                Id = userViewDTO.SecondaryPhoneNumber.Id,
+                AreaCode = decodedUserSeconodary.AreaCode,
+                Prefix = decodedUserSeconodary.Prefix,
+                LastFour = decodedUserSeconodary.LastFour,
+                Type = userViewDTO.SecondaryPhoneNumber.Type,
+                Fk_users = userViewDTO.SecondaryPhoneNumber.Fk_users
+            };
+        updatedUser.PrimaryPhoneNumber = updateUserPrimary;
+        updatedUser.SecondaryPhoneNumber = updatedUserSecondary;
+
+        PhoneNumberDTO updatedEmergencyPrimary = new PhoneNumberDTO
+            {
+                Id = emergencyDTO.PrimaryPhoneNumber.Id,
+                AreaCode = decodedEmergencyPrimary.AreaCode,
+                Prefix = decodedEmergencyPrimary.Prefix,
+                LastFour = decodedEmergencyPrimary.LastFour,
+                Type = emergencyDTO.PrimaryPhoneNumber.Type,
+                Fk_users = emergencyDTO.PrimaryPhoneNumber.Fk_users
+            };
+        PhoneNumberDTO updatedEmergencySecondary = new PhoneNumberDTO
+            {
+                Id = emergencyDTO.SecondaryPhoneNumber.Id,
+                AreaCode = decodedEmergencySecondary.AreaCode,
+                Prefix = decodedEmergencySecondary.Prefix,
+                LastFour = decodedEmergencySecondary.LastFour,
+                Type = emergencyDTO.SecondaryPhoneNumber.Type,
+                Fk_users = emergencyDTO.SecondaryPhoneNumber.Fk_users
+            };
+        updatedEmergency.PrimaryPhoneNumber = updatedEmergencyPrimary;
+        updatedEmergency.SecondaryPhoneNumber = updatedEmergencySecondary;
+
+
+
+        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, updatedUser);
+        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, updatedEmergency);
+
+        if (!userUpdateStatus)
+            Console.WriteLine("Debug: user update failed");
+        else
+            Console.WriteLine("Debug: user update succesful");
+
+        if (!emergencyUpdateStatus)
+            Console.WriteLine("Debug: emergency contact update failed");
+        else
+            Console.WriteLine("Debug: emergnecy contact update successful");
+
+        // Optionally, handle the statuses (e.g. show messages) before hiding the edit UI.
+        HideCards();
+        await GetUserView();
+        StateHasChanged();
+    }
+
+    private void HideCards()
+    {
+        currentCardIndex = 0;
+        showEditCard = false;
+    }
+
+    private void Navigate()
+    {
+        Navigation.NavigateTo("/parent_status");
     }
 }
 
@@ -267,6 +443,7 @@ else{
             </div>
         </div>
 
+        <!-- Registraion Options -->
         <div class="button-group">
             <button class="btn-edit" @onclick="ShowEditProfileCard">Edit Profile</button>
             <button class="btn-regupload" @onclick="ShowFileUploadDialog">Upload Registration</button>
@@ -369,170 +546,14 @@ else{
 
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-@code 
+@if (showUploadDialog)
 {
-    private int currentCardIndex = 0; 
-    private bool showEditCard = false;
-    private string userPrimary, userSecondary, emergencyPrimary, emergencySecondary;
-    private CustomerUserViewDTO updatedUser;
-    private EmergencyContactDTO updatedEmergency;
-    private EditContext editContext;
-
-
-    private void NextCard() 
-    { 
-        currentCardIndex = (currentCardIndex + 1) % 2; 
-    } 
-
-    private void PreviousCard() 
-    { 
-        currentCardIndex = (currentCardIndex - 1 + 2) % 2; 
-    } 
-
-    private void ShowEditProfileCard() 
-    {
-        userPrimary = profileService.numberToString(userViewDTO.PrimaryPhoneNumber);
-        userSecondary = profileService.numberToString(userViewDTO.SecondaryPhoneNumber);
-        updatedUser = new CustomerUserViewDTO
-            {   
-                Id = UserSession.UserId,
-                FirstName = userViewDTO.FirstName,
-                LastName = userViewDTO.LastName,
-                MiddleName = userViewDTO.MiddleName,
-                Email = userViewDTO.Email,
-                Address = userViewDTO.Address,
-                City = userViewDTO.City,
-                State = userViewDTO.State,
-                ZipCode = userViewDTO.ZipCode,
-                PrimaryPhoneNumber = userViewDTO.PrimaryPhoneNumber,
-                SecondaryPhoneNumber = userViewDTO.SecondaryPhoneNumber
-            };
-
-        emergencyPrimary = profileService.numberToString(emergencyDTO.PrimaryPhoneNumber);
-        emergencySecondary = profileService.numberToString(emergencyDTO.SecondaryPhoneNumber);
-        updatedEmergency = new EmergencyContactDTO
-            {
-                FirstName = emergencyDTO.FirstName,
-                LastName = emergencyDTO.LastName,
-                PrimaryPhoneNumber = emergencyDTO.PrimaryPhoneNumber,
-                SecondaryPhoneNumber = emergencyDTO.SecondaryPhoneNumber,
-                Relationship = emergencyDTO.Relationship
-            };
-        showEditCard = true; 
-    } 
-
-
-    private async Task HandleValidSubmit() 
-    { 
-        // Create separate field identifiers for each DTO
-        var userSecondaryField = new FieldIdentifier(updatedUser, nameof(updatedUser.SecondaryPhoneNumber));
-        var emergencySecondaryField = new FieldIdentifier(updatedEmergency, nameof(updatedEmergency.SecondaryPhoneNumber));
-
-        bool isUserSecondaryModified = editContext.IsModified(userSecondaryField);
-        if (!isUserSecondaryModified)
-        {
-            updatedUser.SecondaryPhoneNumber = null;
-            updatedEmergency.SecondaryPhoneNumber = null;
-        }
-
-        var decodedUserPrimary = profileService.PhoneNumberDecode(userPrimary);
-        var decodedUserSeconodary = profileService.PhoneNumberDecode(userSecondary);
-        var decodedEmergencyPrimary = profileService.PhoneNumberDecode(emergencyPrimary);
-        var decodedEmergencySecondary = profileService.PhoneNumberDecode(emergencySecondary);
-
-        PhoneNumberDTO updateUserPrimary = new PhoneNumberDTO
-        {
-            Id = userViewDTO.PrimaryPhoneNumber.Id,
-            AreaCode = decodedUserPrimary.AreaCode,
-            Prefix = decodedUserPrimary.Prefix,
-            LastFour = decodedUserPrimary.LastFour,
-            Type = userViewDTO.PrimaryPhoneNumber.Type,
-            Fk_users = userViewDTO.PrimaryPhoneNumber.Fk_users
-        };
-        PhoneNumberDTO updatedUserSecondary = new PhoneNumberDTO
-        {
-            Id = userViewDTO.SecondaryPhoneNumber.Id,
-            AreaCode = decodedUserSeconodary.AreaCode,
-            Prefix = decodedUserSeconodary.Prefix,
-            LastFour = decodedUserSeconodary.LastFour,
-            Type = userViewDTO.SecondaryPhoneNumber.Type,
-            Fk_users = userViewDTO.SecondaryPhoneNumber.Fk_users
-        };
-        updatedUser.PrimaryPhoneNumber = updateUserPrimary;
-        updatedUser.SecondaryPhoneNumber = updatedUserSecondary;
-
-        PhoneNumberDTO updatedEmergencyPrimary = new PhoneNumberDTO
-        {
-            Id = emergencyDTO.PrimaryPhoneNumber.Id,
-            AreaCode = decodedEmergencyPrimary.AreaCode,
-            Prefix = decodedEmergencyPrimary.Prefix,
-            LastFour = decodedEmergencyPrimary.LastFour,
-            Type = emergencyDTO.PrimaryPhoneNumber.Type,
-            Fk_users = emergencyDTO.PrimaryPhoneNumber.Fk_users
-        };
-        PhoneNumberDTO updatedEmergencySecondary = new PhoneNumberDTO
-        {
-            Id = emergencyDTO.SecondaryPhoneNumber.Id,
-            AreaCode = decodedEmergencySecondary.AreaCode,
-            Prefix = decodedEmergencySecondary.Prefix,
-            LastFour = decodedEmergencySecondary.LastFour,
-            Type = emergencyDTO.SecondaryPhoneNumber.Type,
-            Fk_users = emergencyDTO.SecondaryPhoneNumber.Fk_users
-        };
-        updatedEmergency.PrimaryPhoneNumber = updatedEmergencyPrimary;
-        updatedEmergency.SecondaryPhoneNumber = updatedEmergencySecondary;
-
-
-
-        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, updatedUser);
-        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, updatedEmergency);
-
-        if (!userUpdateStatus)
-            Console.WriteLine("Debug: user update failed");
-        else
-            Console.WriteLine("Debug: user update succesful");
-
-        if (!emergencyUpdateStatus)
-            Console.WriteLine("Debug: emergency contact update failed");
-        else
-            Console.WriteLine("Debug: emergnecy contact update successful");
-
-        // Optionally, handle the statuses (e.g. show messages) before hiding the edit UI.
-        HideCards();
-        await GetUserView();
-        StateHasChanged();
-    } 
-
-    private void HideCards() 
-    { 
-        currentCardIndex = 0;
-        showEditCard = false;
-    } 
-
-    private void Navigate() 
-    { 
-       Navigation.NavigateTo("/parent_status"); 
-    } 
-} 
-
-@if (showUploadDialog) 
-{ 
-    <div> 
-        <InputFile OnChange="HandleFileSelected" /> 
-        <button class="btn-upload" @onclick="UploadFile">Upload</button> 
-        <button class="btn-cancel" @onclick="CancelUpload">Cancel</button> 
-    </div> 
+    // Display file selection button above upload and cancel buttons
+    <div class="file-select-container">
+        <InputFile OnChange="HandleFileSelected" class="btn-regupload" />
+    </div>
+    <div class="file-upload-container">
+        <button class="btn-regupload" @onclick="UploadFile">Upload</button>
+        <button class="btn-regupload" @onclick="CancelUpload">Cancel</button>
+    </div>
 }

@@ -1,0 +1,201 @@
+﻿/* Container Styling */
+.admin-account-container {
+    padding: 20px;
+}
+
+/* Main Title Styling */
+.account-title h1 {
+    font-size: 28px;
+    color: black;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #007BFF;
+    padding-bottom: 5px;
+}
+
+/* Header Styling */
+.account-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #007BFF;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.account-header h2 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.add-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-btn:hover {
+    background-color: #218838;
+}
+
+/* Table Styling */
+.account-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.account-table th,
+.account-table td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+.account-table th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+/* Button Styling */
+.edit-btn,
+.delete-btn,
+.view-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-btn {
+    background-color: #007bff;
+}
+
+.delete-btn {
+    background-color: #dc3545;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+.view-btn {
+    background-color: #e0a800;
+}
+
+.view-btn:hover {
+    background-color: #c99700;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .account-table th,
+    .account-table td {
+        padding: 8px;
+    }
+
+    .account-header {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+    /* Modal Title */
+    .modal-content h4 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    /* Modal Inputs */
+    .modal-content label {
+        display: block;
+        font-size: 1rem;
+        margin-bottom: 5px;
+        text-align: left;
+    }
+
+    .modal-content input,
+    .modal-content textarea {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 1rem;
+    }
+
+    .modal-content textarea {
+        height: 80px;
+        resize: none;
+    }
+
+/* Modal Buttons */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+/* Save button */
+.save-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .save-btn:hover {
+        background-color: #218838;
+    }
+
+/* Cancel button */
+.cancel-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+    .cancel-btn:hover {
+        background-color: #c82333;
+    }

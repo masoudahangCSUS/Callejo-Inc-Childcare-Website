@@ -3,6 +3,8 @@ using CallejoIncChildCareAPI.Authentication;
 using CallejoIncChildCareAPI.Authorize;
 using Common.Models.Data;
 using Common.Services.DailySchedule;
+using Common.Services.Expenses;
+using Common.Services.Invoice;
 using Common.Services.Login;
 using Common.Services.Registration;
 using Common.Services.Role;
@@ -40,13 +42,15 @@ builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IDailyScheduleService, DailyScheduleService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<ISQLServices, SQLServices>();
-builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IRegService, RegService>();
-builder.Services.AddScoped<ILoginService, LoginService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<PasswordService>();builder.Services.AddScoped<ILoginService, LoginService>();
+
 
 builder.Services.AddHttpClient();
-
 
 // Creates a shared encryption key for both the API and Website
 // In order for this to work, you need to create the SharedKeys folder in your C: drive

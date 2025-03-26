@@ -8,13 +8,14 @@ using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Common.Services.SQL;
 using Common.Services.User;
-
 using Microsoft.AspNetCore.DataProtection;
-
 using Syncfusion.Blazor;
 using Common.Services.Submit;
 using BlazorApp;
-
+using CallejoIncChildcareAPI.Filters;
+using Microsoft.OpenApi.Models;
+using Common.Services.Expenses;
+using Common.Services.Invoice;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -55,6 +56,8 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<DailyScheduleService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 
 builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license
@@ -93,6 +96,48 @@ builder.Services.AddAuthentication(options =>
 // Load environment variables
 Env.Load();
 
+
+
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Callejo API",
+        Version = "v1",
+        Description = "API documentation for Callejo Inc Childcare system, including file upload support."
+    });
+
+    // Enable file upload support in Swagger
+    options.OperationFilter<SwaggerFileUploadOperationFilter>();
+
+    // Support for authorization in Swagger (if needed)
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter 'Bearer {token}' to authenticate."
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
@@ -103,6 +148,12 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
+    // Enable Swagger in development
+    app.UseSwagger();
+    app.UseSwaggerUI(options =>
+    {
+        options.SwaggerEndpoint("/swagger/v1/swagger.json", "Callejo API V1");
+    });
 }
 
 
