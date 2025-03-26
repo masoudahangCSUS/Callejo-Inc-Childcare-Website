@@ -36,7 +36,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var holiday in holidaysVacations)
+                    @foreach (var holiday in PagedHolidays)
                     {
                         <tr>
                             <td>@holiday.Title</td>
@@ -53,6 +53,18 @@
                     }
                 </tbody>
             </table>
+            <div class="pagination-controls">
+                @if (currentPage > 1)
+                {
+                    <button class="pagination-btn" @onclick="GoToPreviousPage">Previous</button>
+                }
+                <span class="page-info">Page @currentPage of @Math.Ceiling((double)holidaysVacations.Count / pageSize)</span>
+                @if ((currentPage * pageSize) < holidaysVacations.Count)
+                {
+                    <button class="pagination-btn" @onclick="GoToNextPage">Next</button>
+                }
+            </div>
+
         }
 
         @if (isModalOpen)
@@ -100,6 +112,14 @@ else
     private bool isEditing = false;
     private HolidaysVacationView editingHoliday = new();
 
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private IEnumerable<HolidaysVacationView> PagedHolidays =>
+        holidaysVacations
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize);
+
     protected override async Task OnInitializedAsync()
     {
         await LoadHolidaysVacations();
@@ -114,28 +134,27 @@ else
     {
         editingHoliday = new HolidaysVacationView
             {
-                Type = "Holiday", // Default to Holiday
-                StartDate = DateOnly.FromDateTime(DateTime.UtcNow), // Convert DateTime to DateOnly
-                EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)), // Convert DateTime to DateOnly
+                Type = "Holiday",
+                StartDate = DateOnly.FromDateTime(DateTime.UtcNow),
+                EndDate = DateOnly.FromDateTime(DateTime.UtcNow.AddDays(1)),
                 CreatedAt = ConvertToPacificTime(DateTime.UtcNow)
             };
         isEditing = false;
         isModalOpen = true;
     }
 
-
     private void OpenEditModal(HolidaysVacationView holiday)
     {
         editingHoliday = new HolidaysVacationView
-        {
-            Id = holiday.Id,
-            Title = holiday.Title,
-            Type = holiday.Type,
-            StartDate = holiday.StartDate,
-            EndDate = holiday.EndDate,
-            Description = holiday.Description,
-            CreatedAt = holiday.CreatedAt
-        };
+            {
+                Id = holiday.Id,
+                Title = holiday.Title,
+                Type = holiday.Type,
+                StartDate = holiday.StartDate,
+                EndDate = holiday.EndDate,
+                Description = holiday.Description,
+                CreatedAt = holiday.CreatedAt
+            };
         isEditing = true;
         isModalOpen = true;
     }
@@ -143,10 +162,9 @@ else
     private async Task SaveHolidayVacation()
     {
         bool success;
-
         if (isEditing)
         {
-            success =  await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
+            success = await HolidaysVacationsService.UpdateHolidayVacationAsync(editingHoliday.Id, editingHoliday);
         }
         else
         {
@@ -164,7 +182,6 @@ else
     private async Task DeleteHolidayVacation(long id)
     {
         bool success = await HolidaysVacationsService.DeleteHolidayVacationAsync(id);
-
         if (success)
         {
             await LoadHolidaysVacations();
@@ -182,4 +199,17 @@ else
         TimeZoneInfo pacificZone = TimeZoneInfo.FindSystemTimeZoneById("Pacific Standard Time");
         return TimeZoneInfo.ConvertTimeFromUtc(utcDateTime, pacificZone);
     }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
+    private void GoToNextPage()
+    {
+        if ((currentPage * pageSize) < holidaysVacations.Count)
+            currentPage++;
+    }
 }
+
