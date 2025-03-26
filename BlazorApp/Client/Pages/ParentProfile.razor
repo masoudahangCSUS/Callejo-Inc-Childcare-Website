@@ -10,11 +10,14 @@
 @using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
 @using System.Text.RegularExpressions;
+@using Common.Services.Invoice;
 
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject IUserService userService
+@inject IJSRuntime JS
+@inject IInvoiceService invoiceService
 @inject UserSessionService UserSession
 @inject ISQLServices sqlService
 @inject ProfileService profileService
@@ -302,7 +305,23 @@ else
     private int currentCardIndex = 0;
     private bool showUploadDialog = false;
     private IBrowserFile? selectedFile;
+    private bool showInvoiceReminder = false;
+    private bool hasRenderedReminder = false;
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(100);
+
+            if (showInvoiceReminder && !hasRenderedReminder)
+            {
+                hasRenderedReminder = true;
+                Console.WriteLine("showing alert");
+                await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
+            }
+        }
+    }
     protected override async Task OnInitializedAsync()
     {
         await GetUserView();
@@ -493,6 +512,10 @@ else
         var user = await profileService.GetUserByID(UserSession.UserId);
         var PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
         var SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
+
+
         userViewDTO = new CustomerUserViewDTO
             {
                 FirstName = user.FirstName,
@@ -550,6 +573,12 @@ else
                     Type = EmergencySecondary.FkType
                 } : null
             };
+
+        if (upcoming != null)
+        {
+            Console.WriteLine("ticking value to true");
+            showInvoiceReminder = true;
+        }
 
         StateHasChanged();
     }
