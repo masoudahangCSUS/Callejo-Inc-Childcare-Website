@@ -18,11 +18,22 @@ namespace CallejoIncChildcareAPI.Controllers
             _dailyScheduleService = dailyScheduleService;
         }
 
-        // GET: api/DailySchedule/{id}
-        [HttpGet("{id}")]
-        public ActionResult<ListDailySchedule> GetDailySchedule(long id)
+        [HttpGet("{date}")]
+        public ActionResult<ListDailySchedule> GetDailyScheduleByDate(DateOnly date)
         {
-            var result = _dailyScheduleService.GetDailySchedule(id);
+            var result = _dailyScheduleService.GetDailyScheduleByDate(date);
+            if (result.Success)
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+        }
+
+        // GET: api/DailySchedule/{id}
+        [HttpGet("ById/{id}")]
+        public ActionResult<ListDailySchedule> GetDailyScheduleById(long id)
+        {
+            var result = _dailyScheduleService.GetDailyScheduleById(id);
             if (result.Success)
             {
                 return Ok(result);

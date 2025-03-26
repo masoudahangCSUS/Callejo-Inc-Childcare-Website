@@ -1,7 +1,11 @@
+using CallejoIncChildCareAPI;
+using CallejoIncChildCareAPI.Authentication;
+using CallejoIncChildCareAPI.Authorize;
 using Common.Models.Data;
 using Common.Services.DailySchedule;
 using Common.Services.Expenses;
 using Common.Services.Invoice;
+using Common.Services.Login;
 using Common.Services.Registration;
 using Common.Services.Role;
 using Common.Services.SQL;
@@ -12,6 +16,7 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,6 +33,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<CallejoSystemDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DataContext")));
 
+// Add services to the container.
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
+
+
 // Register services here
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddScoped<IDailyScheduleService, DailyScheduleService>();
@@ -38,7 +47,8 @@ builder.Services.AddScoped<IRegService, RegService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
-builder.Services.AddScoped<PasswordService>();
+builder.Services.AddScoped<PasswordService>();builder.Services.AddScoped<ILoginService, LoginService>();
+
 
 builder.Services.AddHttpClient();
 
@@ -85,9 +95,15 @@ builder.Services.AddCors(options =>
 
 
 
-
-
 var app = builder.Build();
+
+// Load the configuration into the AppSettings object
+var appSettings = app.Services.GetRequiredService<IOptions<AppSettings>>().Value;
+AuthenticateAction.Key = appSettings.Key.ToString(); // Set the key for the AuthenticateAction class
+AuthenticateAction.Applications = appSettings.Applications; // Set the applications for the AuthenticateAction class
+AuthorizeAction.Applications = appSettings.Applications; // Set the applications for the AuthorizeAction class
+AuthorizeAction.Key = appSettings.Key.ToString(); // Set the key for the AuthorizeAction class
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
