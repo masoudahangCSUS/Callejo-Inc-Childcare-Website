@@ -7,7 +7,6 @@
 @inject IJSRuntime JSRuntime
 @attribute [Authorize(Roles = "Admin")]
 
-
 <div class="admin-dashboard">
     <!-- Sidebar -->
     <div class="sidebar">
@@ -77,6 +76,12 @@
                     <button @onclick='() => SetContent(typeof(AdminDailySchedule), "Admin-Daily-Schedule")'
                             class="btn-link @(ActivePage == "Admin-Daily-Schedule" ? "active" : "")">
                         <img src="images/calendar.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Daily Schedule
+                    </button>
+                </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminInvoices), "Admin-Invoices")'
+                            class="btn-link @(ActivePage == "Admin-Invoices" ? "active" : "")">
+                        <img src="images/calendar.png" alt="Holidays & Vacations" class="nav-icon" /> Invoices
                     </button>
                 </li>
             </ul>

@@ -173,8 +173,19 @@ namespace BlazorApp.Client.Services
             string areaCode = digits.Substring(0, 3);
             string prefix = digits.Substring(3, 3);
             string lastFour = digits.Substring(6, 4);
+                return (areaCode, prefix, lastFour);    
+            }
 
-            return (areaCode, prefix, lastFour);    
+        public async Task<List<InvoiceDTO>> GetInvoicesByGuardianId(Guid guardianId)
+        {
+            var response = await _httpClient.GetAsync($"api/invoices/guardian/{guardianId}");
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<InvoiceDTO>>() ?? new();
+            }
+            return new List<InvoiceDTO>();
+
         }
+
     }
 }
