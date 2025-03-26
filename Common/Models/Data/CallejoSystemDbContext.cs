@@ -141,9 +141,7 @@ public partial class CallejoSystemDbContext : DbContext
             entity.ToTable("Daily_Schedule");
 
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.CreatedAt)
-                .HasColumnType("datetime")
-                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
             entity.Property(e => e.DescSpecial).HasColumnName("desc_special");
             entity.Property(e => e.Description).HasColumnName("description");
         });

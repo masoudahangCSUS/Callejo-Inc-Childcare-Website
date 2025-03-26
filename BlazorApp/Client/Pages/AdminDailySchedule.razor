@@ -49,10 +49,12 @@
         Console.WriteLine($"Selected Date: {SelectedDate}");
         dailyScheduleIdCurrentlyBeingEdited = 0;
 
+        DateOnly selectedDate = DateOnly.FromDateTime(SelectedDate.Value);
+
         DailyScheduleView dailyScheduleInfo = new DailyScheduleView
             {
                 Description = newDailySchedule,
-                CreatedAt = SelectedDate,
+                CreatedAt = selectedDate,
                 Desc_special = specialEvents
             };
         var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);

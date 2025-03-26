@@ -3,6 +3,7 @@
 @using BlazorApp.Client.Services
 @using Common.View
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Mvc
 
 @inject DailyScheduleService DailyScheduleService
 @inject UserSessionService UserSession
@@ -15,9 +16,17 @@
         <CalendarEvents TValue="DateTime?" ValueChange="OnChange"></CalendarEvents>
     </SfCalendar>
     <div class="events-container">
-        <h3>@SelectedValue</h3>
+        <h3>Daily Schedule on @SelectedValue</h3>
+        <ul>
+            @foreach (var item in lines)
+            {
+                <li>@item</li>
+            }
+        </ul>
 
-        <p>@SelectedValueDesc</p>
+        @* <p>@SelectedValueDesc</p> *@
+        <h3>Special Events</h3>
+        <p>@SelectedValueDescSpecial</p>
         <span>Selected Day : @SelectedValue</span>
     </div>
 </div>
@@ -27,29 +36,12 @@
     public string SelectedValue { get; set; } = DateTime.Now.ToString("M/d/yyyy");
     public DateTime? CurrentDate { get; set; } = DateTime.Now;
     public string SelectedValueDesc = string.Empty;
-
-    private string inputText = string.Empty;
-    private string displayedText = string.Empty;
-    private string inputTextSpecial = string.Empty;
-    private string displayedTextSpecial = string.Empty;
+    public string SelectedValueDescSpecial = string.Empty;
+    private string[] lines = Array.Empty<string>();
 
     private List<DailyScheduleView> dailySchedules = new();
     private Common.View.DailyScheduleView dailySchedule;
 
-    /*protected override async Task OnInitializedAsync()
-        {
-        listRoles = await RoleService.GetAllRoles();
-        BuildHtmlTable();
-    }*/
-
-    private void ShowText()
-    {
-        displayedText = inputText;
-    }
-    private void ShowTextSpecial()
-    {
-        displayedTextSpecial = inputTextSpecial;
-    }
 
     public async Task OnChange(ChangedEventArgs<DateTime?> args)
     {
@@ -58,19 +50,32 @@
         var SelectedDay = SelectedDate.Value.Day;
         var SelectedYear = SelectedDate.Value.Year;
         SelectedValueDesc = string.Empty;
+
         if (args.Value.Value.Month == SelectedMonth && args.Value.Value.Day == SelectedDay && args.Value.Value.Year == SelectedYear)
         {
-            var response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate);
-            this.SelectedValue = "Daily schedule on: " + this.SelectedDate?.ToString("M/d/yyyy");
-            if (SelectedValueDesc == string.Empty)
+            if(SelectedDate != null)
             {
-                this.SelectedValue = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+                ListDailySchedule response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate.Value);
+                if (response.dailySchedules[0].Description != null)
+                {
+                    SelectedValueDesc = response.dailySchedules[0].Description;
+                    lines = SelectedValueDesc.Split('\n');
+                    
+                    if (response.dailySchedules[0].Desc_special != null)
+                    {
+                        SelectedValueDescSpecial = response.dailySchedules[0].Desc_special;
+                    }
+                    else
+                    {
+                        SelectedValueDescSpecial = "No special events planned";
+                    }
+                }
+                else
+                {
+                    SelectedValueDesc = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+                }
+                Count++;
             }
-            else
-            {
-                SelectedValueDesc = dailySchedule.Description;
-            }
-            Count++;
         }
     }
     

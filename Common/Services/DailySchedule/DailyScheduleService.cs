@@ -53,12 +53,7 @@ namespace Common.Services.DailySchedule
             return response;
         }
 
-        /// <summary>
-        /// Retrieve a daily schedule record
-        /// </summary>
-        /// <param name="id">Primary key for daily schedule record</param>
-        /// <returns></returns>
-        public ListDailySchedule GetDailyScheduleByDate(DateTime date)
+        public ListDailySchedule GetDailyScheduleByDate(DateOnly date)
         {
             ListDailySchedule listDailySchedule = new ListDailySchedule();
 
@@ -75,11 +70,11 @@ namespace Common.Services.DailySchedule
                     dailyScheduleViewRec.CreatedAt = dailyScheduleRec.CreatedAt;
 
                     listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
-                    listDailySchedule.Message = "Retrieved daily schedule record that matched id " + date.ToString();
+                    listDailySchedule.Message = "Retrieved daily schedule record that matched date " + date.ToString();
                 }
                 else
                 {
-                    listDailySchedule.Status = "No record matching id " + date.ToString() + " would found";
+                    listDailySchedule.Status = "No record matching id " + date.ToString() + " was found";
                 }
                 listDailySchedule.Success = true;
             }
@@ -87,6 +82,46 @@ namespace Common.Services.DailySchedule
             {
                 listDailySchedule.Success = false;
                 listDailySchedule.Message = "Problems retrieve daily schedule record " + date.ToString() + ". Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+            }
+
+            return listDailySchedule;
+        }
+
+
+        /// <summary>
+        /// Retrieve a daily schedule record
+        /// </summary>
+        /// <param name="id">Primary key for daily schedule record</param>
+        /// <returns></returns>
+        public ListDailySchedule GetDailyScheduleById(long id)
+        {
+            ListDailySchedule listDailySchedule = new ListDailySchedule();
+
+            try
+            {
+                var dailyScheduleRec = _context.DailySchedules.Where(r => r.Id == id).FirstOrDefault();
+
+                if (dailyScheduleRec != null)
+                {
+                    DailyScheduleView dailyScheduleViewRec = new DailyScheduleView();
+                    dailyScheduleViewRec.Id = dailyScheduleRec.Id;
+                    dailyScheduleViewRec.Description = dailyScheduleRec.Description;
+                    dailyScheduleViewRec.Desc_special = dailyScheduleRec.DescSpecial;
+                    dailyScheduleViewRec.CreatedAt = dailyScheduleRec.CreatedAt;
+
+                    listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
+                    listDailySchedule.Message = "Retrieved daily schedule record that matched id " + id.ToString();
+                }
+                else
+                {
+                    listDailySchedule.Status = "No record matching id " + id.ToString() + " would found";
+                }
+                listDailySchedule.Success = true;
+            }
+            catch (Exception ex)
+            {
+                listDailySchedule.Success = false;
+                listDailySchedule.Message = "Problems retrieve daily schedule record " + id.ToString() + ". Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
             }
 
             return listDailySchedule;
