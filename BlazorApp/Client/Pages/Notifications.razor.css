@@ -1,5 +1,4 @@
-﻿/* Add more spacing from header and footer */
-.notifications-page {
+﻿.notifications-page {
     padding: 50px 20px;
     max-width: 800px;
     margin: 0 auto;
@@ -9,7 +8,7 @@
     text-align: center;
     font-size: 2rem;
     color: #333;
-    margin-bottom: 20px;
+    margin-bottom: 35px; /* increased spacing below title */
     font-weight: bold;
 }
 
@@ -21,26 +20,21 @@
 
 .notification-card {
     border-radius: 12px;
-    padding: 15px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     background-color: #ffffff;
-    transition: all 0.3s ease-in-out;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     cursor: pointer;
-    border: 1px solid #ddd;
+    border-left: 6px solid #007bff;
 }
 
-    .notification-card:hover {
-        transform: scale(1.02);
-    }
-
-    .notification-card.unread {
-        background-color: #f0f8ff;
-        border-left: 5px solid #007bff;
-    }
-
     .notification-card.read {
-        background-color: #f8f9fa;
-        border-left: 5px solid #28a745;
+        border-left-color: #28a745;
+    }
+
+    .notification-card:hover {
+        transform: scale(1.01);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
     }
 
     .notification-card h3 {
@@ -56,7 +50,6 @@
         margin-bottom: 10px;
     }
 
-/* Click to read styling */
 .click-to-read {
     font-size: 0.9rem;
     color: #007bff;
@@ -69,7 +62,6 @@
         color: #0056b3;
     }
 
-/* Styling for already read messages */
 .read-label {
     font-size: 0.9rem;
     color: #888;
@@ -77,17 +69,53 @@
     margin-top: 10px;
 }
 
-/* Indicator for read messages */
 .read-indicator {
     font-size: 0.9rem;
     color: #28a745;
     font-weight: bold;
 }
 
-/* Loading and empty message styles */
-.loading-message, .empty-message {
+.loading-message,
+.empty-message {
     text-align: center;
     font-size: 1.2rem;
     color: #666;
     margin-top: 50px;
 }
+
+/* Grouping pagination UI */
+.pagination-wrapper {
+    margin-top: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-number {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 0;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all 0.2s ease-in-out;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
