@@ -17,6 +17,7 @@
     </SfCalendar>
     <div class="events-container">
         <h3>Daily Schedule on @SelectedValue</h3>
+        <p>@emptyMessage</p>
         <ul>
             @foreach (var item in lines)
             {
@@ -24,7 +25,6 @@
             }
         </ul>
 
-        @* <p>@SelectedValueDesc</p> *@
         <h3>Special Events</h3>
         <p>@SelectedValueDescSpecial</p>
         <span>Selected Day : @SelectedValue</span>
@@ -38,6 +38,9 @@
     public string SelectedValueDesc = string.Empty;
     public string SelectedValueDescSpecial = string.Empty;
     private string[] lines = Array.Empty<string>();
+    public string emptyMessage = string.Empty;
+    public string emptyMessageSpecial = string.Empty;
+
 
     private List<DailyScheduleView> dailySchedules = new();
     private Common.View.DailyScheduleView dailySchedule;
@@ -56,11 +59,11 @@
             if(SelectedDate != null)
             {
                 ListDailySchedule response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate.Value);
-                if (response.dailySchedules[0].Description != null)
+                if (response.Success == true && response.dailySchedules[0].Description != null)
                 {
                     SelectedValueDesc = response.dailySchedules[0].Description;
                     lines = SelectedValueDesc.Split('\n');
-                    
+
                     if (response.dailySchedules[0].Desc_special != null)
                     {
                         SelectedValueDescSpecial = response.dailySchedules[0].Desc_special;
@@ -72,60 +75,11 @@
                 }
                 else
                 {
-                    SelectedValueDesc = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+                    emptyMessage = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+                    SelectedValueDescSpecial = "No special events planned";
                 }
                 Count++;
             }
         }
     }
-    
-    /*public DateTime? DateValue { get; set; } = DateTime.Now;
-    private DateTime selectedDate = DateTime.Today;
-    private List<string> dailyRoster = new List<string>();
-    private List<string> specialEvents = new List<string>();
-
-    private void onChange(Syncfusion.Blazor.Calendars.ChangedEventArgs<DateTime?> args)
-    {
-        DateValue = args.Value;
-        StateHasChanged();
-    }
-
-    protected override void OnInitialized()
-    {
-        LoadRosterForDate(selectedDate);
-        LoadSpecialEventsForDate(selectedDate);
-    }
-
-    public void LoadRosterForDate(DateTime date)
-    {
-        // Dummy events for demonstration purposes
-        dailyRoster = new List<string>
-        {
-            $"8:30 AM - 9:00 AM: Children are dropped off; playtime inside",
-            $"9:00 AM - 9:30 AM: Breakfest ",
-            $"11:00 AM - 12:00 PM: Playtime outside",
-            $"12:00 PM - 12:30 PM: Lunch",
-            $"12:30 PM - 2:30 PM: Nap time", 
-            $"2:30 PM - 3:00 PM: Circle time",
-            $"3:00 PM - 5:00 PM: Playtime inside until parents arrive"
-        };
-    }
-
-    public void LoadSpecialEventsForDate(DateTime date)
-    {
-        // Dummy events for demonstration purposes
-        specialEvents = new List<string>
-        {
-            $"Bring your parents to Childcare day! (6:00 PM)"
-        };
-    }
-
-    private void OnDateChanged(DateTime? date, ChangedEventArgs<DateTime?> args)
-    {
-        if (date.HasValue)
-        {
-            selectedDate = date.Value;
-            LoadRosterForDate(selectedDate);
-        }
-    }*/
 }

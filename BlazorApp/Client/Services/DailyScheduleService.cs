@@ -37,7 +37,6 @@ namespace BlazorApp.Client.Services
         public async Task<ListDailySchedule> GetDailyScheduleByDate(DateTime date)
         {
             var request = new RestRequest($"DailySchedule/{date.ToString("yyyy-MM-dd")}", Method.Get);
-            //var request = new RestRequest($"DailySchedule/2025-03-28", Method.Get);
             var response = await _client.ExecuteAsync<ListDailySchedule>(request);
             return response.Data;
         }
