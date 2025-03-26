@@ -45,6 +45,10 @@ namespace Common.Services.SQL
         public Task<bool> updateEmergencyContact(EmergencyContact emergencyContact, EmergencyContactDTO emergencyDto);
         public Task<bool> updateChild(Child childId, ChildDTO childDto);
 
+        public Task<bool> updatePassowrd(SettingsDTO settings);
+
+        public Task<bool> updateEmail(SettingsDTO settings);
+
 
 
     }

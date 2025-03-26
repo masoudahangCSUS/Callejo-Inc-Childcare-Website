@@ -23,6 +23,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<EmergencyContact> EmergencyContacts { get; set; }
 
+    public virtual DbSet<Expense> Expenses { get; set; }
+
     public virtual DbSet<FileUpload> FileUploads { get; set; }
 
     public virtual DbSet<Expense> Expenses { get; set; }
@@ -45,6 +47,8 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
     public virtual DbSet<Invoice> Invoices { get; set; }
+
+    public virtual DbSet<UserSecret> UserSecrets { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
@@ -180,16 +184,23 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasConstraintName("FK_Callejo_Inc_Users");
         });
 
+        modelBuilder.Entity<Expense>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Expenses__3214EC072C37F3BF");
+
+            entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
+            entity.Property(e => e.Category).HasMaxLength(15);
+            entity.Property(e => e.Note).HasMaxLength(300);
+        });
+
         modelBuilder.Entity<FileUpload>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__FileUplo__3214EC07E2B87D88");
+            entity.HasKey(e => e.Id).HasName("PK__FileUplo__3214EC07E90E0243");
 
             entity.Property(e => e.ContentType).HasMaxLength(100);
-            entity.Property(e => e.DocumentType).HasMaxLength(255);
+            entity.Property(e => e.DocumentType).HasMaxLength(100);
             entity.Property(e => e.FileName).HasMaxLength(255);
-            entity.Property(e => e.UploadDate)
-                .HasDefaultValueSql("(getutcdate())")
-                .HasColumnType("datetime");
+            entity.Property(e => e.UploadDate).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Expense>(entity =>
@@ -373,6 +384,26 @@ public partial class CallejoSystemDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("description");
         });
+
+
+        modelBuilder.Entity<UserSecret>(entity =>
+        {
+            entity.HasKey(e => e.FkUser);
+
+            entity.Property(e => e.FkUser)
+                .ValueGeneratedNever()
+                .HasColumnName("fk_user");
+            entity.Property(e => e.Secret)
+                .HasMaxLength(50)
+                .IsUnicode(false)
+                .HasColumnName("secret");
+
+            entity.HasOne(d => d.FkUserNavigation).WithOne(p => p.UserSecret)
+                .HasForeignKey<UserSecret>(d => d.FkUser)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_UserSecrets_CallejoIncUsers");
+        });
+
 
         modelBuilder.Entity<Invoice>(entity =>
         {
