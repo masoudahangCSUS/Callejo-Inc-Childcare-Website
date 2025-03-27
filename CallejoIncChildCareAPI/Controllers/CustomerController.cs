@@ -186,12 +186,12 @@ namespace CallejoIncChildcareAPI.Controllers
             }
 
             // call sqlServices to update passowrd
-            //EC bool updateReults = await _sqlServices.updatePassowrd(settings);
-            //if (!updateReults)
-            //{
-            //    return StatusCode(500, "An error has ocurred whule updating the password");
-            //}
-           
+            bool updateReults = await _sqlServices.updatePassowrd(settings);
+            if (!updateReults)
+            {
+                return StatusCode(500, "An error has ocurred whule updating the password");
+            }
+
             return Ok("Password updated successfully.");
         }
 
@@ -205,11 +205,11 @@ namespace CallejoIncChildcareAPI.Controllers
             }
 
             // call sqlServices to update the email
-            //EC bool updateResults = await _sqlServices.updateEmail(settings);
-            //if (!updateResults)
-            //{
-            //    return StatusCode(500, "An error has ocurred while updating the passowrd");
-            //}
+            bool updateResults = await _sqlServices.updateEmail(settings);
+            if (!updateResults)
+            {
+                return StatusCode(500, "An error has ocurred while updating the passowrd");
+            }
 
             return Ok("Email updated successfully.");
         }

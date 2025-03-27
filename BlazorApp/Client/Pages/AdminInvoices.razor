@@ -43,7 +43,7 @@
                         <td>@invoice.InvoiceId</td>
                         <td>@invoice.GuardianName</td>
                         <td>@invoice.ChildNames</td>
-                        @* EC <td>@invoice.DueDate.ToShortDateString()</td> *@
+                        @*EC <td>@invoice.DueDate.ToShortDateString()</td> *@
                         <td>
                             <span class="status-badge @invoice.Status.ToLower()">@invoice.Status</span>
                         </td>
@@ -182,7 +182,7 @@
                 <p><strong>Invoice ID:</strong> @viewingInvoice.InvoiceId</p>
                 <p><strong>Guardian:</strong> @viewingInvoice.GuardianName</p>
                 <p><strong>Children:</strong> @viewingInvoice.ChildNames</p>
-                @* EC <p><strong>Due Date:</strong> @viewingInvoice.DueDate.ToShortDateString()</p> *@
+                @*EC <p><strong>Due Date:</strong> @viewingInvoice.DueDate.ToShortDateString()</p> *@
                 <p><strong>Status:</strong> @viewingInvoice.Status</p>
                 <p><strong>Notes:</strong> @viewingInvoice.Notes</p>
                 <p><strong>Total Amount:</strong> $@viewingInvoice.TotalAmount</p>
