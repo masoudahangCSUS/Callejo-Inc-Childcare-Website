@@ -42,7 +42,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var user in users)
+                @foreach (var user in PagedUsers)
                 {
                     <tr>
                         <td>@user.FirstName</td>
@@ -70,6 +70,20 @@
                 }
             </tbody>
         </table>
+        <div class="pagination-controls">
+            @if (currentPage > 1)
+            {
+                <button class="pagination-btn" @onclick="GoToPreviousPage">Previous</button>
+            }
+
+            <span class="page-info">Page @currentPage of @Math.Ceiling((double)(users?.Count ?? 0) / pageSize)</span>
+
+            @if ((currentPage * pageSize) < (users?.Count ?? 0))
+            {
+                <button class="pagination-btn" @onclick="GoToNextPage">Next</button>
+            }
+        </div>
+
     }
 
     <!-- Modal -->
@@ -84,10 +98,29 @@
     private FormMode formMode;
     private AdminUserCreationDTO? selectedUser;
 
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private List<AdminUserCreationDTO> PagedUsers => users
+        ?.Skip((currentPage - 1) * pageSize)
+        .Take(pageSize)
+        .ToList() ?? new();
+
     private string GetModalTitle()
     {
         return formMode == FormMode.Create ? "Create Profile" : "Edit Profile";
     }
+
+    private void GoToNextPage()
+    {
+        currentPage++;
+    }
+
+    private void GoToPreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
+
 
     public async Task ConfirmDeleteUser(Guid userId)
     {
@@ -123,7 +156,10 @@
 
     private async Task LoadUsers()
     {
-        users = await AdminService.GetAllUsersAsync();
+        users = (await AdminService.GetAllUsersAsync())
+        .OrderBy(u => u.FirstName)
+        .ToList();
+
         StateHasChanged();
     }
 

@@ -7,6 +7,7 @@
 .account-title h1 {
     font-size: 28px;
     color: black;
+    font-weight: bold;
     margin-bottom: 10px;
     border-bottom: 2px solid #007BFF;
     padding-bottom: 5px;
@@ -127,3 +128,34 @@
         gap: 10px;
     }
 }
+
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+.pagination-btn {
+    padding: 8px 16px;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
+
+.page-info {
+    font-size: 1rem;
+    color: #333;
+    font-weight: 500;
+}
+
