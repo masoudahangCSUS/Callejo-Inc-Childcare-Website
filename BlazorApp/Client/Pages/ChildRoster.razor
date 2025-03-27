@@ -9,7 +9,6 @@
 @attribute [Authorize(Roles = "Admin")]
 
 <div class="child-roster-container">
-    <!-- Page Title -->
     <div class="child-roster-header">
         <h1>Child Roster</h1>
     </div>
@@ -24,41 +23,68 @@
     }
     else
     {
-        <ul class="child-list">
-            @foreach (var child in children)
+        <div class="child-grid-container">
+            @foreach (var child in PagedChildren)
             {
-                <li class="child-item">
+                <div class="child-item">
                     <div class="child-photo-wrapper">
                         <img src="images/child-placeholder.png" alt="Child photo" class="child-photo" />
                     </div>
                     <div class="child-info">
                         <p><strong>First Name:</strong> @child.FirstName</p>
-                        <p><strong>Middle Name:</strong> @(string.IsNullOrEmpty(@child.MiddleName) ? "N/A" : @child.MiddleName)</p>
+                        <p><strong>Middle Name:</strong> @(string.IsNullOrEmpty(child.MiddleName) ? "N/A" : child.MiddleName)</p>
                         <p><strong>Last Name:</strong> @child.LastName</p>
                         <p><strong>Age:</strong> @child.Age</p>
                     </div>
-                </li>
+                </div>
             }
-        </ul>
+        </div>
+
+        <div class="pagination-controls">
+            @if (currentPage > 1)
+            {
+                <button class="pagination-btn" @onclick="PreviousPage">Previous</button>
+            }
+
+            <span class="page-info">Page @currentPage of @totalPages</span>
+
+            @if (currentPage < totalPages)
+            {
+                <button class="pagination-btn" @onclick="NextPage">Next</button>
+            }
+        </div>
     }
 </div>
 
-
 @code {
-    private List<ChildView> children = new List<ChildView>();
+    private List<ChildView> children = new();
+    private int currentPage = 1;
+    private int pageSize = 10;
+
+    private IEnumerable<ChildView> PagedChildren =>
+        children.Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+    private int totalPages => (int)Math.Ceiling((double)children.Count / pageSize);
 
     protected override async Task OnInitializedAsync()
     {
         var apiUrl = "https://localhost:7139/api/Admin/children";
-
-        // Deserialize the response as an object, then extract the children list
         var response = await Http.GetFromJsonAsync<ListChildren>(apiUrl);
-        if (response != null && response.children != null)
+        if (response?.children != null)
         {
-            children = response.children;
+            children = response.children.OrderBy(c => c.FirstName).ToList();
         }
     }
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+            currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
 }
-
-
-
