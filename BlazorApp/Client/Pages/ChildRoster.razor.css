@@ -3,14 +3,15 @@
     padding: 20px;
 }
 
-/* Page Header */
 .child-roster-header h1 {
     font-size: 28px;
     color: black;
-    border-bottom: 2px solid #00B7D7;
+    font-weight: bold;
+    border-bottom: 2px solid #007BFF; /* changed from aqua to strong blue */
     padding-bottom: 8px;
     margin-bottom: 20px;
 }
+
 
 /* Loading and No Data Styling */
 .loading-text,
@@ -21,30 +22,29 @@
     margin-top: 20px;
 }
 
-/* Child List Styling */
-.child-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
+/* Grid Layout */
+.child-grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(45%, 1fr));
     gap: 16px;
 }
 
-/* Individual Child Item */
 .child-item {
     display: flex;
     align-items: center;
     background-color: #f9f9f9;
     padding: 12px;
     border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.2s ease;
+    border: 1px solid #007BFF;
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+    transition: box-shadow 0.3s ease, transform 0.2s ease;
 }
 
     .child-item:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 0 15px rgba(0, 123, 255, 0.5);
+        transform: translateY(-2px);
     }
+
 
 /* Child Photo Styling */
 .child-photo-wrapper {
@@ -57,9 +57,9 @@
     height: 60px;
     border-radius: 50%;
     object-fit: cover;
-    border: 2px solid #00B7D7;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    border: 2px solid #007BFF; /* changed from aqua to blue */
 }
+
 
 /* Child Info Styling */
 .child-info {
@@ -74,8 +74,40 @@
         color: #333;
     }
 
-/* Responsive Design */
+/* Pagination Controls */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    gap: 12px;
+}
+
+.pagination-btn {
+    background-color: #007BFF;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
+
+.page-info {
+    font-size: 16px;
+    color: #333;
+}
+
+/* Responsive */
 @media (max-width: 768px) {
+    .child-grid-container {
+        grid-template-columns: 1fr;
+    }
+
     .child-item {
         flex-direction: column;
         align-items: flex-start;
