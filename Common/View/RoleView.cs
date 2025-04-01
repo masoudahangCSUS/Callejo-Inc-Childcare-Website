@@ -10,7 +10,9 @@ namespace Common.View
     {
         public long Id { get; set; }
         public string Description { get; set; }
+        public bool IsEditing { get; set; } = false;
     }
+
     public class ListRoles : APIResponse
     {
         public List<RoleView> roles { get; set; }

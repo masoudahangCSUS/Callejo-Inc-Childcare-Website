@@ -30,7 +30,7 @@ namespace Common.Services.Invoice
                     GuardianId = i.GuardianId,
                     GuardianName = i.GuardianName,
                     ChildNames = i.ChildNames,
-                    DueDate = i.DueDate,
+                    // SBC DueDate = i.DueDate,
                     Status = i.Status,
                     Notes = i.Notes,
                     TotalAmount = i.TotalAmount,
@@ -51,7 +51,7 @@ namespace Common.Services.Invoice
                 GuardianId = dto.GuardianId,
                 GuardianName = dto.GuardianName,
                 ChildNames = dto.ChildNames,
-                DueDate = dto.DueDate,
+                // SBC DueDate = dto.DueDate,
                 Status = dto.Status ?? "Pending",
                 Notes = dto.Notes,
                 TotalAmount = dto.TotalAmount,
@@ -79,7 +79,7 @@ namespace Common.Services.Invoice
             existing.GuardianId = dto.GuardianId;
             existing.GuardianName = dto.GuardianName;
             existing.ChildNames = dto.ChildNames;
-            existing.DueDate = dto.DueDate;
+            // SBC existing.DueDate = dto.DueDate;
             existing.Status = dto.Status;
             existing.Notes = dto.Notes;
             existing.TotalAmount = dto.TotalAmount;
@@ -116,7 +116,7 @@ namespace Common.Services.Invoice
                     GuardianId = i.GuardianId,
                     GuardianName = i.GuardianName,
                     ChildNames = i.ChildNames,
-                    DueDate = i.DueDate,
+                    // SBC DueDate = i.DueDate,
                     Status = i.Status,
                     Notes = i.Notes,
                     TotalAmount = i.TotalAmount,

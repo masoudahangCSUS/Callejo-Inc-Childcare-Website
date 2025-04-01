@@ -1,7 +1,7 @@
 ﻿@page "/roles"
 @using Service
 @inject RoleService RoleService
-@inject IHttpContextAccessor HttpContextAccessor
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
 
 <h3>Roles</h3>
 
@@ -65,12 +65,14 @@
 
     protected override async Task OnInitializedAsync()
     {
-        if (HttpContextAccessor.HttpContext != null)
-        {
-            authGuid = HttpContextAccessor.HttpContext.Request.Cookies["AuthGUID"];
-            userName = HttpContextAccessor.HttpContext.Request.Cookies["AuthUserName"];
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
 
-            //listRoles = Task.Run(() => RoleService.GetAllRoles(userName, authGuid)).Result;
+        if (user.Identity.IsAuthenticated)
+        {
+            authGuid = user.FindFirst("AuthGUID")?.Value;
+            userName = user.FindFirst("AuthUserName")?.Value;
+
             listRoles = await RoleService.GetAllRoles(userName, authGuid);
             if (listRoles != null)
                 BuildHtmlTable();

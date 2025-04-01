@@ -3,9 +3,9 @@
 @using ExampleBlazorAuthentication.Service
 @rendermode InteractiveServer
 @inject LoginService LoginService
-@inject IHttpContextAccessor HttpContextAccessor
 @inject IJSRuntime JS
 @inject NavigationManager NavigationManager
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
 
 <script type="text/javascript">
     function setCookie(name, value, days) {
@@ -52,7 +52,7 @@ else if (IsAuthenticated != null && !IsAuthenticated.Value)
         Password = "SamTest";
     }
 
-    private void AuthenticateUser()
+    private async Task AuthenticateUser()
     {
 
         // Call the async method and block until it completes
@@ -60,17 +60,9 @@ else if (IsAuthenticated != null && !IsAuthenticated.Value)
 
         if (response != null && response.Success)
         {
-            // Create cookie options
-            var options = new CookieOptions
-                {
-                    Expires = DateTimeOffset.UtcNow.AddHours(24), // Set your desired expiration time
-                    HttpOnly = true,
-                    Secure = true // Set to true if using HTTPS
-                };
-
-            // Store the Token into a cookie.  Need to use JavaScript
-            JS.InvokeVoidAsync("setCookie", "AuthGUID", response.Token.ToString(), 1);
-            JS.InvokeVoidAsync("setCookie", "AuthUserName", Username, 1);
+            await JS.InvokeVoidAsync("localStorage.setItem", "authToken", response.Token.ToString());
+            await JS.InvokeVoidAsync("localStorage.setItem", "authUserName", Username);
+            AuthenticationStateProvider.MarkUserAsAuthenticated(response.Token.ToString(), Username);
             IsAuthenticated = true;
             // Redirect to the Roles component
             NavigationManager.NavigateTo("/roles");

@@ -1,7 +1,9 @@
 using ExampleBlazorAuthentication;
 using ExampleBlazorAuthentication.Components;
 using ExampleBlazorAuthentication.Service;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Endpoints;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,13 +11,18 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Services.AddMudServices();
+
 // Populate the AppSettings object
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
 
 // Register Services
 builder.Services.AddScoped<LoginService>();
 builder.Services.AddScoped<RoleService>();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); // Register IHttpContextAccessor for dependency injection
+builder.Services.AddHttpClient(); // Register HttpClient
+builder.Services.AddScoped<AuthenticationStateProvider, CustomAuthenticationStateProvider>();
+builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+
 
 builder.Services.AddAuthentication("Cookies")
     .AddCookie(options =>
@@ -32,17 +39,6 @@ builder.Services.AddAuthorization(options =>
 });
 
 var app = builder.Build();
-
-// Middleware to set the authentication cookie
-app.Use(async (context, next) =>
-{
-    if (context.Request.Path == "/")
-    {
-        context.Response.Cookies.Delete("AuthGUID"); // Clear any existing authentication cookie
-        context.Response.Cookies.Delete("AuthUserName"); // Clear any existing authentication cookie
-    }
-    await next.Invoke();
-});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

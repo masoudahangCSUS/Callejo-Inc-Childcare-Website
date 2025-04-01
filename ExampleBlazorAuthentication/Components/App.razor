@@ -13,7 +13,15 @@
 </head>
 
 <body>
-    <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+    <MudThemeProvider>
+        <MudLayout>
+            <MudContainer>
+                <Routes @rendermode="new InteractiveServerRenderMode(prerender: false)" />
+            </MudContainer>
+        </MudLayout>
+    </MudThemeProvider>
+    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <script src="scripts.js"></script>
     <script src="_framework/blazor.web.js"></script>
 </body>
 

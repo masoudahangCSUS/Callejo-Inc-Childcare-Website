@@ -1,0 +1,119 @@
+﻿@page "/role-management"
+@using Common.View
+@using MudBlazor
+@using Service
+@inject RoleService RoleService
+@inject IJSRuntime JSRuntime
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+<link href="custom.css" rel="stylesheet" />
+
+<h1>MudBlazor DataGrid Example</h1>
+<MudTable Items="@listRoles.roles" Hover="true" Sortable="true" Filterable="true" Class="custom-table">
+    <ToolBarContent>
+        <MudTextField @bind-Value="newRole.Description" Label="New Role Description" />
+        <MudButton OnClick="AddRole">Add Role</MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Id</MudTh>
+        <MudTh>Description</MudTh>
+        <MudTh>Actions</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd Class="mud-table-cell">@context.Id</MudTd>
+        <MudTd Class="mud-table-cell">
+            @if (context.IsEditing)
+            {
+                <MudTextField @bind-Value="context.Description" />
+            }
+            else
+            {
+                @context.Description
+            }
+        </MudTd>
+        <MudTd Class="mud-table-cell">
+            @if (context.IsEditing)
+            {
+                <MudButton OnClick="@(() => SaveRole(context))">Save</MudButton>
+                <MudButton OnClick="@(() => CancelEdit(context))">Cancel</MudButton>
+            }
+            else
+            {
+                <MudButton OnClick="@(() => EditRole(context))">Edit</MudButton>
+                <MudButton OnClick="@(() => ConfirmDelete(context.Id))">Delete</MudButton>
+            }
+        </MudTd>
+    </RowTemplate>
+</MudTable>
+
+@code {
+    private Common.View.RoleView newRole = new();
+
+    private Common.View.ListRoles listRoles = new ListRoles { roles = new List<RoleView>() };
+    private string authGuid = string.Empty;
+    private string userName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+            authGuid = user.FindFirst("AuthGUID")?.Value;
+            userName = user.FindFirst("AuthUserName")?.Value;
+
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+        }
+        else
+        {
+            listRoles = new ListRoles { roles = new List<RoleView>() };
+        }
+    }
+    private async Task AddRole()
+    {
+        var response = await RoleService.InsertRole(newRole, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+            newRole = new RoleView();
+        }
+    }
+
+    private async Task EditRole(RoleView role)
+    {
+        role.IsEditing = true;
+    }
+
+    private async Task SaveRole(RoleView role)
+    {
+        var response = await RoleService.UpdateRole(role, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+        }
+    }
+
+    private async Task ConfirmDelete(long id)
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirmDelete", new object[] { });
+        if (confirmed)
+        {
+            await DeleteRole(id);
+        }
+    }
+
+    private async Task DeleteRole(long id)
+    {
+        var response = await RoleService.DeleteRole(id, userName, authGuid);
+        if (response.Success)
+        {
+            listRoles = await RoleService.GetAllRoles(userName, authGuid);
+        }
+    }
+
+    private void CancelEdit(RoleView role)
+    {
+        role.IsEditing = false;
+    }
+}
