@@ -11,4 +11,14 @@ namespace Common.View
         public Guid Fk_users { get; set; }
         public long Type { get; set; }
     }
+
+    //public class ListPhoneNumbers : APIResponse
+    //{
+    //    public List<PhoneNumberDTO> phoneNumbers { get; set; }
+
+    //    public ListPhoneNumbers()
+    //    {
+    //        phoneNumbers = new List<PhoneNumberDTO>();
+    //    }
+    //}
 }

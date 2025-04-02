@@ -1,21 +1,17 @@
 using BlazorApp.Client;
-using Common.Models.Data;
-using Common.Services.Role;
+//using Common.Models.Data;
 using DotNetEnv;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
 using BlazorApp.Client.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Common.Services.SQL;
-using Common.Services.User;
 using Microsoft.AspNetCore.DataProtection;
 using Syncfusion.Blazor;
-using Common.Services.Submit;
 using BlazorApp;
 using CallejoIncChildcareAPI.Filters;
 using Microsoft.OpenApi.Models;
-using Common.Services.Expenses;
-using Common.Services.Invoice;
+using Services.Submit;
+using Services.Invoice;
+using Services.Expenses;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -48,11 +44,11 @@ builder.Services.AddServerSideBlazor()
 
 // Register any additional services
 builder.Services.AddScoped<NotificationService>();
-builder.Services.AddScoped<ISQLServices, SQLServices>();
+// EC builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<HolidaysVacationsService>();
 builder.Services.AddSingleton<UserSessionService>();
 builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<IUserService, UserService>();
+// EC builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<DailyScheduleService>();
 builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
@@ -63,7 +59,7 @@ builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license
 
 
-builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
+//builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
 
 // Creates a shared encryption key for both the API and Website

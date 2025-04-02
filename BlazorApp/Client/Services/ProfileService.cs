@@ -1,4 +1,4 @@
-﻿using Common.Models.Data;
+﻿//EC using Common.Models.Data;
 using Common.View;
 using Microsoft.AspNetCore.Mvc;
 using Sprache;
@@ -17,13 +17,13 @@ namespace BlazorApp.Client.Services
         }
 
         // Method for retreiving phone numbers
-        public async Task<PhoneNumber> GetPhoneNumberAsync(Guid? id, long type)
+        public async Task<PhoneNumberDTO> GetPhoneNumberAsync(Guid? id, long type)
         {
 
             try
             {
                 var url = $"api/customer/get-phone-number?id={id}&type={type}";
-                var PhoneNumber = await _httpClient.GetFromJsonAsync<PhoneNumber>(url);
+                var PhoneNumber = await _httpClient.GetFromJsonAsync<PhoneNumberDTO>(url);
                 return PhoneNumber;
             }
             catch(Exception ex)
@@ -34,12 +34,12 @@ namespace BlazorApp.Client.Services
         }
             
         // Method for getting user by ID
-        public async Task<CallejoIncUser> GetUserByID(Guid? id)
+        public async Task<CallejoIncUserView> GetUserByID(Guid? id)
         {
             try
             {
                 var url = $"api/customer/get-user-by-id?id={id}";
-                var user = await _httpClient.GetFromJsonAsync<CallejoIncUser>(url);
+                var user = await _httpClient.GetFromJsonAsync<CallejoIncUserView>(url);
                 return user;
             }
             catch (Exception ex)
@@ -50,12 +50,12 @@ namespace BlazorApp.Client.Services
         }
 
         // Method to get a users Emergency Contact
-        public async Task<EmergencyContact> GetEmergencyContactAsync(Guid? id)
+        public async Task<EmergencyContactDTO> GetEmergencyContactAsync(Guid? id)
         {
             try
             {
                 var url = $"api/customer/get-emergency-contact?id={id}";
-                var EmergencyContact = await _httpClient.GetFromJsonAsync<EmergencyContact>(url);
+                var EmergencyContact = await _httpClient.GetFromJsonAsync<EmergencyContactDTO>(url);
                 return EmergencyContact;
             }
             catch (Exception ex)
@@ -82,12 +82,12 @@ namespace BlazorApp.Client.Services
         }
 
         // Method to get child from Children table
-        public async Task<Child> GetChildById(long id)
+        public async Task<ChildView> GetChildById(long id)
         {
             try
             {
                 var url = $"api/customer/get-children-by-id?id={id}";
-                var Child = await _httpClient.GetFromJsonAsync<Child>(url);
+                var Child = await _httpClient.GetFromJsonAsync<ChildView>(url);
                 return Child;
             }
             catch (Exception ex)
@@ -122,7 +122,7 @@ namespace BlazorApp.Client.Services
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> updateChild(long childID, ChildDTO childDTO)
+        public async Task<bool> updateChild(long childID, ChildView childDTO)
         {
             var apiUrl = $"api/customer/update-child/{childID}";
             var response = await _httpClient.PutAsJsonAsync(apiUrl, childDTO);

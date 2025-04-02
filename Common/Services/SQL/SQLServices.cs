@@ -531,7 +531,7 @@ namespace Common.Services.SQL
             }
         }
 
-        public async Task<bool> updateChild(Child child, ChildDTO childDTO)
+        public async Task<bool> updateChild(Child child, ChildView childDTO)
         {
             if (child == null || childDTO == null)
                 return false;

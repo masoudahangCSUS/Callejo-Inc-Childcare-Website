@@ -6,7 +6,7 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Common.View
 @using Common.Services.User
-@using Common.Models.Data
+@* EC @using Common.Models.Data *@
 @using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
 @using System.Text.RegularExpressions;
@@ -15,11 +15,11 @@
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
-@inject IUserService userService
+@* EC @inject IUserService userService *@
 @inject IJSRuntime JS
-@inject IInvoiceService invoiceService
+@* EC @inject IInvoiceService invoiceService *@
 @inject UserSessionService UserSession
-@inject ISQLServices sqlService
+@* EC @inject ISQLServices sqlService *@
 @inject ProfileService profileService
 @rendermode InteractiveServer
 
@@ -510,8 +510,8 @@ else
     async Task GetUserView()
     {
         var user = await profileService.GetUserByID(UserSession.UserId);
-        var PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
-        var SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
+        PhoneNumberDTO PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
+        PhoneNumberDTO SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
         var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
         var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
 
@@ -532,8 +532,8 @@ else
                     AreaCode = PrimaryPhoneNumber.AreaCode,
                     Prefix = PrimaryPhoneNumber.Prefix,
                     LastFour = PrimaryPhoneNumber.LastFour,
-                    Fk_users = PrimaryPhoneNumber.FkUsers,
-                    Type = PrimaryPhoneNumber.FkType
+                    Fk_users = PrimaryPhoneNumber.Fk_users,
+                    Type = PrimaryPhoneNumber.Type
                 },
                 SecondaryPhoneNumber = SecondaryPhoneNumber != null ? new PhoneNumberDTO
                 {
@@ -541,14 +541,14 @@ else
                     AreaCode = SecondaryPhoneNumber.AreaCode,
                     Prefix = SecondaryPhoneNumber.Prefix,
                     LastFour = SecondaryPhoneNumber.LastFour,
-                    Fk_users = SecondaryPhoneNumber.FkUsers,
-                    Type = SecondaryPhoneNumber.FkType
+                    Fk_users = SecondaryPhoneNumber.Fk_users,
+                    Type = SecondaryPhoneNumber.Type
                 } : null,
             };
 
         var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
-        var EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
-        var EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+        PhoneNumberDTO EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
+        PhoneNumberDTO EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
         emergencyDTO = new EmergencyContactDTO
             {
                 FirstName = emergencyContact.FirstName,
@@ -560,8 +560,8 @@ else
                     AreaCode = EmergencyPrimary.AreaCode,
                     Prefix = EmergencyPrimary.Prefix,
                     LastFour = EmergencyPrimary.LastFour,
-                    Fk_users = EmergencyPrimary.FkUsers,
-                    Type = EmergencyPrimary.FkType
+                    Fk_users = EmergencyPrimary.Fk_users,
+                    Type = EmergencyPrimary.Type
                 },
                 SecondaryPhoneNumber = EmergencySecondary != null ? new PhoneNumberDTO
                 {
@@ -569,8 +569,8 @@ else
                     AreaCode = EmergencySecondary.AreaCode,
                     Prefix = EmergencySecondary.Prefix,
                     LastFour = EmergencySecondary.LastFour,
-                    Fk_users = EmergencySecondary.FkUsers,
-                    Type = EmergencySecondary.FkType
+                    Fk_users = EmergencySecondary.Fk_users,
+                    Type = EmergencySecondary.Type
                 } : null
             };
 

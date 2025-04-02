@@ -43,7 +43,7 @@ namespace Common.Services.SQL
         public Task<bool> updateUser(CallejoIncUser user, CustomerUserViewDTO userDto);
 
         public Task<bool> updateEmergencyContact(EmergencyContact emergencyContact, EmergencyContactDTO emergencyDto);
-        public Task<bool> updateChild(Child childId, ChildDTO childDto);
+        public Task<bool> updateChild(Child childId, ChildView childDto);
 
         public Task<bool> updatePassowrd(SettingsDTO settings);
 

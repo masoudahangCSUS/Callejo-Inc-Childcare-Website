@@ -1,6 +1,6 @@
 @page "/enrolled-children"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
+@* @using Common.Models.Data *@
 @using Common.View
 @using Microsoft.AspNetCore.Authorization
 @inject ProfileService profileService
@@ -18,7 +18,7 @@
 }
 else
 {
-    @foreach (Child child in childList)
+    @foreach (ChildView child in childList)
     {
         <div class="child-overview-section mb-4">
             <h1>Child Information Overview</h1>
@@ -91,9 +91,9 @@ else
 }
 
 @code {
-    private List<Child> childList = new List<Child>();
+    private List<ChildView> childList = new List<ChildView>();
     private HashSet<long> editingChildIds = new HashSet<long>();
-    private ChildDTO updatedChild;
+    private ChildView updatedChild;
 
 
     protected override async Task OnInitializedAsync()
@@ -127,9 +127,9 @@ else
 
     }
 
-    async Task HandleUpdateChild(Child child)
+    async Task HandleUpdateChild(ChildView child)
     {
-        var updatedChild = new ChildDTO
+        var updatedChild = new ChildView
         {
             Id = child.Id,
             FirstName = child.FirstName,

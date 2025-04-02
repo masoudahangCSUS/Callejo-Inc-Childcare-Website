@@ -8,10 +8,16 @@ namespace Common.View
 {
     public class FileUploadDTO
     {
-        public string FileName { get; set; }
-        public string ContentType { get; set; }
-        public long FileSize { get; set; }
-        public string DocumentType { get; set; }
-        public DateTime UploadDate { get; set; }
+        public int Id { get; set; }
+
+        public string FileName { get; set; } = null!;
+
+        public string ContentType { get; set; } = null!;
+
+        public byte[] FileData { get; set; } = null!;
+
+        public string DocumentType { get; set; } = null!;
+
+        public DateTime? UploadDate { get; set; }
     }
 }

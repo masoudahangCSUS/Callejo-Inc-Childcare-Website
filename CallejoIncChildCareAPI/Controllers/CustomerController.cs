@@ -150,7 +150,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
         // Endpoint to update a child's information.
         [HttpPut("update-child/{childId}")]
-        public async Task<IActionResult> UpdateChild(long childId, [FromBody] ChildDTO childDto)
+        public async Task<IActionResult> UpdateChild(long childId, [FromBody] ChildView childDto)
         {
             if (childDto == null)
             {

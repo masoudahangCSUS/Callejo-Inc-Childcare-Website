@@ -1,6 +1,7 @@
 ﻿@page "/NewParentDocViewing"
 @using System.Net.Http.Json
-@using Common.Models.Data
+@using Common.View
+@* EC @using Common.Models.Data *@
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -62,7 +63,7 @@ else
 <script src="JavaScript/CustomDownloadHelper.js"></script>
 
 @code {
-    private List<FileUpload> ParentDocuments = new();
+    private List<FileUploadDTO> ParentDocuments = new();
     private int? CurrentPreviewDocumentId = null;
     private string PreviewDataUrl = string.Empty;
 
@@ -74,7 +75,7 @@ else
         try
         {
             AddDebugMessage("OnInitializedAsync: Retrieving documents...");
-            var documents = await Http.GetFromJsonAsync<List<FileUpload>>("api/parent/documents");
+            var documents = await Http.GetFromJsonAsync<List<FileUploadDTO>>("api/parent/documents");
 
             var orderMapping = new Dictionary<string, int>
             {
@@ -85,14 +86,14 @@ else
                 { "ImmunizationCard", 5 }
             };
 
-            ParentDocuments = (documents ?? new List<FileUpload>())
+            ParentDocuments = (documents ?? new List<FileUploadDTO>())
                               .OrderBy(doc => orderMapping.TryGetValue(doc.DocumentType, out int order) ? order : int.MaxValue)
                               .ToList();
             AddDebugMessage($"OnInitializedAsync: Retrieved {ParentDocuments.Count} documents.");
         }
         catch (Exception ex)
         {
-            ParentDocuments = new List<FileUpload>();
+            ParentDocuments = new List<FileUploadDTO>();
             AddDebugMessage($"OnInitializedAsync: Error retrieving documents: {ex.Message}");
         }
     }
