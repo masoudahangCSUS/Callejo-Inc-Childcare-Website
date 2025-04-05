@@ -138,5 +138,25 @@ namespace CallejoIncChildcareAPI.Controllers
 
             return Ok(dto);
         }
+        [HttpPost("updateStatus")]
+        public ActionResult UpdateRegistrationStatus([FromBody] Registration request)
+        {
+            var registration = reg.FirstOrDefault(r => r.Id == request.UserId);
+            if (registration == null)
+            {
+                return NotFound("Registration not found.");
+            }
+
+            if (registration.Status == "Pending")
+            {
+                registration.Status = "Received";
+            }
+            else
+            {
+                return BadRequest("Status can only be changed from 'Pending' to 'Received'.");
+            }
+
+            return Ok(registration);
+        }
     }
 }

@@ -85,6 +85,12 @@
                         <img src="images/upload-Documents-Icon.png" alt="Upload Documents" class="nav-icon" /> New Parent Docs
                     </button>
                 </li>
+                <li>
+                    <button @onclick='() => SetContent(typeof(AdminUpdateStatus), "Admin-Update-Status")'
+                            class="btn-link @(ActivePage == "Admin-Update-Status" ? "active" : "")">
+                        <img src="images/upload-Documents-Icon.png" alt="Update status" class="nav-icon" /> Update Registration
+                    </button>
+                </li>
             </ul>
         </nav>
 

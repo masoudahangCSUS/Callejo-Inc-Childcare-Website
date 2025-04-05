@@ -34,8 +34,21 @@ namespace Common.Services.Submit
         // Delete an inquiry via API
         public async Task<bool> DeleteInquiryAsync(Guid id)
         {
-            var response = await _http.DeleteAsync($"https://localhost:7139/api/Submit/delete/{id}");
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _http.DeleteAsync($"api/Submit/delete/{id}");
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine($"Failed to delete inquiry: {error}");
+                }
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in DeleteInquiryAsync: {ex.Message}");
+                return false;
+            }
         }
     }
 }

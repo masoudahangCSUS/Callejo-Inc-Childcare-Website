@@ -2,38 +2,40 @@
 @inject HttpClient Http
 @rendermode InteractiveServer
 
-<h3>Check Your Registration Status</h3>
+<div class="status-container">
+    <h3>Check Your Registration Status</h3>
+    <div>
+        <label>Enter Your User ID:</label>
+        <InputText @bind-Value="userId" class="input-field" />
+    </div>
+    <button @onclick="CheckStatus">Check Status</button>
 
-<div>
-    <label>Enter Your User ID:</label>
-    <InputText @bind-Value="userId" />
+    @if (statusInfo != null)
+    {
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Submission Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@statusInfo.Name</td>
+                            <td>@statusInfo.Status</td>
+                            <td>@statusInfo.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    }
+    else if (!string.IsNullOrEmpty(statusMessage))
+    {
+            <p class="error-message">@statusMessage</p>
+    }
 </div>
-
-<button @onclick="CheckStatus">Check Status</button>
-
-@if (statusInfo != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Submission Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>@statusInfo.Name</td>
-                <td>@statusInfo.Status</td>
-                <td>@statusInfo.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</td>
-            </tr>
-        </tbody>
-    </table>
-}
-else if (!string.IsNullOrEmpty(statusMessage))
-{
-    <p style="color:red">@statusMessage</p>
-}
 
 @code {
     private string userId;
@@ -71,3 +73,77 @@ else if (!string.IsNullOrEmpty(statusMessage))
         public DateTime Datetime { get; set; }
     }
 }
+<style>
+    .status-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 20px;
+    background: #f0f8ff;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h3 {
+    color: #0077b6;
+    margin-bottom: 15px;
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.input-field {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #0077b6;
+    border-radius: 5px;
+}
+
+button {
+    background-color: #0077b6;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    margin-top: 10px;
+}
+
+    button:hover {
+        background-color: #005f87;
+    }
+
+.table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #0077b6;
+    color: white;
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+</style>
