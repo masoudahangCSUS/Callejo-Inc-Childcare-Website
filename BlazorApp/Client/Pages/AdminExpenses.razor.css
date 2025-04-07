@@ -32,10 +32,13 @@ h2 {
         color: #333;
     }
 
-    .summary-card p {
-        font-size: 1.2em;
-        color: #18bc9c;
-    }
+.summary-value {
+    font-size: 1.75rem;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 0.5rem;
+    color: #18bc9c;
+}
 
 .details-section {
     margin-bottom: 30px;

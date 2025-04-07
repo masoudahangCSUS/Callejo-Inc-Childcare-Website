@@ -4,6 +4,8 @@
 @using Common.Services.Expenses
 @using System.Globalization
 @inject IExpenseService ExpenseService
+@inject IJSRuntime JS
+@inject HttpClient Http
 @attribute [Authorize(Roles = "Admin")]
 @rendermode InteractiveServer
 
@@ -14,82 +16,140 @@
     <div class="summary-section">
         <div class="summary-card">
             <h3>Total Profit</h3>
-            <input type="text" class="summary-input" @bind="FormattedProfit" readonly />
-            <button class="confirm-btn" @onclick="TotalProfit">✔</button>
+            <p class="summary-value">@FormattedProfit</p>
         </div>
         <div class="summary-card">
             <h3>Total Revenue</h3>
-            <input type="text" id="operating-costs" class="summary-input" @bind="formattedRevenue" readonly />
-            <button class="confirm-btn" onclick="confirmInput('operating-costs')">✔</button>
+            <p class="summary-value">@formattedRevenue</p>
         </div>
         <div class="summary-card">
             <h3>Total Expenses</h3>
-            <input type="text" id="total-expenses" class="summary-input" @bind="FormattedTotalExpenses" readonly>
-            <button class="confirm-btn" @onclick="LoadTotalExpenses">✔</button>
+            <p class="summary-value">@FormattedTotalExpenses</p>
         </div>
     </div>
 
     <!-- Button to add new expense -->
     <div class="d-flex justify-content-end mb-3">
         <button class="modal-btn" @onclick="ShowExpenseModal">
-            + New Expense
+            Create Expense
         </button>
     </div>
 
-    <!-- Detailed Expenses Section -->
+    <!-- Grocery expenses -->
     <div class="details-section">
-        <h3>Detailed Expense Breakdown</h3>
+        <h3>Groceries</h3>
         <table class="expense-table">
             <thead>
                 <tr>
-                    <th>Category</th>
-                    <th>Amount</th>
                     <th>Date</th>
-                    <th>Notes</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                    <th>Receipt</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>Marketing</td>
-                    <td>
-                        <input type="text" id="amount-marketing" class="expense-amount" value="$0.00">
-                        <button class="confirm-btn" onclick="confirmInput('amount-marketing')">✔</button>
-                    </td>
-                    <td>01/01/2024</td>
-                    <td><input type="text" class="expense-notes" placeholder="Enter notes here">
-                    <button class="confirm-btn" onclick="confirmInput('expense-notes')">✔</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Utilities</td>
-                    <td>
-                        <input type="text" id="amount-utilities" class="expense-amount" value="$0.00">
-                        <button class="confirm-btn" onclick="confirmInput('amount-utilities')">✔</button>
-                    </td>
-                    <td>01/01/2024</td>
-                    <td><input type="text" class="expense-notes" placeholder="Enter notes here">
-                    <button class="confirm-btn" onclick="confirmInput('expense-notes2')">✔</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Employee Salaries</td>
-                    <td>
-                        <input type="text" id="amount-salaries" class="expense-amount" value="$0.00">
-                        <button class="confirm-btn" onclick="confirmInput('amount-salaries')">✔</button>
-                    </td>
-                    <td>01/01/2024</td>
-                    <td><input type="text" class="expense-notes" placeholder="Enter notes here">
-                        <button class="confirm-btn" onclick="confirmInput('expense-notes')">✔</button>
-                    </td>
-                </tr>
+                @if (GroceryExpenses.Count == 0)
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No grocery expenses available</td>
+                    </tr>
+                }
+                @foreach (var expense in GroceryExpenses)
+                {
+                    <tr>
+                        <td>@expense.Date.ToString("MM/dd/yyyy")</td>
+                        <td>@expense.Amount.ToString("C")</td>
+                        <td>@expense.Note</td>
+                        <td>
+                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                        </td>
+                        <td>
+                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
             </tbody>
         </table>
     </div>
 
-    <!-- Expenses Analysis Section -->
-    <div class="charts-section">
-        <h3>Expenses Analysis</h3>
-        <p>Use the inputs above to update expense details.</p>
+    <!-- Supply expenses -->
+    <div class="details-section">
+        <h3>Supplies</h3>
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                    <th>Receipt</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (SupplyExpenses.Count == 0)
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No supply expenses available</td>
+                    </tr>
+                }
+                @foreach (var expense in SupplyExpenses)
+                {
+                    <tr>
+                        <td>@expense.Date.ToString("MM/dd/yyyy")</td>
+                        <td>@expense.Amount.ToString("C")</td>
+                        <td>@expense.Note</td>
+                        <td>
+                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                        </td>
+                        <td>
+                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Other expenses -->
+    <div class="details-section">
+        <h3>Other</h3>
+        <table class="expense-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Note</th>
+                    <th>Receipt</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (OtherExpenses.Count == 0)
+                {
+                    <tr>
+                        <td colspan="4" style="text-align:center;">No other expenses available</td>
+                    </tr>
+                }
+                @foreach (var expense in OtherExpenses)
+                {
+                    <tr>
+                        <td>@expense.Date.ToString("MM/dd/yyyy")</td>
+                        <td>@expense.Amount.ToString("C")</td>
+                        <td>@expense.Note</td>
+                        <td>
+                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                        </td>
+                        <td>
+                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
 
     <!-- Add Expense Modal -->
@@ -133,6 +193,14 @@
     private ExpenseDTO newExpense = new ExpenseDTO();
     private byte[]? ReceiptData;
 
+    private bool IsEditing = false;
+    private int? EditingExpenseId = null;
+
+    // Lists for the tables
+    private List<ExpenseDTO> GroceryExpenses = new();
+    private List<ExpenseDTO> SupplyExpenses = new();
+    private List<ExpenseDTO> OtherExpenses = new();
+
     private void ShowExpenseModal()
     {
         // Pre-assign date and category values when opening modal
@@ -168,10 +236,11 @@
         }
     }
 
+    // Submit new expense entry
     private async Task SubmitExpense()
     {
         // File must be present when creating expense
-        if (ReceiptData == null)
+        if (!IsEditing && ReceiptData == null)
         {
             Console.WriteLine("[Blazor] No file selected");
             return;
@@ -184,19 +253,127 @@
             return;
         }
 
-        // Assign ReceiptData to the receipt variable in the DTO, then create expense entry in DB
-        newExpense.Receipt = ReceiptData;
-        var createdExpense = await ExpenseService.CreateExpenseAsync(newExpense);
+        // Assign ReceiptData to the receipt variable in the DTO and definte success bool
+        newExpense.Receipt ??= ReceiptData;
+        bool success;
 
-        if (createdExpense != null)
+        if (IsEditing)
         {
+            success = await ExpenseService.EditExpenseAsync(newExpense);
+        }
+        else
+        {
+            var createdExpense = await ExpenseService.CreateExpenseAsync(newExpense);
+            success = createdExpense != null;
+        }
+
+
+        if (success)
+        {
+            // Close modal and refresh page
             Console.WriteLine("[Blazor] Expense uploaded successfully");
-            newExpense = new ExpenseDTO(); // Reset form
+            newExpense = new ExpenseDTO();
             IsExpenseModalOpen = false;
-        } else
+            ReceiptData = null;
+            IsEditing = false;
+            EditingExpenseId = null;
+            await LoadExpenseLists();
+            await LoadTotalExpenses();
+            await TotalProfit();
+        }
+        else
         {
             Console.WriteLine("[Blazor] Failed to upload expense");
         }
+    }
+
+    // Delete expense entry
+    private async Task DeleteExpense(int id)
+    {
+        bool confirmed = await JS.InvokeAsync<bool>("confirm", new object[] { "Are you sure you want to delete this expense?" });
+        if (!confirmed)
+            return;
+
+        var response = await ExpenseService.DeleteExpenseAsync(id);
+
+        if (response)
+        {
+            Console.WriteLine($"[Blazor] Expense {id} deleted");
+            await LoadExpenseLists();
+            await LoadTotalExpenses();
+            await TotalProfit();
+        }
+        else
+        {
+            Console.WriteLine($"[Blazor] Failed to delete expense {id}");
+        }
+    }
+
+    // Download Receipt
+    private bool isJsLoaded = false;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !isJsLoaded)
+        {
+            await JS.InvokeVoidAsync("eval", @"
+                window.customDownloadFile = (fileName, byteBase64, contentType) => {
+                    try {
+                        const byteCharacters = atob(byteBase64);
+                        const byteNumbers = Array.from(byteCharacters, char => char.charCodeAt(0));
+                        const byteArray = new Uint8Array(byteNumbers);
+                        const blob = new Blob([byteArray], { type: contentType });
+                        const link = document.createElement('a');
+                        const url = URL.createObjectURL(blob);
+                        link.href = url;
+                        link.download = fileName;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                    } catch {
+                        console.error('Error in customDownloadFile:', error);
+                    }
+                };
+            ");
+            isJsLoaded = true;
+        }
+    }
+
+
+    private async Task DownloadReceipt(int id)
+    {
+        try
+        {
+            var fileData = await Http.GetByteArrayAsync($"api/Expense/Download Receipt?id={id}");
+            var base64File = Convert.ToBase64String(fileData);
+            var fileName = "receipt.pdf";
+            
+            await JS.InvokeVoidAsync("customDownloadFile", fileName, base64File);
+        }
+
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[Blazor] Failed to download receipt for ID {id}: {ex.Message}");
+        }
+    }
+
+    // Edit existing expense entry
+    private async Task EditExpense(ExpenseDTO expense)
+    {
+        IsEditing = true;
+        EditingExpenseId = expense.Id;
+
+        newExpense = new ExpenseDTO
+            {
+                Id = expense.Id,
+                Date = expense.Date,
+                Category = expense.Category,
+                Amount = expense.Amount,
+                Note = expense.Note,
+                Receipt = expense.Receipt
+            };
+
+        IsExpenseModalOpen = true;
     }
 
     private string formattedRevenue;
@@ -206,7 +383,27 @@
         await UpdateTotalRevenue();
         await LoadTotalExpenses(); 
         await TotalProfit();
+        await LoadExpenseLists();
+    }
 
+    // Load lists of expenses
+    private async Task LoadExpenseLists()
+    {
+        var allExpenses = await ExpenseService.GetAllExpensesAsync();
+
+        GroceryExpenses = allExpenses
+            .Where(e => e.Category.Equals("Groceries", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        SupplyExpenses = allExpenses
+            .Where(e => e.Category.Equals("Supplies", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        OtherExpenses = allExpenses
+            .Where(e => e.Category.Equals("Other", StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        StateHasChanged();
     }
 
     private async Task UpdateTotalRevenue()
@@ -235,7 +432,4 @@
         var profit = revenueValue - expenseValue;
         FormattedProfit = $"${profit:N2}";
     }
-    }
-
-
 }
