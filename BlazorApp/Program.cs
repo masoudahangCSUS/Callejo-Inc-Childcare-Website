@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Services.Submit;
 using Services.Invoice;
 using Services.Expenses;
+using Microsoft.Extensions.Options;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +44,7 @@ builder.Services.AddServerSideBlazor()
     });
 
 // Register any additional services
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
 builder.Services.AddScoped<NotificationService>();
 // EC builder.Services.AddScoped<ISQLServices, SQLServices>();
 builder.Services.AddScoped<HolidaysVacationsService>();
@@ -59,7 +61,7 @@ builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license
 
 
-//builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
+// EC builder.Services.AddDbContext<CallejoSystemDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True;")));
 
 
 // Creates a shared encryption key for both the API and Website
@@ -135,6 +137,9 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// Load the configuration into the AppSettings object
+var appSettings = app.Services.GetRequiredService<IOptions<AppSettings>>().Value;
 
 // Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
