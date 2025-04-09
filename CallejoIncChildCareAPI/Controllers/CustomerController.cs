@@ -191,7 +191,7 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 return StatusCode(500, "An error has ocurred whule updating the password");
             }
-           
+
             return Ok("Password updated successfully.");
         }
 

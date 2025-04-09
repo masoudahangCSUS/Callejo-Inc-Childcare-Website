@@ -29,7 +29,16 @@
         border: 1px solid #ddd;
         padding: 10px;
         text-align: left;
+        vertical-align: top;
+        word-wrap: break-word;
+        word-break: break-word;
     }
+
+        .admin-table td:nth-child(5) {
+            max-width: 300px; /* Or adjust as needed */
+            white-space: pre-wrap; /* Keeps spacing and wraps long text */
+        }
+
 
     .admin-table th {
         background-color: #007bff;
@@ -100,4 +109,33 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 5px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }
+
+.page-info {
+    font-size: 0.95rem;
+    color: #555;
 }

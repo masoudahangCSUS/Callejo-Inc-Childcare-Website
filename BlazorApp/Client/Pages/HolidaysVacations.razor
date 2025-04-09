@@ -21,7 +21,7 @@ else if (!holidaysVacations.Any())
 else
 {
     <div class="holidays-container">
-        @foreach (var item in holidaysVacations)
+        @foreach (var item in PagedHolidays)
         {
             <div class="holiday-card">
                 <h3 class="holiday-title">@item.Title</h3>
@@ -42,12 +42,29 @@ else
                 }
             </div>
         }
+
+        <div class="pagination-wrapper">
+            <p class="page-number">Page @currentPage of @Math.Ceiling((double)holidaysVacations.Count / pageSize)</p>
+            <div class="pagination-controls">
+                @if (currentPage > 1)
+                {
+                    <button @onclick="PreviousPage" class="pagination-btn">← Previous</button>
+                }
+                @if ((currentPage * pageSize) < holidaysVacations.Count)
+                {
+                    <button @onclick="NextPage" class="pagination-btn">Next →</button>
+                }
+            </div>
+        </div>
     </div>
-} 
+}
 
 @code {
     private List<HolidaysVacationView> holidaysVacations = new();
     private long? expandedHolidayId = null;
+
+    private int currentPage = 1;
+    private int pageSize = 4;
 
     protected override async Task OnInitializedAsync()
     {
@@ -57,8 +74,29 @@ else
     private void ToggleDescription(long holidayId)
     {
         if (expandedHolidayId == holidayId)
-            expandedHolidayId = null; // Collapse if already expanded
+            expandedHolidayId = null;
         else
-            expandedHolidayId = holidayId; // Expand new item
+            expandedHolidayId = holidayId;
+    }
+
+    private IEnumerable<HolidaysVacationView> PagedHolidays =>
+        holidaysVacations
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize);
+
+    private void NextPage()
+    {
+        if ((currentPage * pageSize) < holidaysVacations.Count)
+        {
+            currentPage++;
+        }
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+        {
+            currentPage--;
+        }
     }
 }

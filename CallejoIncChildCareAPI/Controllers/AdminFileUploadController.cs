@@ -6,6 +6,7 @@ using System.Linq;
 using Common.Models.Data;
 using System;
 using System.Diagnostics; // Added for Debug.WriteLine
+using Aspose.Words; // Ensure Aspose.Words is installed via NuGet
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -69,11 +70,11 @@ namespace CallejoIncChildcareAPI.Controllers
                 Debug.WriteLine($"File Name: {file.FileName}, Inferred ContentType: '{actualContentType}', Size: {file.Length} bytes");
 
                 var allowedTypes = new[] {
-            "application/pdf",
-            "image/jpeg",
-            "application/msword",
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        };
+                    "application/pdf",
+                    "image/jpeg",
+                    "application/msword",
+                    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                };
 
                 if (!allowedTypes.Contains(actualContentType))
                 {
@@ -119,6 +120,68 @@ namespace CallejoIncChildcareAPI.Controllers
             {
                 Debug.WriteLine($"Error during file upload: {ex.Message}");
                 return StatusCode(500, "An internal server error occurred. Please try again.");
+            }
+        }
+
+        [HttpGet("download/{documentId}")]
+        public IActionResult DownloadFile(int documentId)
+        {
+            try
+            {
+                // Find the file in the database based on the document ID
+                var file = _context.FileUploads.FirstOrDefault(f => f.Id == documentId);
+                if (file == null)
+                {
+                    return NotFound("File not found.");
+                }
+
+                // Return the file with appropriate HTTP headers
+                return File(file.FileData, file.ContentType, file.FileName);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error during file download: {ex.Message}");
+                return StatusCode(500, "An internal server error occurred.");
+            }
+        }
+
+        [HttpGet("preview/{documentId}")]
+        public IActionResult PreviewFile(int documentId)
+        {
+            try
+            {
+                // Find the file in the database based on the document ID
+                var file = _context.FileUploads.FirstOrDefault(f => f.Id == documentId);
+                if (file == null)
+                {
+                    return NotFound("File not found.");
+                }
+
+                if (file.ContentType == "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+                {
+                    // Convert DOCX to PDF for preview
+                    using var inputStream = new MemoryStream(file.FileData);
+                    var document = new Document(inputStream);
+
+                    using var outputStream = new MemoryStream();
+                    document.Save(outputStream, SaveFormat.Pdf);
+
+                    return File(outputStream.ToArray(), "application/pdf");
+                }
+                else if (file.ContentType == "application/pdf" || file.ContentType == "image/jpeg")
+                {
+                    // Return PDFs or Images directly for preview
+                    return File(file.FileData, file.ContentType);
+                }
+                else
+                {
+                    return BadRequest("Preview is not supported for this file type.");
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error during file preview: {ex.Message}");
+                return StatusCode(500, "An internal server error occurred.");
             }
         }
     }

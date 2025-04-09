@@ -2,7 +2,7 @@
 .page-title {
     text-align: center;
     font-size: 2rem; /* Slightly smaller */
-    margin-bottom: 25px;
+    margin-bottom: 35px;
     margin-top: 40px; /* Reduced top margin */
     color: #333;
     font-weight: bold;
@@ -32,7 +32,7 @@
     padding: 15px; /* Less padding */
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    border-left: 5px solid #007bff; /* Slimmer border */
+    border: 3px solid #e0e7ff;
 }
 
     /* Hover Effect */
@@ -121,3 +121,39 @@
         width: 100%;
     }
 }
+
+.pagination-wrapper {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.page-number {
+    font-size: 0.95rem;
+    color: #666;
+    margin: 0;
+}
+
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pagination-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    min-width: 120px;
+    transition: all 0.2s ease-in-out;
+}
+
+    .pagination-btn:hover {
+        background-color: #0056b3;
+    }

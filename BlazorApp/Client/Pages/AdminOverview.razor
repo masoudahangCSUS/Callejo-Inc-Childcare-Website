@@ -1,57 +1,89 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using Common.Services.Expenses
+@using BlazorApp.Client.Services
+@using Common.View
+@inject IExpenseService ExpenseService
+@inject HolidaysVacationsService HolidaysService
 @attribute [Authorize(Roles = "Admin")]
 
 <div class="admin-overview">
     <!-- Page Title -->
     <div class="overview-header">
-        <h2>Overview</h2>
+        <h2><strong>Overview</strong></h2>
         <p>Welcome back, Admin! Here's a summary of your childcare center's performance.</p>
     </div>
 
     <div class="grid">
-        <!-- Company Facts -->
-        <div class="card">
-            <h5>Company Facts</h5>
-            <p>Employees</p>
-            <div>
-                <!-- Placeholder for chart component -->
-                <p>Employee List (2024)</p>
-            </div>
-        </div>
-
         <!-- Total Revenue -->
         <div class="card highlight-card">
             <h5>Total Revenue</h5>
-            <p>$125,000</p>
-            <p>Last Updated: March 18, 2025</p>
+            <p class="card-value">@FormattedRevenue</p>
+            <p class="card-subtext">Last Updated: @LastUpdated.ToString("MMMM dd, yyyy")</p>
         </div>
 
         <!-- Total Active Children -->
         <div class="card highlight-card">
             <h5>Total Active Children</h5>
-            <p>48</p>
-            <p>Includes infants, toddlers, and preschoolers</p>
+            <p class="card-value">@ChildrenCount</p>
+            <p class="card-subtext">Includes infants, toddlers, and preschoolers</p>
         </div>
 
-        <!-- Statistics -->
-        <div class="card">
-            <h5>Statistics</h5>
-            <p>Projects by Account</p>
-            <ul>
-                <li>No active projects at the moment.</li>
-            </ul>
-        </div>
-
-        <!-- Assigned Risks -->
-        <div class="card">
-            <h5>Assigned Risks</h5>
-            <p>No risks currently assigned.</p>
-        </div>
-
-        <!-- Assigned Action Items -->
-        <div class="card">
-            <h5>Assigned Action Items</h5>
-            <p>No action items assigned.</p>
+        <!-- Holidays & Vacations -->
+        <div class="card highlight-card">
+            <h5>Upcoming Breaks</h5>
+            @if (UpcomingHolidays.Count == 0)
+            {
+                <p class="card-subtext">No upcoming holidays or vacations.</p>
+            }
+            else
+            {
+                <ul>
+                    @foreach (var h in UpcomingHolidays)
+                    {
+                        <li>
+                            <strong>@h.Title</strong>: @h.StartDate.ToString("MMM dd") - @h.EndDate.ToString("MMM dd")
+                        </li>
+                    }
+                </ul>
+            }
         </div>
     </div>
 </div>
+
+@code {
+    private int ChildrenCount = 0;
+    private string FormattedRevenue = "$0.00";
+    private DateTime LastUpdated = DateTime.Now;
+    private List<HolidaysVacationView> UpcomingHolidays = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTotalRevenue();
+        await LoadChildrenCount();
+        await LoadUpcomingBreaks();
+    }
+
+    private async Task LoadTotalRevenue()
+    {
+        var count = await ExpenseService.GetChildrenCountAsync();
+        var revenue = count * 1000;
+        FormattedRevenue = $"${revenue:N2}";
+        LastUpdated = DateTime.Now;
+    }
+
+    private async Task LoadChildrenCount()
+    {
+        ChildrenCount = await ExpenseService.GetChildrenCountAsync();
+    }
+
+    private async Task LoadUpcomingBreaks()
+    {
+        var all = await HolidaysService.GetHolidaysVacationsAsync();
+        var today = DateOnly.FromDateTime(DateTime.Today);
+        UpcomingHolidays = all
+            .Where(h => h.EndDate >= today)
+            .OrderBy(h => h.StartDate)
+            .Take(3)
+            .ToList();
+    }
+}

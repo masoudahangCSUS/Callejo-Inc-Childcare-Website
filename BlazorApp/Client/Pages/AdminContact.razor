@@ -17,7 +17,7 @@
 <section class="inq-container">
     @if (inquiry.Any())
     {
-        @foreach (var inq in inquiry)
+        @foreach (var inq in CurrentPageInquiries)
         {
             <div class="info-card">
                 <h3>@inq.Name</h3>
@@ -35,10 +35,43 @@
         <p class="no-inquiries">No inquiries found.</p>
     }
 </section>
+<div class="pagination-controls">
+    @if (currentPage > 1)
+    {
+        <button @onclick="PreviousPage">Previous</button>
+    }
+
+    <span>Page @currentPage of @totalPages</span>
+
+    @if (currentPage < totalPages)
+    {
+        <button @onclick="NextPage">Next</button>
+    }
+</div>
+
 
 @code
 {
     private List<InterestedParent> inquiry = new();
+
+    private int currentPage = 1;
+    private int pageSize = 4; // Show 4 cards per page
+    private int totalPages => (int)Math.Ceiling((double)inquiry.Count / pageSize);
+
+    private IEnumerable<InterestedParent> CurrentPageInquiries =>
+        inquiry.Skip((currentPage - 1) * pageSize).Take(pageSize);
+
+    private void NextPage()
+    {
+        if (currentPage < totalPages)
+            currentPage++;
+    }
+
+    private void PreviousPage()
+    {
+        if (currentPage > 1)
+            currentPage--;
+    }
 
     protected override async Task OnInitializedAsync()
     {
