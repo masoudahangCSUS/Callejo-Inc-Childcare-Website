@@ -15,7 +15,7 @@ namespace CallejoIncChildcareAPI.Controllers
         private IDailyScheduleService _dailyScheduleService;
         private ILoginService _loginService;
 
-        // Constructor to inject the IRoleService
+        // Constructor to inject the IDailyScheduleService
         public DailyScheduleController(IDailyScheduleService dailyScheduleService, ILoginService loginService)
         {
             _dailyScheduleService = dailyScheduleService;
