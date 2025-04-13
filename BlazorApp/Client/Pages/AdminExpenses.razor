@@ -10,8 +10,6 @@
 @rendermode InteractiveServer
 
 <div class="expenses-page">
-    <h2>Expenses Overview</h2>
-
     <!-- Summary Section with Editable Inputs and Confirm Buttons -->
     <div class="summary-section">
         <div class="summary-card">
@@ -28,11 +26,10 @@
         </div>
     </div>
 
-    <!-- Button to add new expense -->
-    <div class="d-flex justify-content-end mb-3">
-        <button class="modal-btn" @onclick="ShowExpenseModal">
-            Create Expense
-        </button>
+    <!-- Header w/ add expense button -->
+    <div class="expense-header">
+        <h2>Expenses</h2>
+        <button class="modal-btn" @onclick="ShowExpenseModal">Create Expense</button>
     </div>
 
     <!-- Grocery expenses -->
@@ -41,11 +38,11 @@
         <table class="expense-table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Note</th>
-                    <th>Receipt</th>
-                    <th>Actions</th>
+                    <th style="width: 10%;">Date</th>
+                    <th style="width: 15%;">Amount</th>
+                    <th style="width: 55%;">Note</th>
+                    <th style="width: 10%;">Receipt</th>
+                    <th style="width: 10%;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -62,11 +59,11 @@
                         <td>@expense.Amount.ToString("C")</td>
                         <td>@expense.Note</td>
                         <td>
-                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                            <button class="download-btn" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
                         </td>
                         <td>
-                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
-                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                            <button class="edit-btn" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="delete-btn" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -80,11 +77,11 @@
         <table class="expense-table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Note</th>
-                    <th>Receipt</th>
-                    <th>Actions</th>
+                    <th style="width: 10%;">Date</th>
+                    <th style="width: 15%;">Amount</th>
+                    <th style="width: 55%;">Note</th>
+                    <th style="width: 10%;">Receipt</th>
+                    <th style="width: 10%;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,11 +98,11 @@
                         <td>@expense.Amount.ToString("C")</td>
                         <td>@expense.Note</td>
                         <td>
-                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                            <button class="download-btn" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
                         </td>
                         <td>
-                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
-                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                            <button class="edit-btn" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="delete-btn" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -119,11 +116,11 @@
         <table class="expense-table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Amount</th>
-                    <th>Note</th>
-                    <th>Receipt</th>
-                    <th>Actions</th>
+                    <th style="width: 10%;">Date</th>
+                    <th style="width: 15%;">Amount</th>
+                    <th style="width: 55%;">Note</th>
+                    <th style="width: 10%;">Receipt</th>
+                    <th style="width: 10%;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -140,11 +137,11 @@
                         <td>@expense.Amount.ToString("C")</td>
                         <td>@expense.Note</td>
                         <td>
-                            <button class="action-button download" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
+                            <button class="download-btn" @onclick="() => DownloadReceipt(expense.Id)">Download</button>
                         </td>
                         <td>
-                            <button class="action-button edit" @onclick="() => EditExpense(expense)">Edit</button>
-                            <button class="action-button delete" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
+                            <button class="edit-btn" @onclick="() => EditExpense(expense)">Edit</button>
+                            <button class="delete-btn" @onclick="() => DeleteExpense(expense.Id)">Delete</button>
                         </td>
                     </tr>
                 }
@@ -185,6 +182,11 @@
             </div>
         </div>
     }
+
+    @if (ShowSuccessToast)
+    {
+        <div class="toast-success">@SuccessMessage</div>
+    }
 </div>
 
 @code
@@ -201,6 +203,11 @@
     private List<ExpenseDTO> SupplyExpenses = new();
     private List<ExpenseDTO> OtherExpenses = new();
 
+    // Success variables
+    private bool ShowSuccessToast = false;
+    private string SuccessMessage = "";
+
+    // Open and close Modal
     private void ShowExpenseModal()
     {
         // Pre-assign date and category values when opening modal
@@ -209,12 +216,23 @@
         IsExpenseModalOpen = true;
         StateHasChanged();
     }
-
     private void CloseExpenseModal()
     {
         IsExpenseModalOpen = false;
         newExpense = new ExpenseDTO(); // Reset form
         ReceiptData = null;
+        StateHasChanged();
+    }
+
+    // Show toast message
+    private async Task ShowToast(string message)
+    {
+        SuccessMessage = message;
+        ShowSuccessToast = true;
+        StateHasChanged();
+
+        await Task.Delay(3000); // Hide after 3 seconds
+        ShowSuccessToast = false;
         StateHasChanged();
     }
 
@@ -271,15 +289,22 @@
         if (success)
         {
             // Close modal and refresh page
-            Console.WriteLine("[Blazor] Expense uploaded successfully");
+            Console.WriteLine("[Blazor] Expense created successfully");
             newExpense = new ExpenseDTO();
             IsExpenseModalOpen = false;
             ReceiptData = null;
-            IsEditing = false;
             EditingExpenseId = null;
             await LoadExpenseLists();
             await LoadTotalExpenses();
             await TotalProfit();
+            if (IsEditing)
+            {
+                await ShowToast("Expense edited successfully");
+            } else
+            {
+                await ShowToast("Expense created successfully");
+            }
+            IsEditing = false;
         }
         else
         {
@@ -302,6 +327,7 @@
             await LoadExpenseLists();
             await LoadTotalExpenses();
             await TotalProfit();
+            await ShowToast("Expense deleted successfully");
         }
         else
         {
@@ -338,8 +364,6 @@
             isJsLoaded = true;
         }
     }
-
-
     private async Task DownloadReceipt(int id)
     {
         try
@@ -406,6 +430,7 @@
         StateHasChanged();
     }
 
+    // Card functions
     private async Task UpdateTotalRevenue()
     {
         var totalRevenue = await ExpenseService.GetChildrenCountAsync();
