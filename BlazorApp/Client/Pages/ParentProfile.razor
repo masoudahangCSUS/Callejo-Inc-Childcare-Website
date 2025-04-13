@@ -6,12 +6,9 @@
 @using Microsoft.AspNetCore.Components.Forms
 @using Common.View
 @using Common.Services.User
-@using Common.Models.Data
-@using Common.Services.SQL
 @using Microsoft.AspNetCore.Authorization
-@using System.Text.RegularExpressions;
-@using Common.Services.Invoice;
-
+@using System.Text.RegularExpressions
+@using Common.Services.Invoice
 
 @inject HttpClient Http
 @inject NavigationManager Navigation
@@ -19,7 +16,6 @@
 @inject IJSRuntime JS
 @inject IInvoiceService invoiceService
 @inject UserSessionService UserSession
-@inject ISQLServices sqlService
 @inject ProfileService profileService
 @rendermode InteractiveServer
 
@@ -230,12 +226,11 @@ else
 }
 
 @code {
-    // Edit model for profile and emergency contact fields
+    // Edit model used for both profile and emergency contact editing
     public class ParentProfileEditModel
     {
         [Required(ErrorMessage = "First Name is required")]
         public string FirstName { get; set; }
-        // Optional - default to empty string if null
         public string MiddleName { get; set; } = "";
         [Required(ErrorMessage = "Last Name is required")]
         public string LastName { get; set; }
@@ -253,7 +248,6 @@ else
         [Required(ErrorMessage = "Primary phone number is required")]
         [PhoneNumberValidation(ErrorMessage = "Invalid phone number format")]
         public string PrimaryPhoneNumber { get; set; }
-        // Optional secondary phone number - default to empty string
         [PhoneNumberValidation(AllowEmpty = true, ErrorMessage = "Invalid phone number format")]
         public string SecondaryPhoneNumber { get; set; } = "";
         // Emergency Contact Fields
@@ -266,12 +260,11 @@ else
         [Required(ErrorMessage = "Emergency primary phone number is required")]
         [PhoneNumberValidation(ErrorMessage = "Invalid phone number format")]
         public string EmergencyPrimaryPhoneNumber { get; set; }
-        // Optional secondary phone number - default to empty string
         [PhoneNumberValidation(AllowEmpty = true, ErrorMessage = "Invalid phone number format")]
         public string EmergencySecondaryPhoneNumber { get; set; } = "";
     }
 
-    // Custom validator to ensure phone numbers contain only digits and at least 10 digits.
+    // Custom validation attribute for phone number formatting.
     public class PhoneNumberValidationAttribute : ValidationAttribute
     {
         public bool AllowEmpty { get; set; } = false;
@@ -285,18 +278,14 @@ else
                     return ValidationResult.Success;
                 return new ValidationResult("This field is required.");
             }
-
-            // Remove all non-digit characters (spaces, hyphens, parentheses, etc.)
             string digits = Regex.Replace(phoneStr, @"\D", "");
             if (digits.Length < 10)
             {
                 return new ValidationResult("Invalid phone number format");
             }
-
             return ValidationResult.Success;
         }
     }
-
 
     private CustomerUserViewDTO? userViewDTO;
     private EmergencyContactDTO? emergencyDTO;
@@ -313,15 +302,14 @@ else
         if (firstRender)
         {
             await Task.Delay(100);
-
             if (showInvoiceReminder && !hasRenderedReminder)
             {
                 hasRenderedReminder = true;
-                Console.WriteLine("showing alert");
                 await JS.InvokeVoidAsync("alert", "Reminder: You have a pending invoice due. Please pay in person.");
             }
         }
     }
+
     protected override async Task OnInitializedAsync()
     {
         await GetUserView();
@@ -359,22 +347,17 @@ else
         showUploadDialog = true;
     }
 
-   
     private async Task HandleValidSubmit()
     {
-        // Always decode required phone numbers.
+        // Decode phone numbers.
         var decodedUserPrimary = profileService.PhoneNumberDecode(editModel.PrimaryPhoneNumber);
         var decodedEmergencyPrimary = profileService.PhoneNumberDecode(editModel.EmergencyPrimaryPhoneNumber);
-
-        // Only decode optional numbers if they are not empty.
         var decodedUserSecondary = string.IsNullOrWhiteSpace(editModel.SecondaryPhoneNumber)
             ? ((string AreaCode, string Prefix, string LastFour)?)null
             : profileService.PhoneNumberDecode(editModel.SecondaryPhoneNumber);
-
         var decodedEmergencySecondary = string.IsNullOrWhiteSpace(editModel.EmergencySecondaryPhoneNumber)
             ? ((string AreaCode, string Prefix, string LastFour)?)null
             : profileService.PhoneNumberDecode(editModel.EmergencySecondaryPhoneNumber);
-
 
         // Update the user DTO.
         userViewDTO.FirstName = editModel.FirstName;
@@ -406,7 +389,7 @@ else
                 }
             : null;
 
-        // Update the emergency contact DTO.
+        // Update the emergency DTO.
         emergencyDTO.FirstName = editModel.EmergencyFirstName;
         emergencyDTO.LastName = editModel.EmergencyLastName;
         emergencyDTO.Relationship = editModel.EmergencyRelationship;
@@ -435,21 +418,19 @@ else
         bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, emergencyDTO);
 
         if (!userUpdateStatus)
-            Console.WriteLine("Debug: user update failed");
+            Console.WriteLine("User update failed");
         else
-            Console.WriteLine("Debug: user update successful");
+            Console.WriteLine("User update successful");
 
         if (!emergencyUpdateStatus)
-            Console.WriteLine("Debug: emergency contact update failed");
+            Console.WriteLine("Emergency contact update failed");
         else
-            Console.WriteLine("Debug: emergency contact update successful");
+            Console.WriteLine("Emergency contact update successful");
 
         HideCards();
         await GetUserView();
         StateHasChanged();
     }
-
-    
 
     private void HideCards()
     {
@@ -491,11 +472,11 @@ else
 
             if (response.IsSuccessStatusCode)
             {
-                Console.WriteLine("[Blazor] File uploaded successfully");
+                Console.WriteLine("File uploaded successfully");
             }
             else
             {
-                Console.WriteLine("[Blazor] File upload failed");
+                Console.WriteLine("File upload failed");
             }
 
             showUploadDialog = false;
@@ -509,12 +490,10 @@ else
 
     async Task GetUserView()
     {
+        // Retrieve the user and related phone numbers using DTO endpoints.
         var user = await profileService.GetUserByID(UserSession.UserId);
         var PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
         var SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
-        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
-        var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
-
 
         userViewDTO = new CustomerUserViewDTO
             {
@@ -532,8 +511,8 @@ else
                     AreaCode = PrimaryPhoneNumber.AreaCode,
                     Prefix = PrimaryPhoneNumber.Prefix,
                     LastFour = PrimaryPhoneNumber.LastFour,
-                    Fk_users = PrimaryPhoneNumber.FkUsers,
-                    Type = PrimaryPhoneNumber.FkType
+                    Fk_users = PrimaryPhoneNumber.Fk_users,
+                    Type = PrimaryPhoneNumber.Type
                 },
                 SecondaryPhoneNumber = SecondaryPhoneNumber != null ? new PhoneNumberDTO
                 {
@@ -541,14 +520,15 @@ else
                     AreaCode = SecondaryPhoneNumber.AreaCode,
                     Prefix = SecondaryPhoneNumber.Prefix,
                     LastFour = SecondaryPhoneNumber.LastFour,
-                    Fk_users = SecondaryPhoneNumber.FkUsers,
-                    Type = SecondaryPhoneNumber.FkType
+                    Fk_users = SecondaryPhoneNumber.Fk_users,
+                    Type = SecondaryPhoneNumber.Type
                 } : null,
             };
 
         var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
         var EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
         var EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+
         emergencyDTO = new EmergencyContactDTO
             {
                 FirstName = emergencyContact.FirstName,
@@ -560,8 +540,8 @@ else
                     AreaCode = EmergencyPrimary.AreaCode,
                     Prefix = EmergencyPrimary.Prefix,
                     LastFour = EmergencyPrimary.LastFour,
-                    Fk_users = EmergencyPrimary.FkUsers,
-                    Type = EmergencyPrimary.FkType
+                    Fk_users = EmergencyPrimary.Fk_users,
+                    Type = EmergencyPrimary.Type
                 },
                 SecondaryPhoneNumber = EmergencySecondary != null ? new PhoneNumberDTO
                 {
@@ -569,14 +549,15 @@ else
                     AreaCode = EmergencySecondary.AreaCode,
                     Prefix = EmergencySecondary.Prefix,
                     LastFour = EmergencySecondary.LastFour,
-                    Fk_users = EmergencySecondary.FkUsers,
-                    Type = EmergencySecondary.FkType
+                    Fk_users = EmergencySecondary.Fk_users,
+                    Type = EmergencySecondary.Type
                 } : null
             };
 
-        if (upcoming != null)
+        // Check for pending invoices
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        if (invoices.Any(i => i.Status == "Pending" || i.Status == "Overdue"))
         {
-            Console.WriteLine("ticking value to true");
             showInvoiceReminder = true;
         }
 

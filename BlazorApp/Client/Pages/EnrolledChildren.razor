@@ -1,11 +1,11 @@
 @page "/enrolled-children"
 @using BlazorApp.Client.Services
-@using Common.Models.Data
 @using Common.View
 @using Microsoft.AspNetCore.Authorization
+
+@attribute [Authorize(Roles = "User")]
 @inject ProfileService profileService
 @inject UserSessionService UserSession
-@attribute [Authorize(Roles = "User")]
 @rendermode InteractiveServer
 
 @if (childList == null || !childList.Any())
@@ -16,7 +16,7 @@
 }
 else
 {
-    @foreach (Child child in childList)
+    @foreach (ChildDTO child in childList)
     {
         <div class="child-overview-section mb-4">
             <h1>Child Information Overview</h1>
@@ -88,7 +88,8 @@ else
 }
 
 @code {
-    private List<Child> childList = new List<Child>();
+    // Use ChildDTO to store child records.
+    private List<ChildDTO> childList = new List<ChildDTO>();
     private HashSet<long> editingChildIds = new HashSet<long>();
 
     protected override async Task OnInitializedAsync()
@@ -98,12 +99,7 @@ else
 
     async Task LoadChildren()
     {
-        var childrenIds = await profileService.getChildrenAsync(UserSession.UserId);
-        foreach (var childId in childrenIds)
-        {
-            var child = await profileService.GetChildById(childId);
-            childList.Add(child);
-        }
+        childList = await profileService.getChildrenAsync(UserSession.UserId);
     }
 
     void ToggleEdit(long childId)
@@ -116,7 +112,7 @@ else
         StateHasChanged();
     }
 
-    async Task HandleUpdateChild(Child child)
+    async Task HandleUpdateChild(ChildDTO child)
     {
         var updatedChild = new ChildDTO
             {
@@ -126,6 +122,7 @@ else
                 LastName = child.LastName,
                 Age = child.Age
             };
+
         bool updateResult = await profileService.updateChild(child.Id, updatedChild);
         if (updateResult)
             Console.WriteLine("Child updated successfully");
