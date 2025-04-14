@@ -352,24 +352,20 @@ namespace Common.Services.SQL
                 })
                 .ToList();
         }
-        
-        
-        public async Task<IEnumerable<long>> GetChildren(Guid? id)
+
+
+        public async Task<IEnumerable<Child>> GetChildren(Guid? id)
         {
             var user = await _context.CallejoIncUsers
-            .Include(u => u.FkChildren)
-            .FirstOrDefaultAsync(u => u.Id == id);
-
+                 .Include(u => u.FkChildren)
+                 .FirstOrDefaultAsync(u => u.Id == id);
             if (user == null)
             {
-                return Enumerable.Empty<long>();
+                return Enumerable.Empty<Child>();
             }
-
-
-            return user.FkChildren.Select(child => child.Id);
+            return user.FkChildren;
         }
-        
-        
+
 
         public async Task<Child> getChildById(long id)
         {
@@ -557,7 +553,7 @@ namespace Common.Services.SQL
                 return false;
             }
         }
-       
+
         public async Task<bool> updatePassowrd(SettingsDTO settings)
         {
             // Retrieve the user by Id from the database.

@@ -22,7 +22,7 @@ namespace Common.Services.SQL
         bool CreateNotification(NotificationView notification);
         bool UpdateNotification(long id, NotificationView updatedNotification);
         bool DeleteNotification(long id);
-        
+
         // Holidays & Vacations
         IEnumerable<HolidaysVacationView> GetHolidaysVacations();
 
@@ -36,7 +36,7 @@ namespace Common.Services.SQL
         public Task<IEnumerable<PhoneNumber>> GetPhoneNumber(Guid? ID, long type);
         public Task<Child> getChildById(long id);
 
-        public Task<IEnumerable<long>> GetChildren(Guid? id);
+        public Task<IEnumerable<Child>> GetChildren(Guid? id);
         public Task<CallejoIncUser?> getUserWithNumber(Guid id);
 
 

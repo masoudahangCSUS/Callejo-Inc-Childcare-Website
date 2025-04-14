@@ -1,5 +1,4 @@
-﻿//EC using Common.Models.Data;
-using Common.View;
+﻿using Common.View;
 using Microsoft.AspNetCore.Mvc;
 using Sprache;
 using System.Text.RegularExpressions;
@@ -19,32 +18,31 @@ namespace BlazorApp.Client.Services
         // Method for retreiving phone numbers
         public async Task<PhoneNumberDTO> GetPhoneNumberAsync(Guid? id, long type)
         {
-
             try
             {
                 var url = $"api/customer/get-phone-number?id={id}&type={type}";
                 var PhoneNumber = await _httpClient.GetFromJsonAsync<PhoneNumberDTO>(url);
                 return PhoneNumber;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine($"Exception in GetPhoneNumberAsync: {ex.Message}");
                 return null;
             }
         }
-            
-        // Method for getting user by ID
-        public async Task<CallejoIncUserView> GetUserByID(Guid? id)
+
+        /// Retrieves a user DTO by ID.
+        public async Task<CustomerUserViewDTO> GetUserByID(Guid? id)
         {
             try
             {
                 var url = $"api/customer/get-user-by-id?id={id}";
-                var user = await _httpClient.GetFromJsonAsync<CallejoIncUserView>(url);
-                return user;
+                var userDTO = await _httpClient.GetFromJsonAsync<CustomerUserViewDTO>(url);
+                return userDTO;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in GetUserView: {ex.Message}");
+                Console.WriteLine($"Exception in GetUserByID: {ex.Message}");
                 return null;
             }
         }
@@ -55,44 +53,44 @@ namespace BlazorApp.Client.Services
             try
             {
                 var url = $"api/customer/get-emergency-contact?id={id}";
-                var EmergencyContact = await _httpClient.GetFromJsonAsync<EmergencyContactDTO>(url);
-                return EmergencyContact;
+                var emergencyDTO = await _httpClient.GetFromJsonAsync<EmergencyContactDTO>(url);
+                return emergencyDTO;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in GetPhoneNumberAsync: {ex.Message}");
-                return null;
-            }
-        }
-        
-        // Method to get List of children from Guardians table
-        public async Task<List<long>> getChildrenAsync(Guid? id)
-        {
-            try
-            {
-                var url = $"api/customer/get-child-list?id={id}";
-                var Children = await _httpClient.GetFromJsonAsync<List<long>>(url);
-                return Children;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception in GetPhoneNumberAsync: {ex.Message}");
+                Console.WriteLine($"Exception in GetEmergencyContactAsync: {ex.Message}");
                 return null;
             }
         }
 
+        // Method to get List of children from Guardians table
+        public async Task<List<ChildDTO>> getChildrenAsync(Guid? id)
+        {
+            try
+            {
+                var url = $"api/customer/get-child-list?id={id}";
+                var children = await _httpClient.GetFromJsonAsync<List<ChildDTO>>(url);
+                return children ?? new List<ChildDTO>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception in getChildrenAsync: {ex.Message}");
+                return new List<ChildDTO>();
+            }
+        }
+
         // Method to get child from Children table
-        public async Task<ChildView> GetChildById(long id)
+        public async Task<ChildDTO> GetChildById(long id)
         {
             try
             {
                 var url = $"api/customer/get-children-by-id?id={id}";
-                var Child = await _httpClient.GetFromJsonAsync<ChildView>(url);
-                return Child;
+                var childDTO = await _httpClient.GetFromJsonAsync<ChildDTO>(url);
+                return childDTO;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Exception in GetPhoneNumberAsync: {ex.Message}");
+                Console.WriteLine($"Exception in GetChildById: {ex.Message}");
                 return null;
             }
         }
@@ -111,23 +109,23 @@ namespace BlazorApp.Client.Services
                 Console.WriteLine($"Exception in UpdateUserProfileAsync: {ex.Message}");
                 return false;
             }
-            
+
         }
 
         public async Task<bool> UpdateEmergencyContactAsync(Guid? userId, EmergencyContactDTO emergencyDto)
-        {   
+        {
             // Route: /api/customer/update-emergency/{userId}
             var apiUrl = $"api/customer/update-emergency/{userId}";
             var response = await _httpClient.PutAsJsonAsync(apiUrl, emergencyDto);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> updateChild(long childID, ChildView childDTO)
+        public async Task<bool> updateChild(long childID, ChildDTO childDTO)
         {
             var apiUrl = $"api/customer/update-child/{childID}";
             var response = await _httpClient.PutAsJsonAsync(apiUrl, childDTO);
             return response.IsSuccessStatusCode;
-            
+
         }
 
         public async Task<bool> UpdatePassword(SettingsDTO settings)
@@ -173,8 +171,8 @@ namespace BlazorApp.Client.Services
             string areaCode = digits.Substring(0, 3);
             string prefix = digits.Substring(3, 3);
             string lastFour = digits.Substring(6, 4);
-                return (areaCode, prefix, lastFour);    
-            }
+            return (areaCode, prefix, lastFour);
+        }
 
         public async Task<List<InvoiceDTO>> GetInvoicesByGuardianId(Guid guardianId)
         {

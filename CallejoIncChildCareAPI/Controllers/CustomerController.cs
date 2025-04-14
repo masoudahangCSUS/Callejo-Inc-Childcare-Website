@@ -17,7 +17,7 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private ISQLServices _sqlServices;
         private IUserService _userService;
-         
+
 
         public CustomerController(ISQLServices sqlServices, IUserService userService)
         {
@@ -47,20 +47,50 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result);
         }
 
-       //GET: api/customer/get-emergency-contact
-       [HttpGet]
-       [Route("get-emergency-contact")]
-       public async Task<IActionResult> GetEmergencyContact(Guid id)
+        [HttpGet]
+        [Route("get-emergency-contact")]
+        public async Task<IActionResult> GetEmergencyContact(Guid id)
         {
-            var result = await _userService.GetEmergencyContactAsync(id);
-            if (result == null)
+            // Retrieve the emergency contact record.
+            var contact = await _userService.GetEmergencyContactAsync(id);
+            if (contact == null)
             {
-                return BadRequest(result);
+                return NotFound("Emergency contact not found.");
             }
 
-            return Ok(result);
+            // Convert the EmergencyContact object to an EmergencyContactDTO
+            var emergencyDTO = new EmergencyContactDTO
+            {
+                FirstName = contact.FirstName,
+                LastName = contact.LastName,
+                Relationship = contact.Relationship,
+                PrimaryPhoneNumber = (await _sqlServices.GetPhoneNumber(id, 3)).FirstOrDefault() is PhoneNumber emergencyPrimary
+                    ? new PhoneNumberDTO
+                    {
+                        Id = emergencyPrimary.Id,
+                        AreaCode = emergencyPrimary.AreaCode,
+                        Prefix = emergencyPrimary.Prefix,
+                        LastFour = emergencyPrimary.LastFour,
+                        Fk_users = emergencyPrimary.FkUsers,
+                        Type = emergencyPrimary.FkType
+                    }
+                    : null,
+                SecondaryPhoneNumber = (await _sqlServices.GetPhoneNumber(id, 4)).FirstOrDefault() is PhoneNumber emergencySecondary
+                    ? new PhoneNumberDTO
+                    {
+                        Id = emergencySecondary.Id,
+                        AreaCode = emergencySecondary.AreaCode,
+                        Prefix = emergencySecondary.Prefix,
+                        LastFour = emergencySecondary.LastFour,
+                        Fk_users = emergencySecondary.FkUsers,
+                        Type = emergencySecondary.FkType
+                    }
+                    : null
+            };
+
+            return Ok(emergencyDTO);
         }
-        
+
         //GET: api/customer/get-phone-number
         [HttpGet]
         [Route("get-phone-number")]
@@ -80,29 +110,103 @@ namespace CallejoIncChildcareAPI.Controllers
         [Route("get-user-by-id")]
         public async Task<IActionResult> GetUserByID(Guid? id)
         {
-            var result = await _userService.GetUserByID(id);
-            if (result == null)
+            // Retrieve the user record (internal model)
+            var user = await _userService.GetUserByID(id);
+            if (user == null)
             {
-                return BadRequest(result); 
+                return BadRequest("User not found.");
             }
-            return Ok(result);
+
+            // Convert the CallejoIncUser object to a DTO.
+            var userDTO = new CustomerUserViewDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                MiddleName = user.MiddleName ?? string.Empty,
+                LastName = user.LastName,
+                Address = user.Address,
+                City = user.City,
+                State = user.State,
+                ZipCode = user.ZipCode,
+                Email = user.Email,
+                // Convert phone numbers to DTOs
+                PrimaryPhoneNumber = user.PhoneNumbers.FirstOrDefault(p => p.FkType == 1) is PhoneNumber primary
+                    ? new PhoneNumberDTO
+                    {
+                        Id = primary.Id,
+                        AreaCode = primary.AreaCode,
+                        Prefix = primary.Prefix,
+                        LastFour = primary.LastFour,
+                        Fk_users = primary.FkUsers,
+                        Type = primary.FkType
+                    }
+                    : null,
+                SecondaryPhoneNumber = user.PhoneNumbers.FirstOrDefault(p => p.FkType == 2) is PhoneNumber secondary
+                    ? new PhoneNumberDTO
+                    {
+                        Id = secondary.Id,
+                        AreaCode = secondary.AreaCode,
+                        Prefix = secondary.Prefix,
+                        LastFour = secondary.LastFour,
+                        Fk_users = secondary.FkUsers,
+                        Type = secondary.FkType
+                    }
+                    : null,
+                // Optionally, convert children if needed.
+                Children = user.FkChildren.Select(child => new ChildView
+                {
+                    Id = child.Id,
+                    FirstName = child.FirstName,
+                    MiddleName = child.MiddleName ?? string.Empty,
+                    LastName = child.LastName,
+                    Age = child.Age
+                }).ToList()
+            };
+
+            return Ok(userDTO);
         }
+
 
         //GET: api/customer/get-child-list
         [HttpGet]
         [Route("get-child-list")]
         public async Task<IActionResult> GetChildList(Guid? id)
         {
-            var result = await _sqlServices.GetChildren(id);
-            return Ok(result);
+            // Assume _sqlServices.GetChildren(id) now returns a list of Child objects.
+            var children = await _sqlServices.GetChildren(id);
+            // Convert each raw Child to a ChildDTO:
+            var childDTOList = children.Select(child => new ChildDTO
+            {
+                Id = child.Id,
+                FirstName = child.FirstName,
+                MiddleName = child.MiddleName ?? string.Empty,
+                LastName = child.LastName,
+                Age = child.Age
+            }).ToList();
+
+            return Ok(childDTOList);
         }
 
         [HttpGet]
         [Route("get-children-by-id")]
         public async Task<IActionResult> GetChildrenByID(long id)
         {
-            var result = await _sqlServices.getChildById(id);
-            return Ok(result);
+            var child = await _sqlServices.getChildById(id);
+            if (child == null)
+            {
+                return NotFound("Child not found.");
+            }
+
+            var childDTO = new ChildDTO
+            {
+                Id = child.Id,
+                FirstName = child.FirstName,
+                MiddleName = child.MiddleName ?? string.Empty,
+                LastName = child.LastName,
+                Age = child.Age
+            };
+
+            return Ok(childDTO);
         }
 
 
@@ -116,7 +220,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
             // Retrieve the user record along with associated phone numbers.
             var user = await _sqlServices.getUserWithNumber(userId);
-            bool updateStatus =await _sqlServices.updateUser(user, userDto);
+            bool updateStatus = await _sqlServices.updateUser(user, userDto);
             if (updateStatus)
                 return Ok("User Updated Succesfully");
             else
@@ -124,7 +228,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
         }
 
-        
+
         [HttpPut("update-emergency/{userId}")]
         public async Task<IActionResult> UpdateEmergencyContact(Guid userId, [FromBody] EmergencyContactDTO emergencyDto)
         {
@@ -197,7 +301,7 @@ namespace CallejoIncChildcareAPI.Controllers
 
         [HttpPut("update-email")]
         public async Task<IActionResult> UpdateEmail([FromBody] SettingsDTO settings)
-        {   
+        {
             // validate the data
             if (settings == null || settings.Id == Guid.Empty)
             {
