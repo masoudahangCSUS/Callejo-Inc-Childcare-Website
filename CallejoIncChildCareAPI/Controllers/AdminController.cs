@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace CallejoIncChildcareAPI.Controllers
@@ -38,7 +39,7 @@ namespace CallejoIncChildcareAPI.Controllers
             _userService = userService;
             _imageService = imageService;
             _configuration = configuration;
-            _context = context; 
+            _context = context;
         }
 
         //  POST: api/admin/create-user
@@ -119,8 +120,8 @@ namespace CallejoIncChildcareAPI.Controllers
             // Allows the Cookie to be persistent across browser sessions
             var authProperties = new AuthenticationProperties
             {
-                IsPersistent = true, 
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60) 
+                IsPersistent = true,
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(60)
             };
             // Sign in the user and issue the cookie
             await HttpContext.SignInAsync(
@@ -143,33 +144,6 @@ namespace CallejoIncChildcareAPI.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Response.Cookies.Delete("MyAppAuthCookie");
             return Ok(new { Success = true, Message = "Logged Out Successfully" });
-        }
-
-        // POST: api/admin/upload-image
-        [HttpPost("upload-image")]
-        public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
-        {
-            try
-            {
-                Console.WriteLine($"DEBUG: Received image upload request: {imageData?.ImageUrl}");
-
-                if (string.IsNullOrWhiteSpace(imageData?.ImageUrl))
-                {
-                    Console.WriteLine("DEBUG: [FAILURE] Empty image URL received.");
-                    return BadRequest(new APIResponse { Success = false, Message = "Image URL is empty." });
-                }
-
-                // Store Image URL using ImageService
-                await _imageService.SaveImageUrlAsync(imageData.ImageUrl);
-
-                Console.WriteLine($"DEBUG: Image URL {imageData.ImageUrl} successfully saved to DB.");
-                return Ok(new APIResponse { Success = true, Message = "Image URL stored successfully." });
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"DEBUG: [EXCEPTION] Error saving image URL. {ex.Message}");
-                return StatusCode(500, new APIResponse { Success = false, Message = ex.Message });
-            }
         }
 
         [HttpDelete("delete-user")]
@@ -256,22 +230,93 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
+        // POST: api/admin/upload-photo
+        [HttpPost("upload-photo")]
+        public async Task<IActionResult> UploadPhoto(IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new APIResponse { Success = false, Message = "No file uploaded." });
+
+            try
+            {
+                string uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "photos");
+                if (!Directory.Exists(uploadsFolder))
+                {
+                    Directory.CreateDirectory(uploadsFolder);
+                }
+
+                string uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(file.FileName)}";
+                string fullPath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                using (var stream = new FileStream(fullPath, FileMode.Create))
+                {
+                    Console.WriteLine($"Saving file into {fullPath}");
+                    await file.CopyToAsync(stream);
+                }
+
+                // Insert into database
+                using (var conn = new SqlConnection(_configuration.GetConnectionString("DataContext")))
+                {
+                    await conn.OpenAsync();
+                    var query = "INSERT INTO Images (file_name, is_published, uploaded_at) VALUES (@FileName, 0, GETUTCDATE())";
+
+                    using var cmd = new SqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("@FileName", uniqueFileName);
+                    await cmd.ExecuteNonQueryAsync();
+                }
+
+                return Ok(new APIResponse { Success = true, Message = "Image uploaded successfully." });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"ERROR: {ex.Message}");
+                return StatusCode(500, new APIResponse { Success = false, Message = "Server error while uploading image." });
+            }
+        }
+
+        [HttpGet("get-all-photos")]
+        public async Task<ActionResult<List<Common.View.Image>>> GetAllPhotos()
+        {
+            var images = await _imageService.GetAllImagesAsync();
+            Console.WriteLine("returning all images");
+            Console.WriteLine(images);
+            return Ok(images);
+        }
 
 
-        //  GET: api/admin/get-latest-image
-        [HttpGet("get-latest-image")]
-        public async Task<ActionResult<APIResponse>> GetLatestImage()
+        [HttpGet("/api/photos/featured")]
+        [AllowAnonymous]
+        public async Task<ActionResult<List<Common.View.Image>>> GetPublishedPhotos()
+        {
+            var images = await _imageService.GetPublishedImagesAsync();
+            Console.WriteLine("returning all featured images");
+            Console.WriteLine($"Count: {images.Count}");
+
+            foreach (var img in images)
+            {
+                Console.WriteLine($"✔️ File: {img.FileName}, Published: {img.IsPublished}");
+            }
+            return Ok(images);
+        }
+
+        [HttpPost("publish-images")]
+        public async Task<IActionResult> PublishSelectedImages([FromBody] List<string> selectedFileNames)
         {
             try
             {
-                var imageUrl = await _imageService.GetLatestImageUrlAsync();
 
-                if (string.IsNullOrEmpty(imageUrl))
+                await _context.Database.ExecuteSqlRawAsync("UPDATE Images SET is_published = 0");
+
+                if (selectedFileNames.Any())
                 {
-                    return NotFound(new APIResponse { Success = false, Message = "No image found." });
+                    foreach (var name in selectedFileNames)
+                    {
+                        await _context.Database.ExecuteSqlRawAsync(
+                            "UPDATE Images SET is_published = 1 WHERE file_name = {0}", name);
+                    }
                 }
 
-                return Ok(new APIResponse { Success = true, Data = imageUrl });
+                return Ok(new APIResponse { Success = true, Message = "Featured images updated." });
             }
             catch (Exception ex)
             {
@@ -279,23 +324,8 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
-    
 
-        //  Direct SQL insert method (if _imageService is unavailable)
-        private async Task SaveImageUrlAsync(string imageUrl)
-        {
-            var connectionString = _configuration.GetConnectionString("DefaultConnection");
 
-            using (var conn = new SqlConnection(connectionString))
-            {
-                await conn.OpenAsync();
-                var query = "INSERT INTO Images (image_url, uploaded_at) VALUES (@ImageUrl, GETUTCDATE())";
-
-                using var cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@ImageUrl", imageUrl);
-                await cmd.ExecuteNonQueryAsync();
-            }
-        }
     }
 
     public static class IdClaim

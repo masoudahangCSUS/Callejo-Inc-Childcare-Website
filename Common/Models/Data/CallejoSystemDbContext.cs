@@ -224,20 +224,23 @@ public partial class CallejoSystemDbContext : DbContext
 
         modelBuilder.Entity<Image>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Images__3213E83F8C33DC9C");
-
+            entity.ToTable("Images");
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.ImageUrl)
-                .HasMaxLength(1024)
-                .HasColumnName("image_url");
+            entity.Property(e => e.FileName)
+                .HasMaxLength(255)
+                .IsUnicode(false)
+                .HasColumnName("file_name");
+
             entity.Property(e => e.IsPublished)
-                .HasDefaultValue(false)
-                .HasColumnName("is_published");
+                .HasColumnName("is_published")
+                .HasDefaultValue(false);
+
             entity.Property(e => e.UploadedAt)
-                .HasDefaultValueSql("(getutcdate())")
+                .HasColumnName("uploaded_at")
                 .HasColumnType("datetime")
-                .HasColumnName("uploaded_at");
+                .HasDefaultValueSql("GETUTCDATE()");
         });
+
 
         modelBuilder.Entity<InterestedParent>(entity =>
         {

@@ -2,6 +2,8 @@
 @inject HttpClient Http
 @using System.Net.Http
 @using System.Net.Http.Json
+@using System.Net.Http.Headers
+@using System.Text.Json
 @using Common.View
 @using System.Data.SqlClient
 @using Microsoft.Data.SqlClient
@@ -12,145 +14,153 @@
 @rendermode InteractiveServer
 @inject IJSRuntime JS
 
-
-
 <h3>Admin Photo Management</h3>
 
-<EditForm Model="photoModel" OnValidSubmit="SubmitPhotoUrl">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
+<InputFile OnChange="HandleFileSelected" />
+<button @onclick="UploadFile" disabled="@(!isFileSelected)">Upload Image</button>
 
-    <div class="input-header">Image URL</div>
-    <div class="input-wrapper">
-        <InputText @bind-Value="photoModel.ImageUrl" placeholder="Enter image URL..." @oninput="ForceUpdate" />
+<h4>Uploaded Images</h4>
 
-    </div>
+<div class="filter-container">
+    <label>Show:</label>
+    <select @onchange="OnFilterChanged">
+        <option value="All">All</option>
+        <option value="Featured">Featured</option>
+    </select>
+</div>
 
-    <button type="submit">Submit Photo</button>
-
-    <!-- Debugging Output -->
-    <p>Current Input: @photoModel.ImageUrl</p>
-</EditForm>
-
-@if (photos.Any())
+@if (uploadedImages.Any())
 {
-    <h4>Uploaded Images:</h4>
-    <ul>
-        @foreach (var photo in photos)
+    <div class="admin-photo-grid">
+        @foreach (var img in uploadedImages)
         {
-            <li>
-                <a href="@photo" target="_blank">
-                    <img src="@photo" alt="Uploaded Photo" width="100" />
-                </a>
-          
-                
-                <button @onclick="() => AddToParentPhotos(photo)">Feature on ParentPhotos</button>
-            </li>
-        }
-    </ul>
-}
-
-@if (parentPhotos.Any())
-{
-    <h4>Photos Featured on ParentPhotos Page:</h4>
-    <div class="photo-grid">
-        @foreach (var photo in parentPhotos)
-        {
-            <div class="photo-item">
-                <img src="@photo" alt="Parent Featured Photo" />
+            <div class="photo-item" @onclick="() => ToggleSelection(img.FileName)">
+                <input type="checkbox" class="checkbox-overlay" checked="@IsSelected(img.FileName)" />
+                <img src="https://localhost:7139/images/photos/@img.FileName" />
             </div>
         }
+
     </div>
+
+    <button class="publish-button" @onclick="PublishSelectedImages">Publish Featured</button>
 }
 else
 {
-    <p>No images uploaded yet.</p>
+    <p>No uploaded images found.</p>
 }
 
+
 @code {
+    IBrowserFile selectedFile;
+    bool isFileSelected = false;
 
-    private PhotoModel photoModel = new();
-    private List<string> photos = new();
-    private string errorMessage = string.Empty;
-    private List<string> parentPhotos = BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos;
-    
+    List<Image> uploadedImages = new();
+    HashSet<string> selectedImages = new();
+    string filterOption = "All";
 
-
-   
-
-    private void ForceUpdate(ChangeEventArgs e)
+    private void HandleFileSelected(InputFileChangeEventArgs e)
     {
-        photoModel.ImageUrl = e.Value.ToString();
-        Console.WriteLine($"DEBUG: Manual Input Binding = {photoModel.ImageUrl}");
-        StateHasChanged();
+        selectedFile = e.File;
+        isFileSelected = selectedFile != null;
     }
 
-
-    private async Task SubmitPhotoUrl()
+    private async Task UploadFile()
     {
-        Console.WriteLine($"DEBUG: Before submit, ImageUrl = '{photoModel.ImageUrl}'");
-
-        if (string.IsNullOrWhiteSpace(photoModel.ImageUrl))
+        if (selectedFile == null)
         {
-            errorMessage = "Image URL cannot be empty.";
-            Console.WriteLine("DEBUG: Image URL is empty.");
+            await JS.InvokeVoidAsync("alert", "Please select a file first.");
             return;
         }
 
         try
         {
-            Console.WriteLine($"DEBUG: Sending request to API with Image URL: {photoModel.ImageUrl}");
+            var content = new MultipartFormDataContent();
+            var fileContent = new StreamContent(selectedFile.OpenReadStream(10_000_000));
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(selectedFile.ContentType);
+            content.Add(fileContent, "file", selectedFile.Name);
 
-            var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/upload-image", photoModel);
+            var response = await Http.PostAsync("https://localhost:7139/api/admin/upload-photo", content);
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<APIResponse>();
-
-                if (result?.Success == true)
-                {
-                    Console.WriteLine($"DEBUG: [SUCCESS] Image URL stored. Message: {result.Message}");
-                    photos.Add(photoModel.ImageUrl);
-                    photoModel.ImageUrl = ""; // Clear input field
-                }
-                else
-                {
-                    errorMessage = result?.Message ?? "Upload failed.";
-                    Console.WriteLine($"DEBUG: [FAILURE] API returned success but failed. Message: {errorMessage}");
-                }
+                await JS.InvokeVoidAsync("alert", "Upload successful!");
+                await LoadImages();
             }
             else
             {
-                errorMessage = $"API returned error: {response.StatusCode}";
-                Console.WriteLine($"DEBUG: [ERROR] Non-200 status. Status = {response.StatusCode}");
+                await JS.InvokeVoidAsync("alert", $"Upload failed: {response.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            errorMessage = "An error occurred during upload.";
-            Console.WriteLine($"DEBUG: [EXCEPTION] {ex.Message}");
+            await JS.InvokeVoidAsync("alert", $"Upload error: {ex.Message}");
         }
     }
 
-    private void AddToParentPhotos(string photoUrl)
+    protected override async Task OnInitializedAsync()
     {
-        if (!parentPhotos.Contains(photoUrl))
-        {
-            parentPhotos.Add(photoUrl);
-            Console.WriteLine($"DEBUG: Added {photoUrl} to local ParentPhotos.");
-        }
-
-        if (!BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos.Contains(photoUrl))
-        {
-            BlazorApp.Client.Services.ParentPhotoStorage.FeaturedPhotos.Add(photoUrl);
-            Console.WriteLine($"DEBUG: Added {photoUrl} to ParentPhotoStorage.");
-        }
+        await LoadImages();
     }
 
-
-
-    public class PhotoModel
+    private async Task LoadImages()
     {
-        public string ImageUrl { get; set; } = "";
+        try
+        {
+            string apiUrl = filterOption == "Featured"
+                ? "https://localhost:7139/api/photos/featured"
+                : "https://localhost:7139/api/admin/get-all-photos";
+
+            uploadedImages = await Http.GetFromJsonAsync<List<Image>>(apiUrl) ?? new();
+
+            selectedImages = uploadedImages
+                .Where(img => img.IsPublished)
+                .Select(img => img.FileName)
+                .ToHashSet();
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Error loading images: {ex.Message}");
+        }
     }
+
+
+
+    private void ToggleSelection(string fileName)
+    {
+        if (selectedImages.Contains(fileName))
+            selectedImages.Remove(fileName);
+        else
+            selectedImages.Add(fileName);
+    }
+
+    private async Task PublishSelectedImages()
+    {
+        try
+        {
+            var response = await Http.PostAsJsonAsync("https://localhost:7139/api/admin/publish-images", selectedImages.ToList());
+
+            if (response.IsSuccessStatusCode)
+            {
+                await JS.InvokeVoidAsync("alert", "Featured images updated!");
+                selectedImages.Clear();
+                await LoadImages();
+            }
+            else
+            {
+                await JS.InvokeVoidAsync("alert", "Failed to update featured images.!");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Error: {ex.Message}");
+        }
+    }
+
+    private async Task OnFilterChanged(ChangeEventArgs e)
+    {
+        filterOption = e.Value?.ToString() ?? "All";
+        await LoadImages();
+    }
+
+    private bool IsSelected(string fileName) => selectedImages.Contains(fileName);
 }
