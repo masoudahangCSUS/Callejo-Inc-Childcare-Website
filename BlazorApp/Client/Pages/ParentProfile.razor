@@ -218,10 +218,12 @@ else
 
 @if (showUploadDialog)
 {
-    <div>
-        <InputFile OnChange="HandleFileSelected" />
-        <button class="btn-upload" @onclick="UploadFile">Upload</button>
-        <button class="btn-cancel" @onclick="CancelUpload">Cancel</button>
+    <div class="file-select-container">
+        <InputFile OnChange="HandleFileSelected" class="btn-regupload"/>
+    </div>
+    <div class="file-upload-container">
+        <button class="btn-regupload" @onclick="UploadFile">Upload</button>
+        <button class="btn-regupload" @onclick="CancelUpload">Cancel</button> <!-- Uses the same class as upload button to appear identical -->
     </div>
 }
 
