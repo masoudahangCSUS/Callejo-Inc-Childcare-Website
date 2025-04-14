@@ -4,6 +4,6 @@
     {
         public Guid Application { get; set; }
         public Guid Key { get; set; }
-        public string BaseAddress { get; set; }
+        public string BaseUrl { get; set; }
     }
 }

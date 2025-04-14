@@ -38,7 +38,7 @@
             Console.Error.WriteLine("Email claim not found.");
             return;
         }
-        Guid userId = (Guid)user.UserId;
+        Guid userId = (Guid)user.AuthToken;
 
 
         // Construct the URL including the email query parameter.

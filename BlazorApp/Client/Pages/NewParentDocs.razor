@@ -1,12 +1,18 @@
 ﻿@page "/NewParentDocs"
 @using System.Net.Http.Json
-@using BlazorApp.Client.Services
 @using Common.View
 @using Common.Services.User
 @using Microsoft.AspNetCore.Authorization
+@inject NavigationManager Navigation
+@inject UserSessionService UserSession
+
 @inject HttpClient Http
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
+
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 <h3>Document Upload for Prospective Parents</h3>
 <br>
@@ -78,6 +84,16 @@
     private string StatusMessage = string.Empty;
 
     private List<string> LogMessages = new List<string>();
+
+    protected override void OnInitialized()
+    {
+        if (!AuthenticationStateProvider.isOwner())
+        {
+            // If not authenticated, ensure the session service is in a logged-out state.
+            UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
+            Navigation.NavigateTo("/");
+        }
+    }
 
     // Helper method to add a log entry and force UI update
     private void AddLog(string message)

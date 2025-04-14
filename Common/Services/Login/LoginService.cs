@@ -17,8 +17,57 @@ namespace Common.Services.Login
         {
             _context = context;
         }
+        public APIResponse LoginCallejoIncUsers(string encEmail, string encPassword, string key)
+        {
+            APIResponse response = new APIResponse();
 
-        public APIResponse LoginUser(string encUserName, string endPassword, string key)
+            try
+            {
+                string email = AesOperation.DecryptString(key, encEmail);
+                string password = AesOperation.DecryptString(key, encPassword);
+
+                var callejoIncUser = _context.CallejoIncUsers
+                    .Where(u => u.Email == email && u.Password == password)
+                    .FirstOrDefault();
+                if (callejoIncUser != null)
+                {
+                    response.Success = true;
+                    response.Message = "Login successful for user: " + encEmail;
+                    // Update login with last login time along with GUID for authentication
+                    Guid authenticationGuid = Guid.NewGuid();
+                    callejoIncUser.LastLogin = DateTime.Now;
+                    callejoIncUser.AuthenticationGuid = authenticationGuid;
+                    _context.SaveChanges();
+                    response.Token = authenticationGuid; // Return the authentication token
+
+                    response.RoleId = callejoIncUser.FkRole;
+                    GetRoleForUser(response);
+                }
+                else
+                {
+                    response.Success = false;
+                    response.Message = "Invalid email or password.";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Success = false;
+                response.Message = "Error during login: " + ex.Message;
+            }
+            return response;
+        }
+        private void GetRoleForUser(APIResponse response)
+        {
+            var roleRec = _context.Roles.Where(r => r.Id == response.RoleId).FirstOrDefault();
+
+            if (roleRec == null)
+            {
+                throw new Exception("User has no assigned role");
+            }
+            response.Role = roleRec.Description;
+        }
+
+        public APIResponse LoginUserExample(string encUserName, string endPassword, string key)
         {
             APIResponse response = new APIResponse();
             try
@@ -55,7 +104,17 @@ namespace Common.Services.Login
             return response;
 
         }
-        public bool IsUserAuthenticated(string userName, Guid authenticationGuid)
+        public bool IsUserAuthenticated(string email, Guid authenticationGuid)
+        {
+            var callejoIncUser = _context.CallejoIncUsers
+                .Where(l => l.Email == email && l.AuthenticationGuid == authenticationGuid)
+                .FirstOrDefault();
+            if (callejoIncUser == null)
+                return false;
+            // Force user to log back in again if the last login is older than 24 hours
+            return (DateTime.Now - callejoIncUser.LastLogin).TotalHours <= 24;
+        }
+        public bool IsUserAuthenticatedExample(string userName, Guid authenticationGuid)
         {
             var loginRecord = _context.Logins
                 .Where(l => l.Username == userName && l.AuthenticationToken == authenticationGuid)

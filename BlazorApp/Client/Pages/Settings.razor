@@ -126,7 +126,7 @@
             {
                 Password = "*******",
                 Email = email,
-                Id = (Guid)user.UserId
+                Id = (Guid)user.AuthToken
             };
 
         updatedDTO = settingsDTO;
@@ -152,7 +152,7 @@
     {
         var validationRequest = new ValidationDTO
             {
-                UserId = (Guid)user.UserId,
+                UserId = (Guid)user.AuthToken,
                 TotpCode = emailTotpCode
             };
 
@@ -172,7 +172,7 @@
     {
         var validationRequest = new ValidationDTO
             {
-                UserId = (Guid)user.UserId,
+                UserId = (Guid)user.AuthToken,
                 TotpCode = passwordTotpCode
             };
 
@@ -229,7 +229,7 @@
             Console.Error.WriteLine("Email claim not found.");
             return;
         }
-        Guid userId = (Guid)user.UserId;
+        Guid userId = (Guid)user.AuthToken;
         var apiUrl = $"https://localhost:7139/api/MA/QRGenerate/{userId}?email={Uri.EscapeDataString(email)}";
         try
         {

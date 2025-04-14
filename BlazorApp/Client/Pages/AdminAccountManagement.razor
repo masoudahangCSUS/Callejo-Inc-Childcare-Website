@@ -1,11 +1,14 @@
 ﻿@using Common.View
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using BlazorApp.Client.Services
 
 @inject AdminService AdminService
 @inject HttpClient Http
 @inject IJSRuntime JS
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 <div class="admin-account-container">
     <!-- Main Title -->
@@ -151,7 +154,10 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        await LoadUsers();
+        if (AuthenticationStateProvider.isOwner())
+        {
+            await LoadUsers();
+        }
     }
 
     private async Task LoadUsers()

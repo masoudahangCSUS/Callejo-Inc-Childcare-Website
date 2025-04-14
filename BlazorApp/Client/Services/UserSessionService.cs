@@ -3,15 +3,17 @@
 public class UserSessionService
 {
     public bool UserIsLoggedIn { get;  set; }
-    public int? UserRole { get; private set; }
-    public Guid? UserId { get; private set; }
+    public long UserRole { get; private set; }
+    public Guid AuthToken { get; private set; }
+    public string UserRoleName { get; private set; }
 
-    public void SetUser(bool isLoggedIn, int? role = null, Guid? userId = null)
+    public void SetUser(bool isLoggedIn, long role, Guid authToken, string userRoleName)
     {
         UserIsLoggedIn = isLoggedIn;
         UserRole = role;
-        UserId = userId;
+        AuthToken = authToken;
+        UserRoleName = userRoleName;
 
-        Console.WriteLine($"DEBUG: User logged in → {isLoggedIn}, Role: {role}, User ID: {UserId?.ToString()}");
+        Console.WriteLine($"DEBUG: User logged in → {isLoggedIn}");
     }
 }

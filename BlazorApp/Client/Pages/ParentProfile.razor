@@ -23,7 +23,7 @@
 @inject ProfileService profileService
 @rendermode InteractiveServer
 
-@attribute [Authorize(Roles = "User")]
+@* @attribute [Authorize(Roles = "User")] *@
 
 @if (userViewDTO == null || emergencyDTO == null)
 {
@@ -431,8 +431,8 @@ else
                 }
             : null;
 
-        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.UserId, userViewDTO);
-        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.UserId, emergencyDTO);
+        bool userUpdateStatus = await profileService.UpdateUserProfileAsync(UserSession.AuthToken, userViewDTO);
+        bool emergencyUpdateStatus = await profileService.UpdateEmergencyContactAsync(UserSession.AuthToken, emergencyDTO);
 
         if (!userUpdateStatus)
             Console.WriteLine("Debug: user update failed");
@@ -486,7 +486,7 @@ else
             fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
             content.Add(fileContent, "file", selectedFile.Name);
 
-            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={UserSession.UserId}";
+            string apiUrl = $"https://localhost:7139/api/Registration/Upload?userId={UserSession.AuthToken}";
             var response = await Http.PostAsync(apiUrl, content);
 
             if (response.IsSuccessStatusCode)
@@ -509,10 +509,10 @@ else
 
     async Task GetUserView()
     {
-        var user = await profileService.GetUserByID(UserSession.UserId);
-        PhoneNumberDTO PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 1);
-        PhoneNumberDTO SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.UserId, 2);
-        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.UserId.Value);
+        var user = await profileService.GetUserByID(UserSession.AuthToken);
+        PhoneNumberDTO PrimaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.AuthToken, 1);
+        PhoneNumberDTO SecondaryPhoneNumber = await profileService.GetPhoneNumberAsync(UserSession.AuthToken, 2);
+        var invoices = await profileService.GetInvoicesByGuardianId(UserSession.AuthToken);
         var upcoming = invoices.FirstOrDefault(i => i.Status == "Pending" || i.Status == "Overdue");
 
 
@@ -546,9 +546,9 @@ else
                 } : null,
             };
 
-        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.UserId);
-        PhoneNumberDTO EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 3);
-        PhoneNumberDTO EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.UserId, 4);
+        var emergencyContact = await profileService.GetEmergencyContactAsync(UserSession.AuthToken);
+        PhoneNumberDTO EmergencyPrimary = await profileService.GetPhoneNumberAsync(UserSession.AuthToken, 3);
+        PhoneNumberDTO EmergencySecondary = await profileService.GetPhoneNumberAsync(UserSession.AuthToken, 4);
         emergencyDTO = new EmergencyContactDTO
             {
                 FirstName = emergencyContact.FirstName,

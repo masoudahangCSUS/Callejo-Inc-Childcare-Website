@@ -1,11 +1,6 @@
-﻿using BlazorApp;
-using Common.AES;
-using Common.View;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using RestSharp;
+﻿using Common.AES;
 
-namespace ExampleBlazorAuthentication.Service
+namespace BlazorApp.Client.Services
 {
     public class ServiceHelper
     {
@@ -18,5 +13,4 @@ namespace ExampleBlazorAuthentication.Service
         }
 
     }
-
 }

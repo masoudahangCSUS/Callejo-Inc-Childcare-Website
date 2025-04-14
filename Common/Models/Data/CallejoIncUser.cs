@@ -29,6 +29,10 @@ public partial class CallejoIncUser
 
     public byte[]? RegistrationDocument { get; set; }
 
+    public Guid? AuthenticationGuid { get; set; }
+
+    public DateTime LastLogin { get; set; }
+
     public virtual ICollection<EmergencyContact> EmergencyContacts { get; set; } = new List<EmergencyContact>();
 
     public virtual Role FkRoleNavigation { get; set; } = null!;

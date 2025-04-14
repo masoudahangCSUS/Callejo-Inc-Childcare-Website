@@ -1,11 +1,14 @@
 ﻿@page "/admin"
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
 @inject NavigationManager Navigation
 @inject UserSessionService UserSession
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
-@attribute [Authorize(Roles = "Admin")]
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 
 <div class="admin-dashboard">
@@ -27,61 +30,61 @@
             <ul>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminOverview), "Overview")'
-                            class="btn-link @(ActivePage == "Overview" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Overview" ? "active" : "")">
                         <img src="images/OverviewIcon.png" alt="Overview" class="nav-icon" /> Overview
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminAccountManagement), "Accounts")'
-                            class="btn-link @(ActivePage == "Accounts" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Accounts" ? "active" : "")">
                         <img src="images/accountIcon.png" alt="Accounts" class="nav-icon" /> Accounts
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminExpenses), "Expenses")'
-                            class="btn-link @(ActivePage == "Expenses" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Expenses" ? "active" : "")">
                         <img src="images/expensesIcon.png" alt="Expenses" class="nav-icon" /> Expenses
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminContact), "Inquiries")'
-                            class="btn-link @(ActivePage == "Inquiries" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Inquiries" ? "active" : "")">
                         <img src="images/inquiriesIcon.png" alt="Inquiries" class="nav-icon" /> Inquiries
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminPhotos), "Admin-Photos")'
-                            class="btn-link @(ActivePage == "Admin-Photos" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Admin-Photos" ? "active" : "")">
                         <img src="images/camera1.png" alt="Admin Photos" class="nav-icon" /> Admin Photos
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminNotifications), "Admin-Notifications")'
-                            class="btn-link @(ActivePage == "Admin-Notifications" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Admin-Notifications" ? "active" : "")">
                         <img src="images/notificationManagementIcon.png" alt="Notifications" class="nav-icon" /> Notification Management
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(ChildRoster), "Child-Roster")'
-                            class="btn-link @(ActivePage == "Admin-Child-Roster" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Admin-Child-Roster" ? "active" : "")">
                         <img src="images/baby.jpg" alt="Child Roster" class="nav-icon" /> Child Roster 
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminHolidaysVacations), "Admin-Holidays-Vacations")'
-                            class="btn-link @(ActivePage == "Admin-Holidays-Vacations" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Admin-Holidays-Vacations" ? "active" : "")">
                         <img src="images/AdminHolidaysVacations.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Holidays & Vacations
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(AdminDailySchedule), "Admin-Daily-Schedule")'
-                            class="btn-link @(ActivePage == "Admin-Daily-Schedule" ? "active" : "")">
+                    class="btn-link @(ActivePage == "Admin-Daily-Schedule" ? "active" : "")">
                         <img src="images/calendar.png" alt="Holidays & Vacations" class="nav-icon" /> Admin Daily Schedule
                     </button>
                 </li>
                 <li>
                     <button @onclick='() => SetContent(typeof(NewParentDocs), "New-Parent-Docs")'
-                            class="btn-link @(ActivePage == "NewParentDocs" ? "active" : "")">
+                    class="btn-link @(ActivePage == "NewParentDocs" ? "active" : "")">
                         <img src="images/upload-Documents-Icon.png" alt="Upload Documents" class="nav-icon" /> New Parent Docs
                     </button>
                 </li>
@@ -115,12 +118,21 @@
 
     protected override void OnInitialized()
     {
-        SetContent(typeof(AdminOverview), "Overview");
+        if (AuthenticationStateProvider.isOwner())
+        {
+            SetContent(typeof(AdminOverview), "Overview");
+        }
+        else
+        {
+            // If not authenticated, ensure the session service is in a logged-out state.
+            UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
+            Navigation.NavigateTo("/");
+        }
     }
 
     private async Task LogoutUser()
     {
-        var result = await JSRuntime.InvokeAsync<object>("logoutApi", Array.Empty<object>());
+        UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
         Navigation.NavigateTo("/");
     }
 }

@@ -1,13 +1,18 @@
 ﻿@page "/schedule"
 @rendermode InteractiveServer
-@using BlazorApp.Client.Services
 @using Common.View
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
 
 @inject DailyScheduleService DailyScheduleService
 @inject UserSessionService UserSession
-@attribute [Authorize(Roles = "User")]
+@inject NavigationManager Navigation
+@inject UserSessionService UserSession
+
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "User")] *@
 
 <h1 class="title">Daily Schedule</h1>
 
@@ -44,6 +49,16 @@
 
     private List<DailyScheduleView> dailySchedules = new();
     private Common.View.DailyScheduleView dailySchedule;
+
+    protected override void OnInitialized()
+    {
+        // if (!AuthenticationStateProvider.isOwner() )
+        // {
+        //     // If not authenticated, ensure the session service is in a logged-out state.
+        //     UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
+        //     Navigation.NavigateTo("/");
+        // }
+    }
 
 
     public async Task OnChange(ChangedEventArgs<DateTime?> args)

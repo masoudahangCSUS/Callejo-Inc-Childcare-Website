@@ -6,7 +6,7 @@
 @inject NotificationService NotificationService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "User")]
+@* @attribute [Authorize(Roles = "User")] *@
 
 <div class="notifications-page">
     <h1 class="notifications-title">Notifications</h1>
@@ -80,9 +80,9 @@
     {
         try
         {
-            if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 3)
+            if (UserSession.UserIsLoggedIn && UserSession.AuthToken != Guid.Empty && UserSession.UserRole == 3)
             {
-                Guid parentId = UserSession.UserId.Value;
+                Guid parentId = UserSession.AuthToken;
                 notifications = await NotificationService.GetNotificationsByParentId(parentId);
                 notifications.ForEach(n => n.IsExpanded = false);
             }

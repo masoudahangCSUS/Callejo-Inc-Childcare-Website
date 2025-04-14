@@ -1,24 +1,53 @@
-﻿using Common.Models.Data;
+﻿using BlazorApp;
+using Common.Models.Data;
 using Common.View;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using RestSharp;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 
 namespace Services.Expenses
 {
     public class ExpenseService : IExpenseService
     {
+        private AppSettings _appSettings;
+        private readonly RestClient _client;
         // SBC
         // private readonly CallejoSystemDbContext _dbContext;
 
         // sBC public ExpenseService(CallejoSystemDbContext dbContext)
-        public ExpenseService()
+        public ExpenseService(IOptions<AppSettings> apiSettings)
         {
             // SBC _dbContext = dbContext;
+            _appSettings = apiSettings.Value;
+            _client = new RestClient(apiSettings.Value.BaseUrl + "/Expense");
         }
 
         public async Task<ExpenseDTO> CreateExpenseAsync(ExpenseDTO expenseDto)
         {
-            return null;
+            var request = new RestRequest("Upload", Method.Post);
+
+            // Add file
+            request.AddFile("file", expenseDto.Receipt, "receipt.pdf", "application/pdf");
+
+            // Add other form data
+            request.AddParameter("category", expenseDto.Category);
+            request.AddParameter("date", expenseDto.Date.ToString("MM/dd/yyyy"));
+            request.AddParameter("amount", expenseDto.Amount);
+            request.AddParameter("note", expenseDto.Note);
+
+            // Execute the request
+            var response = await _client.ExecuteAsync<ExpenseDTO>(request);
+
+            if (response.IsSuccessful)
+            {
+                return response.Data;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.ErrorMessage}");
+            }            
             //SBC string[] validCategories = { "Groceries", "Supplies", "Other" };
             //if (!Array.Exists(validCategories, c => c.Equals(expenseDto.Category, StringComparison.OrdinalIgnoreCase)))
             //{
@@ -55,7 +84,24 @@ namespace Services.Expenses
 
         public async Task<bool> DeleteExpenseAsync(int id)
         {
-            return false;
+            var request = new RestRequest($"Delete?id={id}", Method.Delete);
+
+            // Execute the request
+            var response = await _client.ExecuteAsync(request);
+
+            if (response.IsSuccessful)
+            {
+                return true;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                Console.WriteLine($"Expense with ID {id} not found.");
+                return false;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.ErrorMessage}");
+            }
             //var SBC expense = await _dbContext.Expenses.FindAsync(id);
 
             //if (expense == null)
@@ -70,8 +116,36 @@ namespace Services.Expenses
 
         public async Task<bool> UpdateExpenseAsync(ExpenseDTO expenseDto)
         {
-            return false;
+            var request = new RestRequest($"Edit?id={expenseDto.Id}", Method.Put);
 
+            // Add file if present
+            if (expenseDto.Receipt != null)
+            {
+                request.AddFile("file", expenseDto.Receipt, "receipt.pdf", "application/pdf");
+            }
+
+            // Add other form data
+            request.AddParameter("category", expenseDto.Category);
+            request.AddParameter("date", expenseDto.Date.ToString("MM/dd/yyyy"));
+            request.AddParameter("amount", expenseDto.Amount);
+            request.AddParameter("note", expenseDto.Note);
+
+            // Execute the request
+            var response = await _client.ExecuteAsync(request);
+
+            if (response.IsSuccessful)
+            {
+                return true;
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                Console.WriteLine($"Expense with ID {expenseDto.Id} not found.");
+                return false;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.ErrorMessage}");
+            }
             //SBC var expense = await _dbContext.Expenses.FindAsync(expenseDto.Id);
 
             //if (expense == null)
@@ -106,13 +180,37 @@ namespace Services.Expenses
 
         public async Task<int> GetChildrenCountAsync()
         {
-            return 0;
+            var request = new RestRequest("children/count", Method.Get);
+
+            // Execute the request
+            var response = await _client.ExecuteAsync<int>(request);
+
+            if (response.IsSuccessful)
+            {
+                return response.Data;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.ErrorMessage}");
+            }
             // SBC return await _dbContext.Children.CountAsync();
         }
 
         public async Task<decimal> GetTotalExpensesAsync()
         {
-            return 0;
+            var request = new RestRequest("expenses/total", Method.Get);
+
+            // Execute the request
+            var response = await _client.ExecuteAsync<decimal>(request);
+
+            if (response.IsSuccessful)
+            {
+                return response.Data;
+            }
+            else
+            {
+                throw new Exception($"Error: {response.ErrorMessage}");
+            }            
             // SBC return await _dbContext.Expenses.SumAsync(e => e.Amount);
         }
 

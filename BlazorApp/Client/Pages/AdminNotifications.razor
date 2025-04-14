@@ -6,9 +6,12 @@
 @inject NotificationService NotificationService
 @inject UserSessionService UserSession
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
 
-@if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
+
+@if (UserSession.UserIsLoggedIn && UserSession.AuthToken != Guid.Empty && UserSession.UserRole == 1)
 {
     <div class="page-container">
         <div class="header-container">
@@ -156,7 +159,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        if (UserSession.UserIsLoggedIn && UserSession.UserId.HasValue && UserSession.UserRole == 1)
+        if (AuthenticationStateProvider.isOwner())
         {
             await LoadNotifications();
         }

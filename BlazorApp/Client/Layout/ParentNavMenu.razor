@@ -92,7 +92,7 @@
 
     private async Task LogoutUser()
     {
-        var result = await JSRuntime.InvokeAsync<object>("logoutApi", Array.Empty<object>());
+        UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
         Navigation.NavigateTo("/");
     }
 }

@@ -6,7 +6,10 @@
 
 @inject AdminService AdminService
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 <div class="child-roster-container">
     <div class="child-roster-header">
@@ -68,11 +71,15 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var apiUrl = "https://localhost:7139/api/Admin/children";
-        var response = await Http.GetFromJsonAsync<ListChildren>(apiUrl);
-        if (response?.children != null)
+        if (AuthenticationStateProvider.isOwner())
         {
-            children = response.children.OrderBy(c => c.FirstName).ToList();
+
+            var apiUrl = "https://localhost:7139/api/Admin/children";
+            var response = await Http.GetFromJsonAsync<ListChildren>(apiUrl);
+            if (response?.children != null)
+            {
+                children = response.children.OrderBy(c => c.FirstName).ToList();
+            }
         }
     }
 

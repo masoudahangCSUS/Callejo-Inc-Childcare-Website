@@ -2,10 +2,12 @@
 @using Common.Models.Data
 @using Common.Services.Submit
 @using Microsoft.AspNetCore.Authorization
+@using BlazorApp.Client.Services
 @inject ISubmitService SubmitService
 @inject HttpClient Http
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
-@attribute [Authorize(Roles = "Admin")]
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 
 <!-- Header Section -->
@@ -75,7 +77,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadInquiries();
+        if (AuthenticationStateProvider.isOwner())
+        {
+            await LoadInquiries();
+        }
     }
     private async Task LoadInquiries()
     {

@@ -1,81 +1,68 @@
-﻿using System.Security.Claims;
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.JSInterop;
+﻿using Microsoft.AspNetCore.Components.Authorization;
+using System.Security.Claims;
 
-namespace ExampleBlazorAuthentication.Service
+namespace BlazorApp.Client.Services
 {
-    public class CustomAuthenticationStateProvider : AuthenticationStateProvider, IAsyncDisposable
+    public class CustomAuthenticationStateProvider : AuthenticationStateProvider
     {
-        private readonly IJSRuntime _jsRuntime;
-        private readonly HttpClient _httpClient;
-        private readonly NavigationManager _navigationManager;
-        private readonly string _authTokenKey = "authToken";
+        private readonly UserSessionService _userSessionService;
 
-        public CustomAuthenticationStateProvider(IJSRuntime jsRuntime, HttpClient httpClient, NavigationManager navigationManager)
+        public CustomAuthenticationStateProvider(UserSessionService userSessionService)
         {
-            _jsRuntime = jsRuntime;
-            _httpClient = httpClient;
-            _navigationManager = navigationManager;
+            _userSessionService = userSessionService;
         }
 
-        public override async Task<AuthenticationState> GetAuthenticationStateAsync()
+        public bool isOwner()
         {
-            try
-            {
-                var token = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", _authTokenKey);
-
-                if (string.IsNullOrWhiteSpace(token))
-                {
-                    return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-                }
-
-                // Retrieve the user name from local storage or another source
-                var userName = await _jsRuntime.InvokeAsync<string>("localStorage.getItem", "authUserName");
-
-                var claims = new List<Claim>
-                {
-                    new Claim("AuthUserName", userName),
-                    new Claim("AuthGUID", token)
-                };
-
-                var identity = new ClaimsIdentity(claims, "jwt");
-                var user = new ClaimsPrincipal(identity);
-
-                return new AuthenticationState(user);
-            }
-            catch (Exception ex)
-            {
-                throw;
-            }
+            if (_userSessionService.UserIsLoggedIn && _userSessionService.UserRoleName.Equals("Owner", StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
         }
-        public void MarkUserAsAuthenticated(string token, string userName)
+        public bool isEmployee()
         {
-            var claims = new List<Claim>
+            if (_userSessionService.UserIsLoggedIn && _userSessionService.UserRoleName.Equals("Employee", StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }
+        public bool isGuardian()
         {
-            new Claim("AuthUserName", userName),
-            new Claim("AuthGUID", token)
-        };
+            if (_userSessionService.UserIsLoggedIn && _userSessionService.UserRoleName.Equals("Guardian", StringComparison.OrdinalIgnoreCase))
+                return true;
+            return false;
+        }
+        public override Task<AuthenticationState> GetAuthenticationStateAsync()
+        {
+            var identity = _userSessionService.UserIsLoggedIn
+                ? new ClaimsIdentity(new[]
+                {
+                    new Claim(ClaimTypes.Name, _userSessionService.AuthToken.ToString()),
+                    new Claim(ClaimTypes.Role, (_userSessionService.UserRole == null ? string.Empty : _userSessionService.UserRoleName)),
+                    new Claim("RoleId", _userSessionService.UserRole.ToString())
+                }, "CustomAuth")
+                : new ClaimsIdentity();
 
-            var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
-
-            var authState = Task.FromResult(new AuthenticationState(user));
-            NotifyAuthenticationStateChanged(authState);
+            return Task.FromResult(new AuthenticationState(user));
         }
 
-        public void MarkUserAsLoggedOut()
+        public void NotifyUserAuthentication(Guid authToken, long roleId, string roleName)
         {
-            var anonymousUser = new ClaimsPrincipal(new ClaimsIdentity());
-            var authState = Task.FromResult(new AuthenticationState(anonymousUser));
-            NotifyAuthenticationStateChanged(authState);
+            var identity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.Name, authToken.ToString()),
+                new Claim(ClaimTypes.Role, roleName),
+                new Claim("RoleId", roleId.ToString())
+            }, "CustomAuth");
+
+            var user = new ClaimsPrincipal(identity);
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
 
-        public async ValueTask DisposeAsync()
+        public void NotifyUserLogout()
         {
-            // Dispose of any resources here
-            await Task.CompletedTask;
+            var identity = new ClaimsIdentity();
+            var user = new ClaimsPrincipal(identity);
+            NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
         }
     }
-
 }

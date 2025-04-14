@@ -5,7 +5,10 @@
 @using Microsoft.AspNetCore.Authorization
 @inject ProfileService profileService
 @inject UserSessionService UserSession
-@attribute [Authorize(Roles = "User")]
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "User")] *@
 @rendermode InteractiveServer
 
 
@@ -103,7 +106,7 @@ else
 
     async Task LoadChildren()
     {
-        var childrenIds = await profileService.getChildrenAsync(UserSession.UserId);
+        var childrenIds = await profileService.getChildrenAsync(UserSession.AuthToken);
         foreach (var childId in childrenIds)
         {
             var child = await profileService.GetChildById(childId);

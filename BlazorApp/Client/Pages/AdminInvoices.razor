@@ -6,7 +6,10 @@
 @rendermode InteractiveServer
 @inject AdminService AdminService
 
-@attribute [Authorize(Roles = "Admin")]
+@using BlazorApp.Client.Services
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 <div class="admin-account-container">
     <div class="account-title">
@@ -211,7 +214,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        invoices = await AdminService.GetAllInvoicesAsync();
+        if (AuthenticationStateProvider.isOwner())
+        {
+            invoices = await AdminService.GetAllInvoicesAsync();
+        }
     }
 
     private void OpenCreateModal()

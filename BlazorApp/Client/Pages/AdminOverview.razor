@@ -1,10 +1,12 @@
 ﻿@using Microsoft.AspNetCore.Authorization
-@using Common.Services.Expenses
 @using BlazorApp.Client.Services
 @using Common.View
 @inject IExpenseService ExpenseService
 @inject HolidaysVacationsService HolidaysService
-@attribute [Authorize(Roles = "Admin")]
+@using global::Services.Expenses
+@inject CustomAuthenticationStateProvider AuthenticationStateProvider
+
+@* Can't get this to work properly @attribute [Authorize(Roles = "Owner")] *@
 
 <div class="admin-overview">
     <!-- Page Title -->
@@ -58,9 +60,12 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadTotalRevenue();
-        await LoadChildrenCount();
-        await LoadUpcomingBreaks();
+        if (AuthenticationStateProvider.isOwner())
+        {
+            await LoadTotalRevenue();
+            await LoadChildrenCount();
+            await LoadUpcomingBreaks();
+        }
     }
 
     private async Task LoadTotalRevenue()

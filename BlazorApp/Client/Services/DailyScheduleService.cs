@@ -13,7 +13,7 @@ namespace BlazorApp.Client.Services
 
         public DailyScheduleService(IOptions<AppSettings> apiSettings)
         {
-            _client = new RestClient(apiSettings.Value.BaseAddress);
+            _client = new RestClient(apiSettings.Value.BaseUrl);
         }
         //public async Task<ListDailySchedule> GetDailySchedule(long id)
         //{

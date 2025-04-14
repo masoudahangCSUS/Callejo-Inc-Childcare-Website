@@ -63,7 +63,7 @@
             return;
         }
 
-        newRequest.FkParentId = UserSession.UserId.Value; // Set parent ID
+        newRequest.FkParentId = UserSession.AuthToken; // Set parent ID
         newRequest.SentOn = DateTime.UtcNow;
         newRequest.IsRead = false;
 
@@ -108,7 +108,7 @@
 
         /*var newRequest = new NotificationView // Updated to use NotificationView
             {
-                FkParentId = UserSession.UserId.Value, // Assuming parent is logged in
+                FkParentId = UserSession.AuthToken.Value, // Assuming parent is logged in
                 Title = notificationTitle,
                 Message = notificationMessage,
                 SentOn = DateTime.UtcNow,

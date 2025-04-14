@@ -28,7 +28,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet]
         public ActionResult<ListRoles> GetAllRoles()
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            if (!_loginService.IsUserAuthenticatedExample(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
             {
                 return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             }
@@ -41,7 +41,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("{id}")]
         public ActionResult<ListRoles> GetRole(long id)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            if (!_loginService.IsUserAuthenticatedExample(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
             {
                 return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             }
@@ -59,7 +59,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpPost]
         public ActionResult<APIResponse> InsertRole([FromBody] RoleView roleInfo)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            if (!_loginService.IsUserAuthenticatedExample(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
             {
                 return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             }
@@ -77,7 +77,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpPut]
         public ActionResult<APIResponse> UpdateRole([FromBody] RoleView roleInfo)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            if (!_loginService.IsUserAuthenticatedExample(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
             {
                 return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             }
@@ -95,7 +95,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpDelete("{id}")]
         public ActionResult<APIResponse> DeleteRole(long id)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            if (!_loginService.IsUserAuthenticatedExample(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
             {
                 return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             }
