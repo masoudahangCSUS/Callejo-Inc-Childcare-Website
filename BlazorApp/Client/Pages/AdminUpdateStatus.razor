@@ -1,0 +1,43 @@
+﻿@page "/admin-update"
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<div class="status-update-container">
+    <h3>Update Registration Status</h3>
+    <div>
+        <label>Enter User ID:</label>
+        <InputText @bind-Value="userId" class="input-field" />
+    </div>
+    <button @onclick="UpdateStatus">Mark as Received</button>
+
+    @if (!string.IsNullOrEmpty(responseMessage))
+    {
+        <p class="response-message">@responseMessage</p>
+    }
+</div>
+
+@code {
+    private string userId;
+    private string responseMessage;
+
+    private async Task UpdateStatus()
+    {
+        if (string.IsNullOrWhiteSpace(userId) || !Guid.TryParse(userId, out Guid userGuid))
+        {
+            responseMessage = "Please enter a valid User ID.";
+            return;
+        }
+
+        var request = new { UserId = userGuid };
+        var response = await Http.PostAsJsonAsync("https://localhost:7139/api/Registration/updateStatus", request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            responseMessage = "Status updated successfully.";
+        }
+        else
+        {
+            responseMessage = "Failed to update status. Ensure the ID is correct and status is 'Pending'.";
+        }
+    }
+}

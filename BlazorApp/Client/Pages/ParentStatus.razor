@@ -2,38 +2,40 @@
 @inject HttpClient Http
 @rendermode InteractiveServer
 
-<h3>Check Your Registration Status</h3>
+<div class="status-container">
+    <h3>Check Your Registration Status</h3>
+    <div>
+        <label>Enter Your User ID:</label>
+        <InputText @bind-Value="userId" class="input-field" />
+    </div>
+    <button @onclick="CheckStatus">Check Status</button>
 
-<div>
-    <label>Enter Your User ID:</label>
-    <InputText @bind-Value="userId" />
+    @if (statusInfo != null)
+    {
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Submission Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@statusInfo.Name</td>
+                            <td>@statusInfo.Status</td>
+                            <td>@statusInfo.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    }
+    else if (!string.IsNullOrEmpty(statusMessage))
+    {
+            <p class="error-message">@statusMessage</p>
+    }
 </div>
-
-<button @onclick="CheckStatus">Check Status</button>
-
-@if (statusInfo != null)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Status</th>
-                <th>Submission Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>@statusInfo.Name</td>
-                <td>@statusInfo.Status</td>
-                <td>@statusInfo.Datetime.ToString("yyyy-MM-dd HH:mm:ss")</td>
-            </tr>
-        </tbody>
-    </table>
-}
-else if (!string.IsNullOrEmpty(statusMessage))
-{
-    <p style="color:red">@statusMessage</p>
-}
 
 @code {
     private string userId;
