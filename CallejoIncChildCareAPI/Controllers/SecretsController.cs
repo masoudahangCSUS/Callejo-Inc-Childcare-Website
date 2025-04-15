@@ -46,24 +46,22 @@ namespace CallejoIncChildcareAPI.Controllers
                 new { fkUser = model.FkUser, secret = model.Secret }, userSecret);
         }
 
-        // GET api/Secrets/{fkUser}
         [HttpGet("{fkUser}")]
-        public async Task<SecretDTO> GetSecret(Guid fkUser)
+        public async Task<IActionResult> GetSecret(Guid fkUser)
         {
             var userSecret = await _context.UserSecrets.FindAsync(fkUser);
             if (userSecret == null)
             {
-                return null;
+                return NotFound("User secret not found.");
             }
 
-            SecretDTO secretDto = new SecretDTO
+            var secretDto = new SecretDTO
             {
                 FkUser = userSecret.FkUser,
                 Secret = userSecret.Secret
-
             };
 
-            return secretDto;
+            return Ok(secretDto);
         }
     }
 

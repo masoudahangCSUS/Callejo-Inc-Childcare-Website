@@ -64,7 +64,7 @@ namespace Common.Services.Expenses
             return true;
         }
 
-        public async Task<bool> UpdateExpenseAsync(ExpenseDTO expenseDto)
+        public async Task<bool> EditExpenseAsync(ExpenseDTO expenseDto)
         {
             var expense = await _dbContext.Expenses.FindAsync(expenseDto.Id);
 
@@ -98,6 +98,12 @@ namespace Common.Services.Expenses
             return true;
         }
 
+        public async Task<byte[]?> DownloadExpenseAsync(int id)
+        {
+            var expense = await _dbContext.Expenses.FindAsync(id);
+            return expense?.Receipt;
+        }
+
         public async Task<int> GetChildrenCountAsync()
         {
             return await _dbContext.Children.CountAsync();
@@ -108,8 +114,20 @@ namespace Common.Services.Expenses
             return await _dbContext.Expenses.SumAsync(e => e.Amount);
         }
 
-
-
-
+        public async Task<List<ExpenseDTO>> GetAllExpensesAsync()
+        {
+            return await _dbContext.Expenses
+                .OrderByDescending(e => e.Date) // Sort newest to oldest
+                .Select(e => new ExpenseDTO
+                {
+                    Id = e.Id,
+                    Date = e.Date,
+                    Category = e.Category,
+                    Amount = e.Amount,
+                    Note = e.Note,
+                    Receipt = e.Receipt
+                })
+                .ToListAsync();
+        }
     }
 }

@@ -134,7 +134,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 Receipt = fileBytes
             };
 
-            var success = await _expenseService.UpdateExpenseAsync(updatedExpense);
+            var success = await _expenseService.EditExpenseAsync(updatedExpense);
 
             if (!success)
             {
@@ -142,6 +142,29 @@ namespace CallejoIncChildcareAPI.Controllers
             }
 
             return NoContent(); // HTTP 204 -- edit successful
+        }
+
+        [HttpGet("Download Receipt")]
+        public async Task<IActionResult> DownloadFile(int id)
+        {
+            // Retrieve file data
+            var fileData = await _expenseService.DownloadExpenseAsync(id);
+
+            // If file is not present, return NotFound
+            if (fileData == null)
+            {
+                return NotFound("No file found");
+            }
+
+            // Return data as PDF
+            return File(fileData, "application/pdf", "receipt.pdf");
+        }
+
+        [HttpGet("All Expenses")]
+        public async Task<ActionResult<List<ExpenseDTO>>> GetAllExpenses()
+        {
+            var expenses = await _expenseService.GetAllExpensesAsync();
+            return Ok(expenses);
         }
     }
 }

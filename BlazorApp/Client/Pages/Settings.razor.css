@@ -1,3 +1,175 @@
 ﻿h1{
-    color:red !important;
+    color:white;
+    text-align:center;
+    padding-top: 5%;
+    padding-bottom: 3%; 
 }
+
+.user-settings-page {
+    background-color: #00B7D7;
+    max-width: 50%;
+    justify-content: center;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;
+    height: max-content;
+    margin: auto;
+    margin-top: 1%;
+    min-height: 70vh;
+}
+
+.settings-card {
+    background-color: white;
+    max-width: 90%;
+    margin: auto;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    min-height:40vh;
+
+}
+
+::deep input.email-input {
+    margin-left: 10%;
+}
+
+::deep input.password-input{
+    margin-left:5%;
+}
+
+::deep .email-validation{
+    margin-right:35%;
+}
+
+::deep .password-validation {
+    position: absolute;
+    top: 100%;
+    left: 2%;
+    width: 100%;
+    color: red;
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap:5%;
+}
+
+.email-modal{
+    display:flex;
+    margin-top:20%;
+    gap: 5%;
+}
+
+.password-modal{
+    display:flex;
+    gap:5%;
+}
+
+.email-group{
+    display:flex;
+    gap: 3%;
+}
+
+.password-group{
+    display:flex;
+    gap:3%;
+}
+
+.input-wrapper{
+    display: inline-block;
+    position:relative;
+    margin-top:4%;
+}
+
+.email-container,
+.password-container {
+    display: flex;
+    align-items: center;
+    width:70%;
+}
+
+
+
+.edit-email{
+    display:flex;
+    align-items: center;
+    margin-top: 10%;
+    margin-left: 5%;
+    gap: 3%;
+}
+
+.edit-password {
+    display: flex;
+    align-items: center;
+    margin-left: 5%;
+    gap:3%;
+}
+
+.email-string {
+    padding-top:2%;
+    margin-left: 2%;
+    margin-top: 2%;
+    margin-top: 10%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a; /* Darker text color for readability */
+}
+
+.password-string {
+    margin-top:4%;
+    margin-left: 2%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a; /* Darker text color for readability */
+}
+
+.password-value {
+    margin-top:3%;
+    margin-left:3%;
+    margin-right: 3%;
+}
+
+.email-value{
+    margin-top:9%;
+    margin-left:3%;
+    margin-right:3%;
+}
+
+.password-button {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    width: 40%;
+    padding-top: 1%;
+    padding-bottom:1%;
+}
+
+.email-button {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    width: 40%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    margin-top: 8%;
+}
+
+.MA-button {
+    background-color: #0073C6; /* Blue color to match the page theme */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    width: 20%;
+    padding-top: 1%;
+    padding-bottom:1%;
+       
+}
+
