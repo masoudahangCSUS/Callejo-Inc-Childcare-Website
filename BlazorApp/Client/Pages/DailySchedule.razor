@@ -3,7 +3,7 @@
 @using Common.View
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
-
+@using BlazorApp
 @inject DailyScheduleService DailyScheduleService
 @inject UserSessionService UserSession
 @inject NavigationManager Navigation
@@ -52,12 +52,12 @@
 
     protected override void OnInitialized()
     {
-        // if (!AuthenticationStateProvider.isOwner() )
-        // {
-        //     // If not authenticated, ensure the session service is in a logged-out state.
-        //     UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
-        //     Navigation.NavigateTo("/");
-        // }
+        if (!AuthenticationStateProvider.isOwner() )
+        {
+            // If not authenticated, ensure the session service is in a logged-out state.
+            UserSession.SetUser(false, 0, Guid.Empty, string.Empty);
+            Navigation.NavigateTo("/");
+        }
     }
 
 

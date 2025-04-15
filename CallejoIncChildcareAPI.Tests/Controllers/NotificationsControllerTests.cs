@@ -7,23 +7,28 @@ using Common.View;
 using CallejoIncChildcareAPI.Controllers;
 using Xunit;
 using System.Linq;
+using Common.Services.Login;
 
 namespace CallejoIncChildcareAPI.Tests
 {
     public class NotificationsControllerTests
     {
         private readonly Mock<ISQLServices> _mockService;
+        private Mock<ILoginService> _mockLoginService;
         private readonly NotificationsController _controller;
 
         public NotificationsControllerTests()
         {
             _mockService = new Mock<ISQLServices>();
-            _controller = new NotificationsController(_mockService.Object);
+            _mockLoginService = new Mock<ILoginService>();
+            _controller = new NotificationsController(_mockService.Object, _mockLoginService.Object);
         }
 
         [Fact]
         public void GetNotificationsByParentId_ReturnsOk_WhenDataExists()
         {
+            // Arrange
+            ReturnAuthorized();
             var parentId = Guid.NewGuid();
             var mockData = new List<NotificationView> { new NotificationView { Id = 1, Message = "Test Message" } };
             _mockService.Setup(s => s.GetNotificationsByParentId(parentId)).Returns(mockData);
@@ -38,6 +43,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void GetNotificationsByParentId_ReturnsNotFound_WhenNoData()
         {
+            // Arrange
+            ReturnAuthorized();
             var parentId = Guid.NewGuid();
             _mockService.Setup(s => s.GetNotificationsByParentId(parentId)).Returns(new List<NotificationView>());
 
@@ -49,6 +56,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void GetAllNotifications_ReturnsOk_WhenDataExists()
         {
+            // Arrange
+            ReturnAuthorized();
             _mockService.Setup(s => s.GetAllNotifications()).Returns(new List<NotificationView> { new NotificationView() });
 
             var result = _controller.GetAllNotifications();
@@ -60,6 +69,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void GetAllNotifications_ReturnsNotFound_WhenNoData()
         {
+            // Arrange
+            ReturnAuthorized();
             _mockService.Setup(s => s.GetAllNotifications()).Returns(new List<NotificationView>());
 
             var result = _controller.GetAllNotifications();
@@ -70,6 +81,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void MarkNotificationAsRead_ReturnsOk_WhenSuccess()
         {
+            // Arrange
+            ReturnAuthorized();
             _mockService.Setup(s => s.MarkNotificationAsRead(1)).Returns(true);
 
             var result = _controller.MarkNotificationAsRead(1);
@@ -81,6 +94,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void MarkNotificationAsRead_ReturnsNotFound_WhenFail()
         {
+            // Arrange
+            ReturnAuthorized();
             _mockService.Setup(s => s.MarkNotificationAsRead(1)).Returns(false);
 
             var result = _controller.MarkNotificationAsRead(1);
@@ -91,6 +106,8 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void CreateNotification_ReturnsOk_WhenValid()
         {
+            // Arrange
+            ReturnAuthorized();
             var notification = new NotificationView { Title = "Title", Message = "Msg", FkParentId = Guid.NewGuid() };
             _mockService.Setup(s => s.CreateNotification(It.IsAny<NotificationView>())).Returns(true);
 
@@ -103,6 +120,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void CreateNotification_ReturnsBadRequest_WhenMissingFields()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true); // Ensure authentication is successful
             var invalid = new NotificationView { Message = "" };
 
             var result = _controller.CreateNotification(invalid);
@@ -113,6 +133,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void CreateNotification_ReturnsServerError_WhenInsertFails()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var notification = new NotificationView { Title = "T", Message = "M", FkParentId = Guid.NewGuid() };
             _mockService.Setup(s => s.CreateNotification(It.IsAny<NotificationView>())).Returns(false);
 
@@ -126,6 +149,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void UpdateNotification_ReturnsOk_WhenValid()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var updated = new NotificationView { Title = "Updated", Message = "Updated Msg", SentOn = DateTime.UtcNow };
             _mockService.Setup(s => s.UpdateNotification(1, updated)).Returns(true);
 
@@ -138,6 +164,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void UpdateNotification_ReturnsBadRequest_WhenInvalidData()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var invalid = new NotificationView { Message = "" };
 
             var result = _controller.UpdateNotification(1, invalid);
@@ -148,6 +177,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void UpdateNotification_ReturnsNotFound_WhenNotExists()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var update = new NotificationView { Message = "Valid" };
             _mockService.Setup(s => s.UpdateNotification(1, update)).Returns(false);
 
@@ -159,6 +191,9 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void DeleteNotification_ReturnsOk_WhenSuccess()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             _mockService.Setup(s => s.DeleteNotification(1)).Returns(true);
 
             var result = _controller.DeleteNotification(1);
@@ -170,10 +205,14 @@ namespace CallejoIncChildcareAPI.Tests
         [Fact]
         public void DeleteNotification_ReturnsNotFound_WhenNotExists()
         {
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             _mockService.Setup(s => s.DeleteNotification(1)).Returns(false);
-
+            // Act
             var result = _controller.DeleteNotification(1);
 
+            // Assert
             Assert.IsType<NotFoundObjectResult>(result);
         }
 
@@ -181,8 +220,10 @@ namespace CallejoIncChildcareAPI.Tests
         public void SendCustomNotification_ReturnsBadRequest_WhenMessageIsEmpty()
         {
             // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var mockService = new Mock<ISQLServices>();
-            var controller = new NotificationsController(mockService.Object);
+            var controller = new NotificationsController(mockService.Object, this._mockLoginService.Object);
             var invalidNotification = new NotificationView
             {
                 FkParentId = Guid.NewGuid(),
@@ -202,11 +243,13 @@ namespace CallejoIncChildcareAPI.Tests
         public void SendCustomNotification_ReturnsOk_WhenSuccess()
         {
             // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var mockService = new Mock<ISQLServices>();
             mockService.Setup(service => service.SendCustomNotification(It.IsAny<NotificationView>()))
                        .Returns(true);
 
-            var controller = new NotificationsController(mockService.Object);
+            var controller = new NotificationsController(mockService.Object, this._mockLoginService.Object);
             var validNotification = new NotificationView
             {
                 FkParentId = Guid.NewGuid(),
@@ -226,11 +269,13 @@ namespace CallejoIncChildcareAPI.Tests
         public void SendCustomNotification_ReturnsServerError_WhenInsertFails()
         {
             // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
             var mockService = new Mock<ISQLServices>();
             mockService.Setup(service => service.SendCustomNotification(It.IsAny<NotificationView>()))
                        .Returns(false); // simulate DB failure
 
-            var controller = new NotificationsController(mockService.Object);
+            var controller = new NotificationsController(mockService.Object, this._mockLoginService.Object);
             var failedNotification = new NotificationView
             {
                 FkParentId = Guid.NewGuid(),
@@ -245,6 +290,16 @@ namespace CallejoIncChildcareAPI.Tests
             var serverError = Assert.IsType<ObjectResult>(result);
             Assert.Equal(500, serverError.StatusCode);
             Assert.Equal("Failed to save the notification.", serverError.Value);
+        }
+        private void ReturnAuthorized()
+        {
+            // Arrange
+            //_mockLoginService = new Mock<ILoginService>();
+            //_mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+            //    .Returns(true);
+            // Arrange
+            _mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true); // Ensure authentication is successful
         }
 
     }

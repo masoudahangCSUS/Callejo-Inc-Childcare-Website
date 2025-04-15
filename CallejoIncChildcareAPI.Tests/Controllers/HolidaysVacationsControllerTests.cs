@@ -6,17 +6,21 @@ using Common.Services.SQL;
 using Common.View;
 using CallejoIncChildcareAPI.Controllers;
 using Xunit;
+using Common.Services.Login;
 
 namespace CallejoIncChildcareAPI.Tests
 {
     public class HolidaysVacationsControllerTests
     {
+        public Mock<ILoginService> mockLoginService;
         [Fact]
-        public void GetHolidaysVacations_ReturnsOkResult_WithList()
+        public void GetHolidaysVacations_ReturnsOkResult_WithListAndWhenUserAuthenticated()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
-            mockService.Setup(service => service.GetHolidaysVacations())
+            ReturnAuthorized();
+
+            var mockSQLService = new Mock<ISQLServices>();
+            mockSQLService.Setup(service => service.GetHolidaysVacations())
                 .Returns(new List<HolidaysVacationView>
                 {
             new HolidaysVacationView
@@ -31,7 +35,7 @@ namespace CallejoIncChildcareAPI.Tests
             }
                 });
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var actionResult = controller.GetHolidaysVacations().Result;
@@ -47,7 +51,8 @@ namespace CallejoIncChildcareAPI.Tests
         public void CreateHolidayVacation_ReturnsOkResult_WhenHolidayType()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
             var holiday = new HolidaysVacationView
             {
                 Title = "MLK Day",
@@ -57,9 +62,9 @@ namespace CallejoIncChildcareAPI.Tests
                 EndDate = new DateOnly(2025, 1, 20),
                 CreatedAt = DateTime.UtcNow
             };
-            mockService.Setup(service => service.CreateHolidayVacation(It.IsAny<HolidaysVacationView>())).Returns(true);
+            mockSQLService.Setup(service => service.CreateHolidayVacation(It.IsAny<HolidaysVacationView>())).Returns(true);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.CreateHolidayVacation(holiday);
@@ -73,7 +78,8 @@ namespace CallejoIncChildcareAPI.Tests
         public void CreateHolidayVacation_ReturnsOkResult_WhenVacationType()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
             var vacation = new HolidaysVacationView
             {
                 Title = "Summer Vacation",
@@ -83,9 +89,9 @@ namespace CallejoIncChildcareAPI.Tests
                 EndDate = new DateOnly(2025, 6, 20),
                 CreatedAt = DateTime.UtcNow
             };
-            mockService.Setup(service => service.CreateHolidayVacation(It.IsAny<HolidaysVacationView>())).Returns(true);
+            mockSQLService.Setup(service => service.CreateHolidayVacation(It.IsAny<HolidaysVacationView>())).Returns(true);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.CreateHolidayVacation(vacation);
@@ -99,7 +105,8 @@ namespace CallejoIncChildcareAPI.Tests
         public void CreateHolidayVacation_ReturnsBadRequest_WhenTitleIsMissing()
         {
             // Arrange
-            var controller = new HolidaysVacationsController(new Mock<ISQLServices>().Object);
+            ReturnAuthorized();
+            var controller = new HolidaysVacationsController(new Mock<ISQLServices>().Object, mockLoginService.Object);
             var invalidHoliday = new HolidaysVacationView { Title = "" };
 
             // Act
@@ -113,7 +120,8 @@ namespace CallejoIncChildcareAPI.Tests
         public void UpdateHolidayVacation_ReturnsOkResult_WhenSuccess()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
             var updated = new HolidaysVacationView
             {
                 Title = "Updated Spring Break",
@@ -123,9 +131,9 @@ namespace CallejoIncChildcareAPI.Tests
                 EndDate = new DateOnly(2025, 4, 5),
                 CreatedAt = DateTime.UtcNow
             };
-            mockService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(true);
+            mockSQLService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(true);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.UpdateHolidayVacation(1, updated);
@@ -139,7 +147,8 @@ namespace CallejoIncChildcareAPI.Tests
         public void UpdateHolidayVacation_HandlesHolidayType_Correctly()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
             var update = new HolidaysVacationView
             {
                 Title = "Presidents' Day",
@@ -149,9 +158,9 @@ namespace CallejoIncChildcareAPI.Tests
                 EndDate = new DateOnly(2025, 2, 17),
                 CreatedAt = DateTime.UtcNow
             };
-            mockService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(true);
+            mockSQLService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(true);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.UpdateHolidayVacation(2, update);
@@ -165,10 +174,11 @@ namespace CallejoIncChildcareAPI.Tests
         public void UpdateHolidayVacation_ReturnsNotFound_WhenInvalidId()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
-            mockService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(false);
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
+            mockSQLService.Setup(service => service.UpdateHolidayVacation(It.IsAny<long>(), It.IsAny<HolidaysVacationView>())).Returns(false);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
             var update = new HolidaysVacationView { Title = "Test", Type = "Holiday" };
 
             // Act
@@ -183,10 +193,11 @@ namespace CallejoIncChildcareAPI.Tests
         public void DeleteHolidayVacation_ReturnsOkResult_WhenSuccess()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
-            mockService.Setup(service => service.DeleteHolidayVacation(It.IsAny<long>())).Returns(true);
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
+            mockSQLService.Setup(service => service.DeleteHolidayVacation(It.IsAny<long>())).Returns(true);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.DeleteHolidayVacation(1);
@@ -200,10 +211,11 @@ namespace CallejoIncChildcareAPI.Tests
         public void DeleteHolidayVacation_ReturnsNotFound_WhenFailure()
         {
             // Arrange
-            var mockService = new Mock<ISQLServices>();
-            mockService.Setup(service => service.DeleteHolidayVacation(It.IsAny<long>())).Returns(false);
+            ReturnAuthorized();
+            var mockSQLService = new Mock<ISQLServices>();
+            mockSQLService.Setup(service => service.DeleteHolidayVacation(It.IsAny<long>())).Returns(false);
 
-            var controller = new HolidaysVacationsController(mockService.Object);
+            var controller = new HolidaysVacationsController(mockSQLService.Object, mockLoginService.Object);
 
             // Act
             var result = controller.DeleteHolidayVacation(999);
@@ -211,6 +223,21 @@ namespace CallejoIncChildcareAPI.Tests
             // Assert
             var notFoundResult = Assert.IsType<NotFoundObjectResult>(result);
             Assert.Equal("Holiday/Vacation not found.", notFoundResult.Value);
+        }
+
+        private void ReturnAuthorized()
+        {
+            // Arrange
+            mockLoginService = new Mock<ILoginService>();
+            mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(true);
+        }
+        private void ReturnUnauthorized()
+        {
+            // Arrange
+            mockLoginService = new Mock<ILoginService>();
+            mockLoginService.Setup(service => service.IsUserAuthenticated(It.IsAny<string>(), It.IsAny<Guid>()))
+                .Returns(false);
         }
     }
 }

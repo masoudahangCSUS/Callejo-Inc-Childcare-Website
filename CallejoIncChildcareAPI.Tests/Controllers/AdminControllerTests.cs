@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using CallejoIncChildcareAPI.Controllers;
 using Common.Models.Data;
+using Common.Services.Login;
 using Common.Services.User;
 using Common.View;
 using Microsoft.AspNetCore.Http;
@@ -34,18 +35,21 @@ namespace CallejoIncChildcareAPI.Tests
         private readonly FakeImageService _fakeImageService;
         private readonly Mock<IConfiguration> _mockConfig;
         private readonly AdminController _controller;
+        private Mock<ILoginService> _loginService;
 
         public AdminControllerTests()
         {
             _mockUserService = new Mock<IUserService>();
             _fakeImageService = new FakeImageService();
             _mockConfig = new Mock<IConfiguration>();
+            _loginService = new Mock<ILoginService>();
 
             _controller = new AdminController(
                 _mockUserService.Object,
                 _fakeImageService,
                 _mockConfig.Object,
-                null // DbContext can be mocked in integration tests
+                null, // DbContext can be mocked in integration tests
+                _loginService.Object
             );
         }
 

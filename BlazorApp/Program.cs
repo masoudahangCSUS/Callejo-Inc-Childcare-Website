@@ -59,6 +59,7 @@ builder.Services.AddDataProtection()
     .SetApplicationName("CallejoIncApp")
     .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\")); // Make sure that path of SharedKeys folder matches this path string
 
+
 //builder.Services.AddAuthentication(options =>
 //{
 //    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -146,6 +147,9 @@ builder.Services.AddScoped(sp =>
 });
 
 var app = builder.Build();
+
+// Load the configuration into the AppSettings object
+var appSettings = app.Services.GetRequiredService<IOptions<AppSettings>>().Value;
 
 // Configure the HTTP request pipeline
 if (!app.Environment.IsDevelopment())
