@@ -7,6 +7,9 @@ using Common.Models.Data;
 using System;
 using System.Diagnostics; // Added for Debug.WriteLine
 using Aspose.Words; // Ensure Aspose.Words is installed via NuGet
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
+using Common.View;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -15,10 +18,12 @@ namespace CallejoIncChildcareAPI.Controllers
     public class AdminFileUploadController : ControllerBase
     {
         private readonly CallejoSystemDbContext _context;
+        private ILoginService _loginService;
 
-        public AdminFileUploadController(CallejoSystemDbContext context)
+        public AdminFileUploadController(CallejoSystemDbContext context, ILoginService loginService)
         {
             _context = context;
+            _loginService = loginService;
         }
 
         private string GetActualContentType(IFormFile file)
@@ -44,10 +49,15 @@ namespace CallejoIncChildcareAPI.Controllers
                 return string.Empty; // Otherwise return an empty string.
         }
 
+        [AuthorizeAttribute()]
         [HttpPost]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadFile([FromForm] IFormFile file, [FromForm] string documentType)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             try
             {
                 Debug.WriteLine($"Received upload request. Document Type: {documentType}");
@@ -123,9 +133,14 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
+        [AuthorizeAttribute()]
         [HttpGet("download/{documentId}")]
         public IActionResult DownloadFile(int documentId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             try
             {
                 // Find the file in the database based on the document ID
@@ -145,9 +160,14 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
+        [AuthorizeAttribute()]
         [HttpGet("preview/{documentId}")]
         public IActionResult PreviewFile(int documentId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             try
             {
                 // Find the file in the database based on the document ID

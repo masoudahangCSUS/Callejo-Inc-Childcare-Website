@@ -59,22 +59,37 @@ builder.Services.AddDataProtection()
     .SetApplicationName("CallejoIncApp")
     .PersistKeysToFileSystem(new DirectoryInfo(@"C:\SharedKeys\")); // Make sure that path of SharedKeys folder matches this path string
 
-builder.Services.AddAuthentication(options =>
+//builder.Services.AddAuthentication(options =>
+//{
+//    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+//})
+//.AddCookie(options =>
+//{
+//    options.Cookie.Name = "MyAppAuthCookie";
+//    options.LoginPath = "/Login";
+//    options.AccessDeniedPath = "/UnauthorizedAccess";
+//    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+//    options.SlidingExpiration = true;
+//    options.Cookie.HttpOnly = true;
+//    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+//});
+
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/";
+    });
+
+builder.Services.AddAuthorization(options =>
 {
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.Cookie.Name = "MyAppAuthCookie";
-    options.LoginPath = "/Login";
-    options.AccessDeniedPath = "/UnauthorizedAccess";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-    options.SlidingExpiration = true;
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.AddPolicy("Authenticated", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+    });
 });
+
 
 // Load environment variables
 Env.Load();

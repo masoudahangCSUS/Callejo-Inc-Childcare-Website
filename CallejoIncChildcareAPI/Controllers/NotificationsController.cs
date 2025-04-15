@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using Common.View;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -13,16 +15,22 @@ namespace CallejoIncChildcareAPI.Controllers
     public class NotificationsController : ControllerBase
     {
         private readonly ISQLServices _sqlServices;
+        private ILoginService _loginService;
 
-        public NotificationsController(ISQLServices sqlServices)
+        public NotificationsController(ISQLServices sqlServices, ILoginService loginService)
         {
             _sqlServices = sqlServices;
+            _loginService = loginService;
         }
 
-        
+        [AuthorizeAttribute()]
         [HttpGet("{parentId}")]
         public IActionResult GetNotificationsByParentId(Guid parentId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _sqlServices.GetNotificationsByParentId(parentId);
             if (result == null || !result.Any())
             {
@@ -32,10 +40,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(1);
         }
 
-        
+        [AuthorizeAttribute()]
         [HttpPut("mark-as-read/{id}")]
         public IActionResult MarkNotificationAsRead(long id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var success = _sqlServices.MarkNotificationAsRead(id);
             if (!success)
             {
@@ -44,10 +56,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification marked as read.");
         }
 
-        
+        [AuthorizeAttribute()]
         [HttpPost("send-custom-notif")]
         public IActionResult SendCustomNotification([FromBody] NotificationView newRequest)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (newRequest == null || string.IsNullOrWhiteSpace(newRequest.Message))
             {
                 return BadRequest("Invalid notification data.");
@@ -65,10 +81,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification sent successfully.");
         }
 
-        
+        [AuthorizeAttribute()]
         [HttpPost("admin-create")]
         public IActionResult CreateNotification([FromBody] NotificationView notification)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (notification == null || string.IsNullOrEmpty(notification.Title) || string.IsNullOrEmpty(notification.Message))
             {
                 return BadRequest("Invalid notification data.");
@@ -87,10 +107,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification created successfully.");
         }
 
-
+        [AuthorizeAttribute()]
         [HttpPut("admin-update/{id}")]
         public IActionResult UpdateNotification(long id, [FromBody] NotificationView updatedNotification)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (updatedNotification == null || string.IsNullOrWhiteSpace(updatedNotification.Message))
             {
                 return BadRequest("Invalid notification data.");
@@ -105,10 +129,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification updated successfully.");
         }
 
-
+        [AuthorizeAttribute()]
         [HttpDelete("admin-delete/{id}")]
         public IActionResult DeleteNotification(long id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var success = _sqlServices.DeleteNotification(id);
             if (!success)
             {
@@ -118,10 +146,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Notification deleted successfully.");
         }
 
-        
+        [AuthorizeAttribute()]
         [HttpGet("get-all")]
         public IActionResult GetAllNotifications()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var notifications = _sqlServices.GetAllNotifications();
             if (notifications == null || !notifications.Any())
             {

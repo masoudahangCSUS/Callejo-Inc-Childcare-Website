@@ -7,6 +7,8 @@ using Common.Models.Data;
 using Common.View;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -17,28 +19,39 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private ISQLServices _sqlServices;
         private IUserService _userService;
+        private ILoginService _loginService;
 
-
-        public CustomerController(ISQLServices sqlServices, IUserService userService)
+        public CustomerController(ISQLServices sqlServices, IUserService userService, ILoginService loginService)
         {
             _sqlServices = sqlServices;
             _userService = userService;
+            _loginService = loginService;
         }
 
         // GET: api/customer/childrenguardian
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("childrenguardian")]
         public IActionResult GetChildrenGuardian()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _sqlServices.GetListOfAllChildrenAndGuardians();
             return Ok(result);
         }
 
         // POST: api/customer/create-user
+        [AuthorizeAttribute()]
         [HttpPost]
         [Route("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] CustomerUserCreationDTO userInfo)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _userService.InsertUser(userInfo);
             if (result.Success)
             {
@@ -47,10 +60,16 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result);
         }
 
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("get-emergency-contact")]
         public async Task<IActionResult> GetEmergencyContact(Guid id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // Retrieve the emergency contact record.
             var contact = await _userService.GetEmergencyContactAsync(id);
             if (contact == null)
@@ -92,10 +111,15 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //GET: api/customer/get-phone-number
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("get-phone-number")]
         public async Task<IActionResult> GetPhoneNumber(Guid? id, long type)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = (await _sqlServices.GetPhoneNumber(id, type)).FirstOrDefault();
             if (result == null)
             {
@@ -106,10 +130,16 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         //GET: api/customer/get-user-by-id
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("get-user-by-id")]
         public async Task<IActionResult> GetUserByID(Guid? id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // Retrieve the user record (internal model)
             var user = await _userService.GetUserByID(id);
             if (user == null)
@@ -168,10 +198,16 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         //GET: api/customer/get-child-list
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("get-child-list")]
         public async Task<IActionResult> GetChildList(Guid? id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // Assume _sqlServices.GetChildren(id) now returns a list of Child objects.
             var children = await _sqlServices.GetChildren(id);
             // Convert each raw Child to a ChildDTO:
@@ -187,10 +223,15 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(childDTOList);
         }
 
+        [AuthorizeAttribute()]
         [HttpGet]
         [Route("get-children-by-id")]
         public async Task<IActionResult> GetChildrenByID(long id)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var child = await _sqlServices.getChildById(id);
             if (child == null)
             {
@@ -209,10 +250,14 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok(childDTO);
         }
 
-
+        [AuthorizeAttribute()]
         [HttpPut("update-user/{userId}")]
         public async Task<IActionResult> UpdateUser(Guid userId, [FromBody] CustomerUserViewDTO userDto)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (userDto == null)
             {
                 return BadRequest("User data is null.");
@@ -228,10 +273,14 @@ namespace CallejoIncChildcareAPI.Controllers
 
         }
 
-
+        [AuthorizeAttribute()]
         [HttpPut("update-emergency/{userId}")]
         public async Task<IActionResult> UpdateEmergencyContact(Guid userId, [FromBody] EmergencyContactDTO emergencyDto)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (emergencyDto == null)
             {
                 return BadRequest("Emergency contact data is null.");
@@ -253,9 +302,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // Endpoint to update a child's information.
+        [AuthorizeAttribute()]
         [HttpPut("update-child/{childId}")]
         public async Task<IActionResult> UpdateChild(long childId, [FromBody] ChildView childDto)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             if (childDto == null)
             {
                 return BadRequest("Child data is null.");
@@ -280,9 +334,15 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
+        [AuthorizeAttribute()]
         [HttpPut("update-password")]
         public async Task<IActionResult> UpdatePassword([FromBody] SettingsDTO settings)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // make sure the data is valid
             if (settings == null || settings.Id == Guid.Empty)
             {
@@ -299,9 +359,15 @@ namespace CallejoIncChildcareAPI.Controllers
             return Ok("Password updated successfully.");
         }
 
+        [AuthorizeAttribute()]
         [HttpPut("update-email")]
         public async Task<IActionResult> UpdateEmail([FromBody] SettingsDTO settings)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // validate the data
             if (settings == null || settings.Id == Guid.Empty)
             {

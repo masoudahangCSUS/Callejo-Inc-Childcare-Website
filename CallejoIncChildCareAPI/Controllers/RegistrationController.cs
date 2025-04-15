@@ -4,6 +4,8 @@ using Common.View;
 using Microsoft.AspNetCore.Mvc;
 using Common.Models.Data;
 using System.Collections.Generic;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -14,16 +16,24 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private IRegService _regService;
         private static List<Registration> reg = new List<Registration>();
+        private ILoginService _loginService;
 
-        public RegistrationController(IRegService regService)
+        public RegistrationController(IRegService regService, ILoginService loginService)
         {
             _regService = regService;
+            _loginService = loginService;
         }
 
         //POST: api/Registration/Upload
+        [AuthorizeAttribute()]
         [HttpPost("Upload")]
         public async Task<IActionResult> UploadFile(Guid userId, IFormFile file)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // Exit if file has no content
             if (file == null || file.Length == 0)
             {
@@ -81,9 +91,15 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //GET: api/Registration/Download
+        [AuthorizeAttribute()]
         [HttpGet("Download")]
         public async Task<IActionResult> DownloadFile(Guid userId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
+
             // Retrieve file data
             var fileData = await _regService.GetFileAsync(userId);
 
@@ -98,9 +114,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //DELETE: api/Registration/Delete
+        [AuthorizeAttribute()]
         [HttpDelete("Delete")]
         public async Task<IActionResult> DeleteFile(Guid userId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = await _regService.DeleteFileAsync(userId);
             if (!result)
             {
@@ -118,9 +139,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //GET api/Registration/status/{userId}
+        [AuthorizeAttribute()]
         [HttpGet("status/{userId}")]
         public async Task<IActionResult> GetRegistrationStatus(Guid userId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var registration = reg.FirstOrDefault(r => r.UserId == userId);
             if (registration == null)
                 return NotFound("No registration found for this user.");

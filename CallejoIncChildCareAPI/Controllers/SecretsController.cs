@@ -1,6 +1,8 @@
 ﻿using Common.Models.Data;
 using Microsoft.AspNetCore.Mvc;
 using Common.View;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 namespace CallejoIncChildcareAPI.Controllers
 {
@@ -10,13 +12,16 @@ namespace CallejoIncChildcareAPI.Controllers
     public class SecretsController : ControllerBase
     {
         private readonly CallejoSystemDbContext _context;
+        private ILoginService _loginService;
 
-        public SecretsController(CallejoSystemDbContext context)
+        public SecretsController(CallejoSystemDbContext context, ILoginService loginService)
         {
             _context = context;
+            _loginService = loginService;
         }
 
         // POST api/Secrets
+        [AuthorizeAttribute()]
         [HttpPost]
         public async Task<IActionResult> CreateSecret([FromBody] SecretDTO model)
         {
@@ -46,6 +51,7 @@ namespace CallejoIncChildcareAPI.Controllers
                 new { fkUser = model.FkUser, secret = model.Secret }, userSecret);
         }
 
+        [AuthorizeAttribute()]
         [HttpGet("{fkUser}")]
         public async Task<IActionResult> GetSecret(Guid fkUser)
         {

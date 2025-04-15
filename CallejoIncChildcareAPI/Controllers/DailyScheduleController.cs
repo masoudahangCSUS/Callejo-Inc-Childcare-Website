@@ -22,6 +22,7 @@ namespace CallejoIncChildcareAPI.Controllers
             _loginService = loginService;
         }
 
+        [AuthorizeAttribute()]
         [HttpGet("{date}")]
         public ActionResult<ListDailySchedule> GetDailyScheduleByDate(DateOnly date)
         {

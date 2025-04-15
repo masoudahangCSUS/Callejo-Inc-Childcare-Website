@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 using OtpNet;
 using Common.View;
 using Microsoft.EntityFrameworkCore;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 [RequireHttps]
 [ApiController]
@@ -14,16 +16,23 @@ using Microsoft.EntityFrameworkCore;
 public class MAController : ControllerBase
 {
     private readonly HttpClient _httpClient;
+    private ILoginService _loginService;
 
-    public MAController(HttpClient httpClient)
+    public MAController(HttpClient httpClient, ILoginService loginService)
     {
         _httpClient = httpClient;
+        _loginService = loginService;
     }
 
     // GET: api/MA/QRGenerate/{id}?email={email}
+    [AuthorizeAttribute()]
     [HttpGet("QRGenerate/{id}")]
     public async Task<IActionResult> QRGenerate(Guid id, [FromQuery] string email)
     {
+        if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+        {
+            return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+        }
         if (string.IsNullOrEmpty(email))
         {
             return BadRequest("Email parameter is required.");
@@ -70,9 +79,15 @@ public class MAController : ControllerBase
     }
 
     // POST api/MA/Validate
+    [AuthorizeAttribute()]
     [HttpPost("Validate")]
     public async Task<IActionResult> ValidateTotp([FromBody] ValidationDTO request, Guid id)
     {
+        if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+        {
+            return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+        }
+
         // Build the URL to retrieve the secret.
         var secretUrl = $"https://localhost:7139/api/Secrets/{request.UserId}";
 
@@ -118,9 +133,14 @@ public class MAController : ControllerBase
     }
 
     // This method calls the external Secrets API to store the user secret.
+    [AuthorizeAttribute()]
     [NonAction]
     public async Task<IActionResult> CreateUserSecret(SecretDTO model)
     {
+        if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+        {
+            return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+        }
         if (model == null)
         {
             return BadRequest("Secret model cannot be null.");

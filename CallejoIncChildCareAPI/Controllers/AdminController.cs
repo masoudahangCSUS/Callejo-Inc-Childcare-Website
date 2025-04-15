@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Common.Services.Login;
+using CallejoIncChildCareAPI.Authorize;
 
 
 namespace CallejoIncChildcareAPI.Controllers
@@ -29,22 +31,27 @@ namespace CallejoIncChildcareAPI.Controllers
         private readonly ISQLServices _sqlService;
         private readonly CallejoSystemDbContext _context;
         private readonly PasswordService _passwordService;
+        private ILoginService _loginService;
 
-
-
-
-        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration, CallejoSystemDbContext context)
+        public AdminController(IUserService userService, ImageService imageService, IConfiguration configuration, 
+            CallejoSystemDbContext context, ILoginService loginService)
         {
             _userService = userService;
             _imageService = imageService;
             _configuration = configuration;
-            _context = context; 
+            _context = context;
+            _loginService = loginService;
         }
 
         //  POST: api/admin/create-user
+        [AuthorizeAttribute()]
         [HttpPost("create-user")]
         public ActionResult<APIResponse> InsertUser([FromBody] AdminUserCreationDTO userInfo)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             userInfo.Password = PasswordService.HashPassword(userInfo.Password);
             var result = _userService.InsertUser(userInfo);
             return result.Success ? Ok(result) : BadRequest(result);
@@ -53,17 +60,27 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         //  GET: api/admin/get-all-users
+        [AuthorizeAttribute()]
         [HttpGet("get-all-users")]
         public ActionResult<ListUsers> GetAllUsers()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _userService.GetAllUsers();
             return Ok(result);
         }
 
         //  GET: api/admin/get-all-users
+        [AuthorizeAttribute()]
         [HttpGet("children")]
         public ActionResult<ListChildren> GetAllChildren()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _userService.GetAllChildren();
             return Ok(result);
         }
@@ -72,18 +89,28 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         //  PUT: api/admin/update-user
+        [AuthorizeAttribute()]
         [HttpPut("update-user")]
         public ActionResult<APIResponse> UpdateUser([FromBody] AdminUserUpdateDTO userDTO)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var result = _userService.UpdateUser(userDTO);
             Console.WriteLine("DEBUG: Reached UpdateUser method");
             return result.Success ? Ok(result) : BadRequest(result.Message);
         }
 
         // ✅ POST: api/admin/login
+        [AuthorizeAttribute()]
         [HttpPost("login")]
         public async Task<ActionResult<APIResponse>> Login([FromBody] LoginDTO loginInfo)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
             if (user == null || user.Password != loginInfo.Password)
             {
@@ -137,18 +164,28 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         //Post: api/admin/logout
+        [AuthorizeAttribute()]
         [HttpPost("logout")]
         public async Task<IActionResult> logoout()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             HttpContext.Response.Cookies.Delete("MyAppAuthCookie");
             return Ok(new { Success = true, Message = "Logged Out Successfully" });
         }
 
         // POST: api/admin/upload-image
+        [AuthorizeAttribute()]
         [HttpPost("upload-image")]
         public async Task<ActionResult<APIResponse>> UploadImage([FromBody] ImageUploadDTO imageData)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             try
             {
                 Console.WriteLine($"DEBUG: Received image upload request: {imageData?.ImageUrl}");
@@ -172,9 +209,14 @@ namespace CallejoIncChildcareAPI.Controllers
             }
         }
 
+        [AuthorizeAttribute()]
         [HttpDelete("delete-user")]
         public async Task<ActionResult<APIResponse>> DeleteUser([FromQuery] Guid userId)
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
@@ -259,9 +301,14 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         //  GET: api/admin/get-latest-image
+        [AuthorizeAttribute()]
         [HttpGet("get-latest-image")]
         public async Task<ActionResult<APIResponse>> GetLatestImage()
         {
+            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            {
+                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            }
             try
             {
                 var imageUrl = await _imageService.GetLatestImageUrlAsync();
