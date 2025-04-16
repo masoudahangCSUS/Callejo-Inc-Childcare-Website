@@ -3,6 +3,8 @@
 @inject NavigationManager Navigation
 @inject HttpClient Http
 @inject IJSRuntime JSRuntime
+@inject NavigationManager Navigation
+
 
 <!-- ParentNavMenu.razor -->
 <div class="container">
@@ -10,6 +12,17 @@
         <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" />
         <span class="brand-name">Callejo Inc.</span>
     </a>
+
+    <!-- Hidden checkbox used for toggling mobile menu -->
+    <input type="checkbox" id="menuToggle" class="menu-toggle" />
+
+    <!-- Hamburger icon; clicking this toggles the checkbox -->
+    <!-- Hamburger Button for Mobile -->
+    <button class="hamburger" @onclick="ToggleMobileMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
 
     <nav class="nav-menu">
         <!-- Home and About -->
@@ -85,11 +98,52 @@
             </a>
         </div>
     </nav>
+
+    <!-- Mobile Menu -->
+    @if (isMobileMenuOpen)
+    {
+        <div class="mobile-menu">
+            <a class="nav-item-link" href="/">HOME</a>
+            <a class="nav-item-link" href="/about">ABOUT US</a>
+            <a class="nav-item-link" href="/schedule">Child's Schedule</a>
+            <a class="nav-item-link" href="/holidays-vacations">Holidays & Vacations</a>
+            <a class="nav-item-link" href="/notifications">Notifications</a>
+            <a class="nav-item-link" href="/SendRequest">Send Request</a>
+            <a class="nav-item-link" href="/profile">Profile</a>
+            <a class="nav-item-link" href="/enrolled-children">My Child Info</a>
+            <a class="nav-item-link" href="/photos">Photos</a>
+            <a class="nav-item-link" href="/settings">Settings</a>
+            <a class="nav-item-link" href="/logout">Logout</a>
+        </div>
+    }
 </div>
 
 @code {
     private readonly HttpClient _httpClient;
+    private bool isMobileMenuOpen;
 
+    protected override void OnInitialized()
+    {
+        // Subscribe to navigation events so that the mobile menu resets on page change
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void ToggleMobileMenu()
+    {
+        isMobileMenuOpen = !isMobileMenuOpen;
+    }
+
+    private void OnLocationChanged(object? sender, Microsoft.AspNetCore.Components.Routing.LocationChangedEventArgs e)
+    {
+        // Close the mobile menu after navigation
+        isMobileMenuOpen = false;
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
     private async Task LogoutUser()
     {
         var result = await JSRuntime.InvokeAsync<object>("logoutApi", Array.Empty<object>());

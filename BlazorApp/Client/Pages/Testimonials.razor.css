@@ -80,3 +80,10 @@
     object-fit: cover;
     animation: fadeIn 6s ease-in-out;
 }
+
+@media (max-width: 768px) {
+    .page-wrapper{
+        max-width:90%;
+        margin-left:5%;
+    }
+}
