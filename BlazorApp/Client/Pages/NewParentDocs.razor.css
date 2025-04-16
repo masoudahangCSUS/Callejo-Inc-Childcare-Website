@@ -1,77 +1,86 @@
-﻿h3 {
+﻿/* Center the heading */
+h3 {
     text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
 }
 
+/* Styling for the main container */
 .new-parent-docs {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
 }
 
-.identify-upload-btn {
-    background-color: #0073C6; /* Blue color to match the page theme */
-    color: white;
-    padding: 15px 30px; /* Increased padding for larger button */
+/* Uniform styling for all upload buttons */
+button {
+    width: 100%;
+    padding: 12px 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1.2rem; /* Increased font size */
+    font-size: 1rem;
     font-weight: bold;
     text-align: center;
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
 }
 
-.consent-emt-upload-btn {
-    background-color: #0073C6; /* Blue color to match the page theme */
-    color: white;
-    padding: 15px 30px; /* Increased padding for larger button */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2rem; /* Increased font size */
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
-}
-
-.additional-children-upload-btn {
-    background-color: #0073C6; /* Blue color to match the page theme */
-    color: white;
-    padding: 15px 30px; /* Increased padding for larger button */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2rem; /* Increased font size */
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
-}
-
-.parent-rights-upload-btn {
-    background-color: #0073C6; /* Blue color to match the page theme */
-    color: white;
-    padding: 15px 30px; /* Increased padding for larger button */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2rem; /* Increased font size */
-    font-weight: bold;
-    text-align: center;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
-}
-
+/* Button color adjustments */
+.identify-upload-btn,
+.consent-emt-upload-btn,
+.additional-children-upload-btn,
+.parent-rights-upload-btn,
 .immunization-card-upload-btn {
-    background-color: #0073C6; /* Blue color to match the page theme */
+    background-color: #0073C6; /* Matching theme */
     color: white;
-    padding: 15px 30px; /* Increased padding for larger button */
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1.2rem; /* Increased font size */
-    font-weight: bold;
+    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.3);
+}
+
+button:hover {
+    background-color: #005a9e;
+    transform: translateY(-2px);
+}
+
+/* File input styling */
+/* Center the file input and limit its width so it doesn’t stretch across the container */
+.file-input {
+    display: block;
+    margin: 10px auto;
+    padding: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+    width: 100%;
+    max-width: 300px; /* Limits width for better centering */
     text-align: center;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-    box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
+}
+
+/* Spacing between sections with a separator */
+/* Each direct child div of .new-parent-docs gets extra bottom padding and a border separator */
+.new-parent-docs > div {
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+    /* Remove spacing and border from the last section */
+    .new-parent-docs > div:last-child {
+        margin-bottom: 0;
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+/* Debug log styling */
+.debug-log {
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #333;
 }

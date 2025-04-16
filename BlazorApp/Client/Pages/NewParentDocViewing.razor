@@ -5,7 +5,15 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
+
+<br>
+<br>
+<br>
+<br>
+<br>
 <h3>Available Documents for Prospective Parents</h3>
+<br>
+<br>
 <br>
 
 @if (ParentDocuments.Any())
@@ -29,6 +37,7 @@
                         <button class="btn btn-secondary" @onclick="() => HandlePreviewClick(document.Id)">Preview</button>
                         <!-- Download Button -->
                         <button class="btn btn-primary" @onclick="() => HandleDownloadClick(document.Id, document.FileName)">Download</button>
+                        <br>
                     </td>
                 </tr>
                 @if (CurrentPreviewDocumentId == document.Id)
@@ -47,8 +56,20 @@ else
 {
     <p>No documents available.</p>
 }
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
-<h4>Debug Messages:</h4>
+<!--<h4>Debug Messages:</h4>
 <div style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px;">
     <ul>
         @foreach (var message in DebugMessages)
@@ -57,7 +78,7 @@ else
         }
     </ul>
 </div>
-
+-->
 <script src="JavaScript/RegDownloadHelper.js"></script>
 <script src="JavaScript/CustomDownloadHelper.js"></script>
 

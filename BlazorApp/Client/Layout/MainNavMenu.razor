@@ -1,4 +1,17 @@
 ﻿<!-- MainNavMenu.razor -->
+
+<style>
+    .doc-view-link {
+        color: black;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: color 0.3s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+</style>
+
 <div class="container">
     <a class="navbar-brand" href="/">
         <img src="images/companyicon.png" alt="Callejo Inc." class="nav-logo" />
@@ -21,6 +34,9 @@
                 <span>ABOUT US</span>
             </div>
         </a>
+        <a class="doc-view-link" href="/NewParentDocViewing">
+            <img src="images/document-View-Icon-scaled-down.png" alt="Document View Icon" class="doc-view-icon" /> Documents
+         </a>
         <a href="/contact">
             <button class="btn btn-outline-primary">Get Started</button>
         </a>
