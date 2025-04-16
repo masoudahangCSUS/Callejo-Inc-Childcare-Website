@@ -1,12 +1,6 @@
-﻿/* Navbar Styling */
-.top-navbar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: white;
-    padding: 30px;
-}
-
+﻿/* ------------------------- */
+/* Desktop Navigation Styles */
+/* ------------------------- */
 .container {
     display: flex;
     align-items: center;
@@ -15,7 +9,6 @@
     width: 100%;
 }
 
-/* Brand Styling */
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -34,10 +27,9 @@
     margin-left: 10px;
 }
 
-/* Main Navigation Menu */
 .nav-menu {
     display: flex;
-    gap: 40px;
+    gap: 30px;
     align-items: center;
 }
 
@@ -51,14 +43,12 @@
     gap: 8px;
 }
 
-/* Icon Styling */
 .nav-icon {
     width: 30px;
     height: 30px;
     transition: transform 0.3s;
 }
 
-/* Hover Effects */
 .nav-item-link:hover {
     color: #00B7D7;
 }
@@ -67,7 +57,22 @@
         transform: scale(1.2);
     }
 
-/* Button Styling */
+.nav-right {
+    display: flex;
+    gap: 20px;
+    padding: 10px 20px;
+    background-color: #00B7D7;
+    border-radius: 15px;
+}
+
+    .nav-right .nav-item-link:hover {
+        color: white;
+    }
+
+        .nav-right .nav-item-link:hover .nav-icon {
+            transform: scale(1.2);
+        }
+
 .btn-outline-primary {
     color: #00B7D7;
     border: 2px solid #00B7D7;
@@ -80,73 +85,81 @@
 }
 
     .btn-outline-primary:hover {
-        background-color: #00B7D7; /* Bright blue background on hover */
-        color: white; /* White text on hover */
+        background-color: #00B7D7;
+        color: white;
     }
 
-.nav-mobile {
+/* Mobile Navigation Styles */
+.mobile-container {
     display: none;
+    position: relative;
 }
 
 .checkbox {
     display: none;
 }
 
-.checkbtn {
-    display: none;
-    font-size: 1.5rem;
-    color: white;
+/* Hamburger button (manually built) */
+.hamburger {
+    position: absolute;
+    top: 10px; /* Position within the mobile menu container */
+    left: 10px;
+    z-index: 1100; /* Above the menu content */
     cursor: pointer;
 }
 
-#check:checked ~ .nav-mobile {
-    display: block
-}
+    .hamburger span {
+        display: block;
+        width: 30px;
+        height: 4px;
+        background: #000; /* Black color */
+        margin-bottom: 5px;
+        transition: 0.3s;
+    }
 
-.nav-mobile {
+/* Mobile menu container */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
     position: absolute;
-    top: 4.5rem;
+    top: 0; /* Start at the top of the container */
     left: 0;
-    background: #222831;
-    z-index: 1;
-    width: 200px;
+    width: 100%;
+    background-color: #00B7D7;
+    padding-top: 60px; /* Reserve 60px at the top for the hamburger (adjust as needed) */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
-    .nav-mobile a {
-        color: #fff;
+    .mobile-menu a {
+        color: white;
         padding: 1rem 1.5rem;
         display: block;
     }
 
-.mobile-container {
-    display: none;
+/* Mobile right section for actions */
+.nav-right-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 
-/* Responsiveness */
+/* Responsive Overrides */
 @media (max-width: 768px) {
-    .checkbtn {
-        display: block;
-        font-size: 5rem;
-        position: absolute;
-        top: -45px;
-        left: 10px;
-    }
-
-    .nav-mobile {
-        top: 80px;
-        width: 100%;
-    }
-
-        .nav-mobile a {
-            font-size: 2rem;
-            padding: 2rem, 3rem;
-        }
-
     .container {
         display: none;
     }
 
     .mobile-container {
         display: block;
+    }
+    /* Ensure checkbox toggles the menu */
+    #check:checked ~ .mobile-menu {
+        display: flex;
+    }
+
+    .nav-right-mobile{
+
     }
 }
