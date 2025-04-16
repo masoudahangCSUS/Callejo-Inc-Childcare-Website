@@ -58,6 +58,12 @@
     transition: transform 0.3s;
 }
 
+.doc-view-icon {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.3s;
+}
+
 /* Hover Effects */
 .nav-item-link:hover {
     color: #00B7D7;
