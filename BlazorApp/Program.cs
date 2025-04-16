@@ -26,6 +26,17 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddMudServices();
 
+builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
+
+// Register HttpClient for making HTTP requests in Blazor components
+builder.Services.AddScoped(sp =>
+    new HttpClient
+    {
+        BaseAddress = new Uri(builder.Environment.IsDevelopment()
+            ? "https://localhost:7139" // Correct API URL for development
+            : builder.Configuration["BaseAddress"])
+    });
+
 // Add Controllers for API endpoints
 builder.Services.AddControllers();
 

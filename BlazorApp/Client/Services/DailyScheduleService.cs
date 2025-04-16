@@ -25,13 +25,13 @@ namespace BlazorApp.Client.Services
         //    return response.Data;
         //}
 
-        private void SetHeaders(RestRequest request, string userName, string authToken)
-        {
-            string appId = ServiceHelper.BuildAppIdHeader(_appSettings);
-            request.AddHeader("AppId", appId);
-            request.AddHeader("AuthorizationToken", AesOperation.EncryptString(_appSettings.Key.ToString(), authToken));
-            request.AddHeader("UserName", AesOperation.EncryptString(_appSettings.Key.ToString(), userName));
-        }
+        //private void SetHeaders(RestRequest request, string userName, string authToken)
+        //{
+        //    //string appId = ServiceHelper.BuildAppIdHeader(_appSettings);
+        //    request.AddHeader("AppId", appId);
+        //    request.AddHeader("AuthorizationToken", AesOperation.EncryptString(_appSettings.Key.ToString(), authToken));
+        //    request.AddHeader("UserName", AesOperation.EncryptString(_appSettings.Key.ToString(), userName));
+        //}
 
 
         public async Task<APIResponse> InsertDailySchedule(DailyScheduleView dailyScheduleView)
@@ -53,10 +53,20 @@ namespace BlazorApp.Client.Services
             return response.Data;
         }
 
-        public async Task<APIResponse> UpdateDailySchedule(DailyScheduleView DailyScheduleInfo)
+        public async Task<ListDailySchedule> GetAllDailySchedules()
+        {
+            RestRequest request = new RestRequest("DailySchedule", Method.Get);
+            //SetHeaders(request, userName, authToken);
+
+            var response = await _client.ExecuteAsync<ListDailySchedule>(request);
+            return response.Data;
+        }
+
+
+        public async Task<APIResponse> UpdateDailySchedule(DailyScheduleView dailyScheduleInfo, string description, string descSpecial)
         {
             var request = new RestRequest("DailySchedule", Method.Put);
-            request.AddJsonBody(DailyScheduleInfo);
+            request.AddJsonBody(dailyScheduleInfo);
             var response = await _client.ExecuteAsync<APIResponse>(request);
             return response.Data;
         }

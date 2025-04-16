@@ -19,17 +19,17 @@ namespace CallejoIncChildcareAPI.Controllers
         public DailyScheduleController(IDailyScheduleService dailyScheduleService, ILoginService loginService)
         {
             _dailyScheduleService = dailyScheduleService;
-            _loginService = loginService;
+            //_loginService = loginService;
         }
 
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpGet("{date}")]
         public ActionResult<ListDailySchedule> GetDailyScheduleByDate(DateOnly date)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
 
             var result = _dailyScheduleService.GetDailyScheduleByDate(date);
             if (result.Success)
@@ -57,6 +57,17 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result);
         }
 
+        [AuthorizeAttribute()]
+        [HttpGet]
+        public ActionResult<ListDailySchedule> GetAllDailySchedules()
+        {
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
+            var result = _dailyScheduleService.GetAllDailySchedules();
+            return Ok(result);
+        }
 
         // POST: api/DailySchedule
         [AuthorizeAttribute()]

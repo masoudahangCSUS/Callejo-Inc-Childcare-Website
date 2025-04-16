@@ -196,5 +196,35 @@ namespace Common.Services.DailySchedule
 
             return response;
         }
+        public ListDailySchedule GetAllDailySchedules()
+        {
+            ListDailySchedule listDailySchedule = new();
+
+            try
+            {
+                var dailyScheduleRecs = _context.DailySchedules.ToList();
+                DailyScheduleView dailyScheduleViewRec = null;
+                foreach (Models.Data.DailySchedule dailyScheduleRec in dailyScheduleRecs)
+                {
+                    dailyScheduleViewRec = new DailyScheduleView();
+                    dailyScheduleViewRec.Id = dailyScheduleRec.Id;
+                    dailyScheduleViewRec.Description = dailyScheduleRec.Description;
+                    dailyScheduleViewRec.Desc_special = dailyScheduleRec.DescSpecial;
+                    dailyScheduleViewRec.CreatedAt = dailyScheduleRec.CreatedAt;
+
+                    listDailySchedule.dailySchedules.Add(dailyScheduleViewRec);
+                }
+
+                listDailySchedule.Success = true;
+                listDailySchedule.Message = "Retrieved " + listDailySchedule.dailySchedules.Count.ToString() + " schedule records";
+            }
+            catch (Exception ex)
+            {
+                listDailySchedule.Success = false;
+                listDailySchedule.Message = "Problems retrieving all daily schedule records. Error: " + ex.Message + ". Inner Exception : " + ex.InnerException + ". Stack Trace : " + ex.StackTrace;
+            }
+
+            return listDailySchedule;
+        }
     }
 }
