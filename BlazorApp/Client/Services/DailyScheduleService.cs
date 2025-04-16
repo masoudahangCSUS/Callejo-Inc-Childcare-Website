@@ -4,12 +4,15 @@ using System.Threading.Tasks;
 using Common.View;
 using BlazorApp;
 using Org.BouncyCastle.Asn1.Crmf;
+using CallejoIncChildCareAPI;
+using Common.AES;
 
 namespace BlazorApp.Client.Services
 {
     public class DailyScheduleService
     {
         private readonly RestClient _client;
+        private AppSettings _appSettings;
 
         public DailyScheduleService(IOptions<AppSettings> apiSettings)
         {
@@ -21,6 +24,15 @@ namespace BlazorApp.Client.Services
         //    var response = await _client.ExecuteAsync<ListDailySchedule>(request);
         //    return response.Data;
         //}
+
+        //private void SetHeaders(RestRequest request, string userName, string authToken)
+        //{
+        //    //string appId = ServiceHelper.BuildAppIdHeader(_appSettings);
+        //    request.AddHeader("AppId", appId);
+        //    request.AddHeader("AuthorizationToken", AesOperation.EncryptString(_appSettings.Key.ToString(), authToken));
+        //    request.AddHeader("UserName", AesOperation.EncryptString(_appSettings.Key.ToString(), userName));
+        //}
+
 
         public async Task<APIResponse> InsertDailySchedule(DailyScheduleView dailyScheduleView)
         {
@@ -40,7 +52,31 @@ namespace BlazorApp.Client.Services
             var response = await _client.ExecuteAsync<ListDailySchedule>(request);
             return response.Data;
         }
-        
+
+        public async Task<ListDailySchedule> GetAllDailySchedules()
+        {
+            RestRequest request = new RestRequest("DailySchedule", Method.Get);
+            //SetHeaders(request, userName, authToken);
+
+            var response = await _client.ExecuteAsync<ListDailySchedule>(request);
+            return response.Data;
+        }
+
+
+        public async Task<APIResponse> UpdateDailySchedule(DailyScheduleView dailyScheduleInfo, string description, string descSpecial)
+        {
+            var request = new RestRequest("DailySchedule", Method.Put);
+            request.AddJsonBody(dailyScheduleInfo);
+            var response = await _client.ExecuteAsync<APIResponse>(request);
+            return response.Data;
+        }
+
+        public async Task<APIResponse> DeleteDailySchedule(long id)
+        {
+            var request = new RestRequest($"DailySchedule/{id}", Method.Delete);
+            var response = await _client.ExecuteAsync<APIResponse>(request);
+            return response.Data;
+        }
 
         /*public async Task<ListDailySchedule> GetAllRoles()
         {
