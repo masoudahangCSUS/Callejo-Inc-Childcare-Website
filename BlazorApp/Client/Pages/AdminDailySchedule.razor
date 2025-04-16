@@ -29,7 +29,7 @@
     </div>
 </div>
 
-<link href="custom.css" rel="stylesheet" />
+@* <link href="custom.css" rel="stylesheet" />
 <div>
     <h1>MudBlazor DataGrid Example</h1>
     <MudTable Items="@listDailySchedule.dailySchedules" Hover="true" Sortable="true" Filterable="true" Class="custom-table">
@@ -66,13 +66,13 @@
                 else
                 {
                     <MudButton OnClick="@(() => EditSchedule(context))">Edit</MudButton>
-                    @* <MudButton OnClick="@(() => ConfirmDelete(context.Id))">Delete</MudButton> *@
+                    @* <MudButton OnClick="@(() => ConfirmDelete(context.Id))">Delete</MudButton>
                 }
             </MudTd>
         </RowTemplate>
     </MudTable>
 
-</div>
+</div> *@
 
 
 @code {
