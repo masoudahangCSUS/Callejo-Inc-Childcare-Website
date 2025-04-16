@@ -12,48 +12,28 @@
 <br>
 
 <div class="request-page">
-    <div class="parentID">
-        <label for="parentID">Parent ID:</label><br>
-    </div>
-    <input type="text" id="parentID" @bind="newRequest.FkParentId" disabled /><br><br>
+    <div class="request-input-wrapper">
+        <label for="requestTitle">Request Title:</label>
+        <input type="text" id="requestTitle" @bind="newRequest.Title" />
 
-    <div class="noteTitle">
-        <label for="requestTitle">Request Title:</label><br>
+        <label for="requestMessage">Request:</label>
+        <textarea id="requestMessage" @bind="newRequest.Message"></textarea>
     </div>
-    <input type="text" id="requestTitle" @bind="newRequest.Title" /><br><br>
-
-    <div class="requestMsg">
-        <label for="requestMessage">Request:</label><br>
-    </div>
-    <textarea @bind="newRequest.Message"></textarea>
 
     <div class="request-buttons">
-        <button @onclick="HandleSubmit" class="rq-submit-btn" type="submit">Submit</button> <br>
-        <a href="/profile" class="rq-cancel-btn">Cancel</a> <br>
+        <button @onclick="HandleSubmit" class="rq-submit-btn" type="submit">Submit</button>
+        <a href="/profile" class="rq-cancel-btn">Cancel</a>
     </div>
 </div>
 
-
 @code {
-    private List<NotificationView> notifications = new(); // Modified to use NotificationView
+    private List<NotificationView> notifications = new();
     private bool? isSuccess;
     private bool isLoading = false;
-    private NotificationView newRequest = new(); // Modified to use NotificationView
+    private NotificationView newRequest = new();
     private DateTime? newFormattedSentOn = null;
 
-    private async Task customNotificationInfo(NotificationView notification) // Modified to use NotificationView
-    {
-
-    }
-
     private readonly IUserService _userService;
-
-    public class notificationModel
-    {
-        public string parentID { get; set; }
-        public string Title { get; set; }
-        public string Message { get; set; }
-    }
 
     private async Task HandleSubmit()
     {
@@ -63,7 +43,7 @@
             return;
         }
 
-        newRequest.FkParentId = UserSession.UserId.Value; // Set parent ID
+        newRequest.FkParentId = UserSession.UserId.Value;
         newRequest.SentOn = DateTime.UtcNow;
         newRequest.IsRead = false;
 
@@ -74,7 +54,7 @@
             if (success)
             {
                 Console.WriteLine("Notification sent successfully.");
-                newRequest = new NotificationView(); // Reset fields after sending (Updated to use NotificationView)
+                newRequest = new NotificationView();
             }
             else
             {
@@ -85,76 +65,13 @@
         {
             Console.WriteLine($"Error sending notification: {ex.Message}");
         }
+    }
 
-        /*newRequest = new NotificationView(); // Updated to use NotificationView
-
-        try
-        {
-            newRequest.SentOn = newFormattedSentOn.Value;
-            newRequest.IsRead = false;
-
-            var success = await NotificationService.SendCustomNotification(newRequest);
-
-            /*if (success)
-            {
-                await LoadNotifications();
-                CloseCreateModal();
-            }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error creating notification: {ex.Message}");
-        }*/
-
-        /*var newRequest = new NotificationView // Updated to use NotificationView
-            {
-                FkParentId = UserSession.UserId.Value, // Assuming parent is logged in
-                Title = notificationTitle,
-                Message = notificationMessage,
-                SentOn = DateTime.UtcNow,
-                IsRead = false
-            };
-
-        var success = await NotificationService.SendCustomNotification(newRequest);
-
-        if (success)
-        {
-            notificationMessage = string.Empty;
-            notificationTitle = string.Empty;
-            Console.WriteLine("Notification sent successfully.");
-        }
-        else
-        {
-            Console.WriteLine("Failed to send notification.");
-        }*/
-
-        /*isLoading = true;
-        try
-        {
-            // Assuming UserSession provides the current user's ID
-            //var parentId = //UserSession.GetCurrentUserId(); // Replace with actual user ID fetching logic
-            //var user = await _userService.GetUserByEmailAsync(loginInfo.Email);
-            //var userDTO = new userDTO { };
-            if (Guid.TryParse(parentId, out var parsedParentId))
-            {
-                // Call the NotificationService to send the custom notification
-                var result = await NotificationService.SendCustomNotification(parsedParentId.ToString(), notificationModel.Message);
-                isSuccess = result;
-            }
-            else
-            {
-                isSuccess = false;
-            }
-        }
-        catch (Exception ex)
-        {
-            isSuccess = false;
-            Console.WriteLine($"Error sending notification: {ex.Message}");
-        }
-        finally
-        {
-            isLoading = false;
-        }*/
+    public class notificationModel
+    {
+        public string parentID { get; set; }
+        public string Title { get; set; }
+        public string Message { get; set; }
     }
 
     public class SendRequestDTO

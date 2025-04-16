@@ -67,5 +67,25 @@ namespace Common.Services.Registration
                 return false;
             }
         }
+        public async Task<bool> UpdateRegistrationStatus(Guid userId)
+        {
+            try
+            {
+                var registration = await _dbContext.Registrations.FindAsync(userId);
+                if (registration == null || registration.Status != "Pending")
+                {
+                    return false;
+                }
+
+                registration.Status = "Received";
+                await _dbContext.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
+
 }

@@ -1,9 +1,21 @@
 ﻿h3 {
     text-align: center;
+    font-size: 2rem;
+    color: #702FE3; /* Purple highlight */
+    margin-top: 60px;
+    margin-bottom: 40px;
+    font-weight: 700;
+    text-shadow: 1px 1px 2px rgba(112, 49, 227, 0.2);
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease-in-out;
 }
+
 
 .request-page {
     text-align: center;
+    max-width:80%;
+    margin-left:10%;
+    
 }
 
 .noteTitle {
@@ -23,6 +35,7 @@
     display: flex;
     justify-content: center;
     margin-top: 40px;
+    margin-bottom: 80px;
     position: relative; /* Ensures layout consistency for flex positioning */
     z-index: 1;
 }
@@ -58,3 +71,46 @@ a.rq-cancel-btn {
     transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
     box-shadow: 0 4px 15px rgba(112, 49, 227, 0.4);
 }
+
+.request-input-wrapper {
+    max-width: 500px;
+    margin: 0 auto 30px;
+    border: 3px solid #702FE3; /* Purple border */
+    padding: 25px;
+    border-radius: 15px;
+    background-color: #F8F9FF; /* Subtle light background */
+    box-shadow: 0 0 15px rgba(112, 49, 227, 0.1);
+}
+
+    .request-input-wrapper label {
+        display: block;
+        margin-bottom: 10px;
+        color: #333;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: left;
+    }
+
+    .request-input-wrapper input,
+    .request-input-wrapper textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #B6A0F9;
+        border-radius: 8px;
+        font-size: 1rem;
+        margin-bottom: 20px;
+        background-color: #fff;
+        transition: border 0.3s;
+    }
+
+        .request-input-wrapper input:focus,
+        .request-input-wrapper textarea:focus {
+            border-color: #702FE3;
+            outline: none;
+        }
+
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+

@@ -1,0 +1,276 @@
+﻿/* ---------------------------- */
+/* General Home Page Styles     */
+/* ---------------------------- */
+.full-width-container {
+    width: 100%;
+    background-color: #00B7D7;
+    padding: 150px 0;
+}
+
+.content-wrapper {
+    max-width: 1200px;
+    margin: auto;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+/* ---------------------------- */
+/* Logged‑In User Home (Desktop)*/
+/* ---------------------------- */
+.user-home .text-card {
+    flex: 2;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 30px;
+    text-align: left;
+}
+
+.user-heading {
+    color: #0073C6;
+    font-size: 2.5rem;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 10px;
+}
+
+.user-paragraph,
+.bullet-point p {
+    color: #333;
+    font-size: 1.2rem;
+    font-family: 'Arial', sans-serif;
+    margin-top: 10px;
+}
+
+.bullet-point {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.bullet {
+    width: 10px;
+    height: 10px;
+    background-color: #00B7D7;
+    border-radius: 50%;
+    margin-top: 10px;
+}
+
+.image-column {
+    flex: 1;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.home-image {
+    width: 300px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* ---------------------------- */
+/* Anonymous Home (Desktop)     */
+/* ---------------------------- */
+.anon-home .content-wrapper {
+    align-items: center;
+}
+
+.text-content {
+    flex: 2;
+    text-align: left;
+}
+
+.anon-heading {
+    color: white;
+    font-size: 2.5rem;
+    font-family: 'Times New Roman', serif;
+}
+
+.learn-more-btn {
+    background-color: white;
+    color: #00B7D7;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+.image-content {
+    flex: 1;
+    text-align: right;
+}
+
+.welcome-image {
+    width: 600px;
+    border-radius: 15px;
+}
+
+/* Info Section for Anonymous */
+.info-section {
+    text-align: center;
+    padding: 100px 0;
+}
+
+.info-heading {
+    color: #7031E3;
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.info-subheading {
+    color: #B76EFF;
+    margin-top: 5px;
+    font-size: 1.5rem;
+}
+
+.info-paragraph {
+    max-width: 1200px;
+    margin: 40px auto;
+    color: #555;
+    font-size: 1.3rem;
+}
+
+.info-images {
+    display: flex;
+    justify-content: center;
+    gap: 200px;
+    margin-top: 60px;
+}
+
+.info-img {
+    width: 250px;
+    height: 250px;
+    border-radius: 10px;
+}
+
+.info-img-heading {
+    color: #7031E3;
+    font-size: 1.8rem;
+    margin-top: 30px;
+}
+
+.details-btn {
+    background-color: #7031E3;
+    color: white;
+    border: none;
+    padding: 20px 40px;
+    font-size: 1.4rem;
+    cursor: pointer;
+    margin-top: 80px;
+    border-radius: 8px;
+}
+
+/* ---------------------------- */
+/* Mobile Responsive Styles     */
+/* (Applies only to screens 768px or less) */
+/* ---------------------------- */
+@media (max-width: 768px) {
+    .full-width-container {
+        padding: 80px 20px;
+    }
+
+    .content-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        padding: 0 20px;
+    }
+
+    /* Simplify logged‑in home page:
+     - In .text-card, hide all text except the heading */
+    .user-home .text-card {
+        text-align: center;
+        width: 100%;
+    }
+
+        .user-home .text-card p,
+        .user-home .text-card .bullet-point {
+            display: none;
+        }
+
+    .user-home .user-heading {
+        font-size: 2rem;
+    }
+
+    /* Display images side by side for logged in page */
+    .user-home .image-column {
+        flex-direction: row;
+        justify-content: center;
+        gap: 20px;
+        width: 100%;
+    }
+
+    .user-home .home-image {
+        width: 45%;
+        max-width: none;
+    }
+
+    /* Anonymous home page mobile adjustments:
+     Here you could either keep more of the design or simplify.
+     For this example, we maintain more content, but adjust sizes. */
+    .anon-home .content-wrapper {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .text-content {
+        width: 100%;
+        text-align: center;
+    }
+
+    .anon-heading {
+        font-size: 2rem;
+    }
+
+    .learn-more-btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+    }
+
+    .image-content {
+        text-align: center;
+    }
+
+    .welcome-image {
+        width: 100%;
+        max-width: 300px;
+        margin: auto;
+    }
+
+    .info-heading {
+        font-size: 2.5rem;
+    }
+
+    .info-subheading {
+        font-size: 1.2rem;
+    }
+
+    .info-paragraph {
+        font-size: 1rem;
+    }
+
+    .info-images {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .info-img {
+        width: 80%;
+        max-width: 200px;
+        margin: auto;
+    }
+
+    .info-img-heading {
+        font-size: 1.5rem;
+        margin-top: 20px;
+    }
+
+    .details-btn {
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        margin-top: 40px;
+    }
+}

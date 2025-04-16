@@ -19,7 +19,7 @@
     </a>
 
     <nav class="nav-menu">
-        <a class="nav-item-link" href="/enrollment">Enrollment Plans</a>
+        <a class="nav-item-link" href="/enrollment">What You Need</a>
         <a class="nav-item-link" href="/testimonials">Testimonials</a>
         <a class="nav-item-link" href="/mission">Mission</a>
         <a class="nav-item-link" href="/">
@@ -48,33 +48,33 @@
 
 <div class="mobile-container">
     <nav class="nav-menu">
-        <input type="checkbox" id="check" class="checkbox">
-        <label for="check" class="checkbtn">
-            <img src="images/nav bar menu image.jpg" class="nav-bar-img" />
-            <i class="fas fa-bars"></i>
+        <!-- Hidden checkbox for toggle -->
+        <input type="checkbox" id="check" class="checkbox" />
+        <!-- Hamburger button built manually using spans -->
+        <label for="check" class="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
         </label>
-        <div class="nav-mobile">
-            <a class="nav-item-link" href="/enrollment">Enrollment Plans</a>
+        <!-- Mobile menu content -->
+        <div class="mobile-menu">
+            <a class="nav-item-link" href="/enrollment">What You Need</a>
             <a class="nav-item-link" href="/testimonials">Testimonials</a>
             <a class="nav-item-link" href="/mission">Mission</a>
             <a class="nav-item-link" href="/">
-                <div class="nav-icon-text">
-                    <img src="images/home.png" alt="Home Icon" class="nav-icon" />
-                    <span>HOME</span>
-                </div>
+                <img src="images/home.png" alt="Home Icon" class="nav-icon" /> HOME
             </a>
             <a class="nav-item-link" href="/about">
-                <div class="nav-icon-text">
-                    <img src="images/about.png" alt="About Us Icon" class="nav-icon" />
-                    <span>ABOUT US</span>
-                </div>
+                <img src="images/about.png" alt="About Us Icon" class="nav-icon" /> ABOUT US
             </a>
-            <a href="/contact">
-                <button class="btn btn-outline-primary">Get Started</button>
-            </a>
-            <a class="nav-item-link" href="/login">
-                <img src="images/login.png" alt="Login Icon" class="nav-icon" /> Login
-            </a>
+            <div class="nav-right-mobile">
+                <a href="/contact">
+                    <button class="btn btn-outline-primary">Get Started</button>
+                </a>
+                <a class="nav-item-link" href="/login">
+                    <img src="images/login.png" alt="Login Icon" class="nav-icon" /> Login
+                </a>
+            </div>
         </div>
     </nav>
 </div>

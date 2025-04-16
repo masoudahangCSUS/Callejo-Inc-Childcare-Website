@@ -13,6 +13,7 @@
     justify-content: space-between;
     max-width: 2000px;
     width: 100%;
+    position: relative; 
 }
 
 /* Brand Styling */
@@ -132,28 +133,79 @@
             transform: scale(1.2);
         }
 
+.menu-toggle {
+    display: none;
+}
+
+.hamburger {
+    display: none;
+}
+
+/* Default mobile menu style – it will be conditionally rendered */
+.mobile-menu {
+    flex-direction: column;
+    position: absolute;
+    top: 70px; /* Adjust based on your navbar height */
+    left: 0;
+    width: 100%;
+    background-color: #00B7D7;
+    padding: 10px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+    .mobile-menu a {
+        display: block;
+        padding: 10px 20px;
+        color: white;
+        font-size: 1.2rem;
+        text-decoration: none;
+        transition: background-color 0.2s;
+    }
+        .mobile-menu a:hover {
+            background-color: #009bbd;
+        }
+
 /* Make the "My Child Info" Icon Circular */
 .nav-icon.child-info {
     border-radius: 50%;
     border: 2px solid #0073C6;
 }
 
-/* Responsiveness */
+/* Media Query for Phones */
 @media (max-width: 768px) {
+    /* Hide desktop navigation */
     .nav-menu {
-        gap: 15px;
+        display: none;
     }
 
-    .nav-item-link {
-        font-size: 1rem;
+    /* Show hamburger button and position it */
+    .hamburger {
+        display: block;
+        background: none;
+        border: none;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        z-index: 1100;
     }
 
-    .nav-icon {
-        width: 25px;
-        height: 25px;
+        .hamburger span {
+            display: block;
+            width: 30px;
+            height: 3px;
+            background-color: #000;
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+    /* Center the brand/logo to avoid overlap */
+    .container {
+        justify-content: center;
     }
 
-    .top-navbar {
-        padding: 15px 20px;
+    .navbar-brand {
+        margin: 0 auto;
     }
 }

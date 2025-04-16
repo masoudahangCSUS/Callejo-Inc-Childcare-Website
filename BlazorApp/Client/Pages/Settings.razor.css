@@ -1,3 +1,217 @@
-﻿h1{
-    color:red !important;
+﻿/* Base Styles (Desktop) */
+h1 {
+    color: white;
+    text-align: center;
+    padding-top: 5%;
+    padding-bottom: 3%;
+}
+
+.user-settings-page {
+    background-color: #00B7D7;
+    max-width: 50%;
+    margin: auto;
+    margin-top: 1%;
+    min-height: 70vh;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    text-align: center;
+}
+
+.settings-card {
+    background-color: white;
+    max-width: 90%;
+    margin: auto;
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    min-height: 40vh;
+}
+
+/* Deep selectors for Blazor components (inputs/validations) */
+::deep input.email-input {
+    margin-left: 10%;
+}
+
+::deep input.password-input {
+    margin-left: 5%;
+}
+
+::deep .email-validation {
+    margin-right: 35%;
+}
+
+::deep .password-validation {
+    position: absolute;
+    top: 100%;
+    left: 2%;
+    width: 100%;
+    color: red;
+    font-size: 0.9rem;
+    flex-direction: column;
+    gap: 5%;
+}
+
+.email-modal {
+    display: flex;
+    margin-top: 20%;
+    gap: 5%;
+}
+
+.password-modal {
+    display: flex;
+    gap: 5%;
+}
+
+.email-group {
+    display: flex;
+    gap: 3%;
+}
+
+.password-group {
+    display: flex;
+    gap: 3%;
+}
+
+.input-wrapper {
+    display: inline-block;
+    position: relative;
+    margin-top: 4%;
+}
+
+.email-container,
+.password-container {
+    display: flex;
+    align-items: center;
+    width: 70%;
+}
+
+.email-string {
+    margin-top: 10%;
+    margin-left: 2%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a;
+}
+
+.password-string {
+    margin-top: 4%;
+    margin-left: 2%;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #4a4a4a;
+}
+
+.password-value {
+    margin: 3% 3%;
+}
+
+.email-value {
+    margin: 9% 3%;
+}
+
+.password-button,
+.email-button {
+    background-color: #0073C6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    width: 40%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+    margin-top: 8%;
+}
+
+.MA-button {
+    background-color: #0073C6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    width: 20%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+}
+
+/* Mobile Overrides */
+@media (max-width: 768px) {
+    /* Increase container width for mobile devices */
+    .user-settings-page {
+        max-width: 90%;
+        padding: 10px;
+        margin-top: 5%;
+    }
+
+    /* Make the settings card take full width */
+    .settings-card {
+        max-width: 100%;
+        margin: 10px auto;
+    }
+
+    /* Stack input containers and center text */
+    .email-container,
+    .password-container {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Adjust deep selectors for mobile so the inputs don't have excessive left margin */
+    ::deep input.email-input,
+    ::deep input.password-input {
+        width: 90%;
+        margin-left: 5%;
+    }
+
+    /* Reduce validation message margins and font sizes */
+    ::deep .email-validation,
+    ::deep .password-validation {
+        margin-right: 5%;
+        font-size: 0.85rem;
+        position: relative;
+        top: auto;
+        left: auto;
+    }
+
+    /* Change the layout of modals to column (stacked) */
+    .email-modal,
+    .password-modal {
+        flex-direction: column;
+        align-items: center;
+        margin-top: 10%;
+    }
+
+    /* Stack groups so buttons and inputs appear one on top of the other */
+    .email-group,
+    .password-group {
+        flex-direction: column;
+        gap: 5%;
+        width: 100%;
+        align-items: center;
+    }
+
+    /* Remove excessive left margins from text strings */
+    .email-string,
+    .password-string {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    /* Scale down buttons for mobile */
+    .password-button,
+    .email-button,
+    .MA-button {
+        width: 80%;
+        font-size: 0.9rem;
+        padding: 8px 0;
+    }
+
+    /* Adjust modal input wrapper */
+    .input-wrapper {
+        margin-top: 4%;
+        width: 100%;
+    }
 }
