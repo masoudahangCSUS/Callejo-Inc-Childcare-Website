@@ -12,5 +12,8 @@ namespace Common.Services.DailySchedule
         APIResponse InsertDailySchedule(DailyScheduleView dailyScheduleView);
         ListDailySchedule GetDailyScheduleById(long id);
         ListDailySchedule GetDailyScheduleByDate(DateOnly date);
+        APIResponse UpdateDailySchedule(DailyScheduleView dailyScheduleView);
+        APIResponse DeleteDailySchedule(long id);
+        ListDailySchedule GetAllDailySchedules();
     }
 }

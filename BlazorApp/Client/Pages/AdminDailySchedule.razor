@@ -2,6 +2,8 @@
 @using Common.View
 @using Syncfusion.Blazor.Calendars
 @using BlazorApp.Client.Services
+@using MudBlazor
+@* @inject IJSRuntime JSRuntime *@
 @inject DailyScheduleService DailyScheduleService 
 
  @rendermode InteractiveServer
@@ -27,6 +29,51 @@
     </div>
 </div>
 
+@* <link href="custom.css" rel="stylesheet" />
+<div>
+    <h1>MudBlazor DataGrid Example</h1>
+    <MudTable Items="@listDailySchedule.dailySchedules" Hover="true" Sortable="true" Filterable="true" Class="custom-table">
+        <ToolBarContent>
+            <MudTextField @bind-Value="newScheduleEntry.Description" Label="New Schedule Description" />
+            <MudButton OnClick="AddDailySchedule">Add Daily Schedule</MudButton>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Id</MudTh>
+            <MudTh>Description</MudTh>
+            <MudTh>Description Special</MudTh>
+            <MudTh>Date Created</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd Class="mud-table-cell">@context.Id</MudTd>
+            <MudTd Class="mud-table-cell">
+                @if (context.IsEditing)
+                {
+                    <MudTextField @bind-Value="context.Description" />
+                    <MudTextField @bind-Value="context.Desc_special" />
+                }
+                else
+                {
+                    @context.Description
+                    @context.Desc_special
+                }
+            </MudTd>
+            <MudTd Class="mud-table-cell">
+                @if (context.IsEditing)
+                {
+                    <MudButton OnClick="@(() => SaveSchedule(context))">Save</MudButton>
+                    <MudButton OnClick="@(() => CancelEdit(context))">Cancel</MudButton>
+                }
+                else
+                {
+                    <MudButton OnClick="@(() => EditSchedule(context))">Edit</MudButton>
+                    @* <MudButton OnClick="@(() => ConfirmDelete(context.Id))">Delete</MudButton>
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+
+</div> *@
+
 
 @code {
     public DateTime? SelectedDate { get; set; } = DateTime.Now;
@@ -39,10 +86,15 @@
     private long dailyScheduleIdCurrentlyBeingEdited;
 
 
-    private Common.View.ListDailySchedule listDailySchedule;
+    private Common.View.ListDailySchedule listDailySchedule = new ListDailySchedule { dailySchedules = new List<DailyScheduleView>() };
     private Common.View.DailyScheduleView dailySchedule;
     private string newDailySchedule;
     private string specialEvents;
+
+    private Common.View.DailyScheduleView newScheduleEntry = new();
+    private string editedDesc = string.Empty;
+    private string editedDescSpecial = string.Empty;
+
 
     private async Task AddDailySchedule()
     {
@@ -65,7 +117,45 @@
             specialEvents = string.Empty;
             SelectedDate = DateTime.Now;
             displayedText = inputText;
+
+            listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
         }
+    }
+
+    private async Task EditSchedule(DailyScheduleView dailySchedule)
+    {
+        dailySchedule.IsEditing = true;
+    }
+    private async Task SaveSchedule(DailyScheduleView dailySchedule)
+    {
+        var response = await DailyScheduleService.UpdateDailySchedule(dailySchedule, editedDesc, editedDescSpecial);
+        if (response.Success)
+        {
+            listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
+        }
+    }
+
+    // private async Task ConfirmDelete(long id)
+    // {
+    //     bool confirmed = await JSRuntime.InvokeAsync<bool>("confirmDelete", new object[] { });
+    //     if (confirmed)
+    //     {
+    //         await DeleteDailySchedule(id);
+    //     }
+    // }
+
+    private async Task DeleteDailySchedule(long id)
+    {
+        var response = await DailyScheduleService.DeleteDailySchedule(id);
+        if (response.Success)
+        {
+            listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
+        }
+    }
+
+    private void CancelEdit(DailyScheduleView dailySchedule)
+    {
+        dailySchedule.IsEditing = false;
     }
 
 

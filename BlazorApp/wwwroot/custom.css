@@ -1,0 +1,9 @@
+﻿.custom-table .mud-table-container {
+    border-collapse: separate;
+    border-spacing: 5px;
+}
+
+.custom-table .mud-table-cell {
+    border: 1px solid #ccc;
+    padding: 5px;
+}
