@@ -16,6 +16,7 @@ using CallejoIncChildcareAPI.Filters;
 using Microsoft.OpenApi.Models;
 using Common.Services.Expenses;
 using Common.Services.Invoice;
+using MudBlazor.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,8 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddMudServices();
 
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("ApiSettings"));
 
@@ -58,6 +61,7 @@ builder.Services.AddScoped<ProfileService>();
 builder.Services.AddScoped<ISubmitService, SubmitService>();
 builder.Services.AddScoped<IExpenseService, ExpenseService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddHttpClient();
 
 builder.Services.AddSyncfusionBlazor(); // Adds Syncfusion Blazor Service
 Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1NMaF5cXmBCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdmWX1cdnZVRGRfUUFwWUE="); //Register Syncfusion license

@@ -27,6 +27,7 @@
 
         <h3>Special Events</h3>
         <p>@SelectedValueDescSpecial</p>
+        <p>@emptyMessageSpecial</p>
         <span>Selected Day : @SelectedValue</span>
     </div>
 </div>
@@ -53,12 +54,20 @@
         var SelectedDay = SelectedDate.Value.Day;
         var SelectedYear = SelectedDate.Value.Year;
         SelectedValueDesc = string.Empty;
+        emptyMessage = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
+        emptyMessageSpecial = "No special events planned";
 
         if (args.Value.Value.Month == SelectedMonth && args.Value.Value.Day == SelectedDay && args.Value.Value.Year == SelectedYear)
         {
+            ListDailySchedule response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate.Value);
+            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
+            lines = Array.Empty<string>();
+            SelectedValueDescSpecial = string.Empty;
+
             if(SelectedDate != null)
             {
-                ListDailySchedule response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate.Value);
+                emptyMessage = string.Empty;
+                emptyMessageSpecial = string.Empty;                
                 if (response.Success == true && response.dailySchedules[0].Description != null)
                 {
                     SelectedValueDesc = response.dailySchedules[0].Description;
