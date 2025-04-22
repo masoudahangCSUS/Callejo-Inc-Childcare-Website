@@ -6,7 +6,6 @@
         public string Description { get; set; }
         public string?  Desc_special { get; set; }
         public DateOnly? CreatedAt { get; set; }
-        public bool IsEditing { get; set; } = false;
     }
     public class ListDailySchedule : APIResponse
     {

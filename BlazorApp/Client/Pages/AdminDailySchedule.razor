@@ -122,10 +122,10 @@
         }
     }
 
-    private async Task EditSchedule(DailyScheduleView dailySchedule)
-    {
-        dailySchedule.IsEditing = true;
-    }
+    // private async Task EditSchedule(DailyScheduleView dailySchedule)
+    // {
+    //     dailySchedule.IsEditing = true;
+    // }
     private async Task SaveSchedule(DailyScheduleView dailySchedule)
     {
         var response = await DailyScheduleService.UpdateDailySchedule(dailySchedule, editedDesc, editedDescSpecial);
@@ -153,10 +153,10 @@
         }
     }
 
-    private void CancelEdit(DailyScheduleView dailySchedule)
-    {
-        dailySchedule.IsEditing = false;
-    }
+    // private void CancelEdit(DailyScheduleView dailySchedule)
+    // {
+    //     dailySchedule.IsEditing = false;
+    // }
 
 
     private void OnChange(ChangedEventArgs<DateTime?> args)

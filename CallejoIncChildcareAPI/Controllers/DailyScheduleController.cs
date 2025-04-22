@@ -57,7 +57,7 @@ namespace CallejoIncChildcareAPI.Controllers
             return BadRequest(result);
         }
 
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpGet]
         public ActionResult<ListDailySchedule> GetAllDailySchedules()
         {
@@ -65,7 +65,12 @@ namespace CallejoIncChildcareAPI.Controllers
             //{
             //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
             //}
+
             var result = _dailyScheduleService.GetAllDailySchedules();
+            if (result == null || !result.Success)
+            {
+                return BadRequest(result);
+            }
             return Ok(result);
         }
 
