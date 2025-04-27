@@ -24,6 +24,10 @@ namespace CallejoIncChildcareAPI.Controllers
         public async Task<IActionResult> GetChildrenCount()
         {
             int count = await _expenseService.GetChildrenCountAsync();
+            if (count < 0)
+            {
+                return BadRequest();
+            }
             return Ok(count); // count is a simple int, easily serializable
         }
 
@@ -31,6 +35,10 @@ namespace CallejoIncChildcareAPI.Controllers
         public async Task<IActionResult> GetTotalExpenses()
         {
             var total = await _expenseService.GetTotalExpensesAsync();
+            if (total < 0)
+            {
+                return BadRequest();
+            }
             return Ok(total);
         }
 
@@ -80,10 +88,15 @@ namespace CallejoIncChildcareAPI.Controllers
             };
 
             var createdExpense = await _expenseService.CreateExpenseAsync(expenseDto);
+            if (createdExpense == null)
+            {
+                return BadRequest("Failed to create expense");
+            }
 
-            return CreatedAtAction(nameof(UploadExpense), new {id =  createdExpense.Id}, createdExpense);
+            return Ok(createdExpense);
         }
 
+        // DELETE: api/Expenses/Delete
         [HttpDelete("Delete")]
         public async Task<IActionResult> DeleteExpense(int id)
         {
@@ -91,12 +104,13 @@ namespace CallejoIncChildcareAPI.Controllers
 
             if (!deleted)
             {
-                return NotFound($"Expense with ID {id} not found."); // HTTP 404 -- not found
+                return BadRequest($"Expense with ID {id} not found.");
             }
 
-            return NoContent(); // HTTP 204 -- deletion successful
+            return Ok(true);
         }
 
+        // PUT: api/Expenses/Edit
         [HttpPut("Edit")]
         public async Task<IActionResult> EditExpense(
             int id,
@@ -138,12 +152,13 @@ namespace CallejoIncChildcareAPI.Controllers
 
             if (!success)
             {
-                return NotFound($"Expense with ID {id} not found"); // HTTP 404 -- not found
+                return BadRequest($"Expense with ID {id} not found");
             }
 
-            return NoContent(); // HTTP 204 -- edit successful
+            return Ok(true);
         }
 
+        // GET: api/Expenses/Download
         [HttpGet("Download Receipt")]
         public async Task<IActionResult> DownloadFile(int id)
         {
@@ -164,6 +179,10 @@ namespace CallejoIncChildcareAPI.Controllers
         public async Task<ActionResult<List<ExpenseDTO>>> GetAllExpenses()
         {
             var expenses = await _expenseService.GetAllExpensesAsync();
+            if (expenses == null)
+            {
+                return BadRequest();
+            }
             return Ok(expenses);
         }
     }
