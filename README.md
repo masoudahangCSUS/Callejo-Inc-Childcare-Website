@@ -47,60 +47,6 @@ Personalized Customer Page:
   <img src="customer_page.png" alt="customer_page" style="width: 500px;">
 </p>
 
-## Timeline and Milestones
-### Sprint 1
-- Development and Planning
-
-### Sprint 2
-- Public Side: Create website landing pages that parents looking for childcare can navigate to
-
-### Sprint 3
-- Public Side: Create login page for parents whose children are enrolled in childcare, employees of the childcare, along with the owner/operator of the childcare
-- Set up forgotten password structure
-- Align edit profile page with client's needs
-- Public Side: Please create necessary SQL tables to store interested parents
-- Update placeholder text for Mission page
-
-### Sprint 4
-- Database Development: Form Control, API Integration, Data Retrieval
-- Parents Side: Create UI and Database for the Enrolled Children Page
-- Parents Side: Ability to upload registration paperwork to childcare owner/operator
-- Refactor website to fix scaling issue
-- Update placeholder text for rest of the landing pages
-- Public Side: Contact Page Functionality
-- Parents Side: Create UI for Parent Profile Page and Link it to Edit Profile page
-
-### Sprint 5
-- Public Side: Provide a mechanism to inform childcare operator/owner when parents register their interest in enrolling their kids.
-- Parents Side: Provide functionality that displays notes and communications from the childcare provider/owner.
-- Parents Side: Ability to view pictures and activities posted by childcare operator.
-- Parents Side: Provide a way for parents to send a note to the childcare provider or owner (e.g., “My child is sick and will be absent”).
-- Owners Side: Share pictures, plans, and activities with parents regarding their children in the daycare.
-
-### Sprint 6
-- Parents Side: Need the ability to view daily schedules entered by childcare operator.
-- Parents Side: Need to be able to view observed holidays and childcare operators' paid vacations.
-- Parents Side: Need to provide some type of acknowledgment mechanism when paperwork is received through the website.
-- Owners Side: Functionality providing a roster of children enrolled in childcare.
-- Owners Side: Ability to file registration paperwork by parent and child.
-
-### Sprint 7
-- Owners Side: Ability to provide paperwork to prospective parents.
-- Owners Side: Create a data entry form so that parents and children in childcare can be entered into the system.
-- Owners Side: Add/remove registration paperwork as needed.
-- Owners Side: Need the ability to enter daily schedules for parents to view.
-- Owners Side: Need the ability to enter observed holidays and paid vacation dates.
-
-### Sprint 8
-- Owners Side: Need the ability to enter business expenses and upload receipts.
-- Owners Side: Need accounts receivable payment feature.
-- Owners Side: Accounts receivable report feature.
-- Parents Side: Backend integration for enrolled children management.
-
-### Sprint 9
-- Owners Side: Need the ability to upload and make available required information pamphlets for registration paperwork.
-- Deployment: Provide a landing environment for the website.
-
 ## Testing
 *Placeholder for testing details to be filled in CSC 191.*
 
