@@ -3,11 +3,11 @@
 ------------------------------ */
 h3 {
     text-align: center;
-    font-size: 96px; /* Increased title size for prominence */
+    font-size: 48px; /* Increased title size for prominence */
     font-weight: bold;
     color: #333;
-    margin-top: 100px; /* More space above the title */
-    margin-bottom: 100px; /* Extra space below the title (between the title and table) */
+    margin-top: 60px; /* More space above the title */
+    margin-bottom: 15px; /* Extra space below the title (between the title and table) */
 }
 
 /* -----------------------------
