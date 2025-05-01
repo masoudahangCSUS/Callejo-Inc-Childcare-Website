@@ -134,7 +134,7 @@ namespace CallejoIncChildcareAPI.Tests
         }
 
         [Fact]
-        public async Task GetChildrenCount_ReturnsBadRequest_WhenZero()
+        public async Task GetChildrenCount_ReturnsBadRequest_WhenBelowZero()
         {
             // Arrange
             var mockService = new Mock<IExpenseService>();

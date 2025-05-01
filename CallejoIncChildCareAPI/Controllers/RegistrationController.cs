@@ -2,6 +2,7 @@
 using Common.Services.Registration;
 using Common.View;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Common.Models.Data;
 using System.Collections.Generic;
 
@@ -14,11 +15,23 @@ namespace CallejoIncChildcareAPI.Controllers
     {
         private IRegService _regService;
         private static List<Registration> reg = new List<Registration>();
+        private readonly List<Registration> _fakeRegistrations; // For testing purposes -- do not delete
 
         public RegistrationController(IRegService regService)
         {
             _regService = regService;
         }
+
+        /*
+        // Testing constructor -- Only uncomment this block when running tests
+        [ActivatorUtilitiesConstructor]
+        public RegistrationController(IRegService regService, List<Registration>? fakeRegistrations = null)
+        {
+            _regService = regService;
+            _fakeRegistrations = fakeRegistrations ?? new List<Registration>();
+            reg = fakeRegistrations;
+        }
+        */
 
         //POST: api/Registration/Upload
         [HttpPost("Upload")]
@@ -53,7 +66,15 @@ namespace CallejoIncChildcareAPI.Controllers
             byte[] fileBytes = memoryStream.ToArray();
 
             // Save file
-            var result = await _regService.UploadFileAsync(userId, fileBytes, fileType, fileSize);
+            bool result;
+            try
+            {
+                result = await _regService.UploadFileAsync(userId, fileBytes, fileType, fileSize);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "File upload failed.");
+            }
 
             if (!result)
             {
@@ -121,7 +142,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpGet("status/{userId}")]
         public async Task<IActionResult> GetRegistrationStatus(Guid userId)
         {
-            var registration = reg.FirstOrDefault(r => r.UserId == userId);
+            var registration = (_fakeRegistrations ?? reg).FirstOrDefault(r => r.UserId == userId);
             if (registration == null)
                 return NotFound("No registration found for this user.");
 
@@ -141,7 +162,7 @@ namespace CallejoIncChildcareAPI.Controllers
         [HttpPost("updateStatus")]
         public ActionResult UpdateRegistrationStatus([FromBody] Registration request)
         {
-            var registration = reg.FirstOrDefault(r => r.Id == request.UserId);
+            var registration = reg.FirstOrDefault(r => r.UserId == request.UserId);
             if (registration == null)
             {
                 return NotFound("Registration not found.");
