@@ -27,7 +27,6 @@ public partial class CallejoSystemDbContext : DbContext
 
     public virtual DbSet<FileUpload> FileUploads { get; set; }
 
-
     public virtual DbSet<HolidaysVacation> HolidaysVacations { get; set; }
 
     public virtual DbSet<Image> Images { get; set; }
@@ -67,6 +66,7 @@ public partial class CallejoSystemDbContext : DbContext
                 .HasMaxLength(512)
                 .IsUnicode(false)
                 .HasColumnName("address");
+            entity.Property(e => e.AuthenticationGuid).HasColumnName("authenticationGuid");
             entity.Property(e => e.City)
                 .HasMaxLength(512)
                 .IsUnicode(false)
@@ -80,6 +80,10 @@ public partial class CallejoSystemDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("first_name");
             entity.Property(e => e.FkRole).HasColumnName("fk_role");
+            entity.Property(e => e.LastLogin)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime")
+                .HasColumnName("lastLogin");
             entity.Property(e => e.LastName)
                 .HasMaxLength(512)
                 .IsUnicode(false)
@@ -225,23 +229,20 @@ public partial class CallejoSystemDbContext : DbContext
 
         modelBuilder.Entity<Image>(entity =>
         {
-            entity.ToTable("Images");
+            entity.HasKey(e => e.Id).HasName("PK__Images__3213E83F8C33DC9C");
+
             entity.Property(e => e.Id).HasColumnName("id");
-            entity.Property(e => e.FileName)
-                .HasMaxLength(255)
-                .IsUnicode(false)
-                .HasColumnName("file_name");
-
+            entity.Property(e => e.ImageUrl)
+                .HasMaxLength(1024)
+                .HasColumnName("image_url");
             entity.Property(e => e.IsPublished)
-                .HasColumnName("is_published")
-                .HasDefaultValue(false);
-
+                .HasDefaultValue(false)
+                .HasColumnName("is_published");
             entity.Property(e => e.UploadedAt)
-                .HasColumnName("uploaded_at")
+                .HasDefaultValueSql("(getutcdate())")
                 .HasColumnType("datetime")
-                .HasDefaultValueSql("GETUTCDATE()");
+                .HasColumnName("uploaded_at");
         });
-
 
         modelBuilder.Entity<InterestedParent>(entity =>
         {

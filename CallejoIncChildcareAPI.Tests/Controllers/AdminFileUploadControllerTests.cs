@@ -9,6 +9,7 @@ using Common.Models.Data;
 using System.Collections.Generic;
 using CallejoIncChildcareAPI.Controllers;
 using Microsoft.EntityFrameworkCore;
+using Common.View;
 
 namespace CallejoIncChildcareAPI.Tests
 {
