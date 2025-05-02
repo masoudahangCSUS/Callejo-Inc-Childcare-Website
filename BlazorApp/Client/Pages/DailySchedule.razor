@@ -56,11 +56,14 @@
         SelectedValueDesc = string.Empty;
         emptyMessage = "Nothing planned on " + this.SelectedDate?.ToString("M/d/yyyy");
         emptyMessageSpecial = "No special events planned";
+        this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
+        lines = Array.Empty<string>();
+        SelectedValueDescSpecial = string.Empty;
 
         if (args.Value.Value.Month == SelectedMonth && args.Value.Value.Day == SelectedDay && args.Value.Value.Year == SelectedYear)
         {
             ListDailySchedule response = await DailyScheduleService.GetDailyScheduleByDate(SelectedDate.Value);
-            this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
+            //this.SelectedValue = this.SelectedDate?.ToString("M/d/yyyy");
             lines = Array.Empty<string>();
             SelectedValueDescSpecial = string.Empty;
 
