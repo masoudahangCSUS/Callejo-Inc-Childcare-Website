@@ -3,52 +3,51 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Json;
-using System.Text;
 using System.Threading.Tasks;
-using static System.Net.WebRequestMethods;
 
 namespace Common.Services.Submit
 {
     public class SubmitService : ISubmitService
     {
-        private readonly HttpClient _http;
+        private readonly CallejoSystemDbContext _context;
 
-        public SubmitService(HttpClient http)
+        public SubmitService(CallejoSystemDbContext context)
         {
-            _http = http;
+            _context = context;
         }
 
-        // Submit an inquiry via API
+        // Add a new inquiry
         public async Task AddInquiryAsync(InterestedParent inquiry)
         {
-            await _http.PostAsJsonAsync("https://localhost:7139/api/Submit/submit", inquiry);
+            if (inquiry == null)
+                throw new ArgumentNullException(nameof(inquiry));
+
+            // Ensure ID and Datetime are set
+            inquiry.Id = inquiry.Id == Guid.Empty ? Guid.NewGuid() : inquiry.Id;
+            inquiry.Datetime ??= DateTime.UtcNow;
+
+            _context.InterestedParents.Add(inquiry);
+            await _context.SaveChangesAsync();
         }
 
-        // Fetch inquiries from the API
+        // Get all inquiries, sorted by Datetime descending
         public async Task<List<InterestedParent>> GetInquiryAsync()
         {
-            return await _http.GetFromJsonAsync<List<InterestedParent>>("https://localhost:7139/api/Submit/data");
+            return await _context.InterestedParents
+                                 .OrderByDescending(i => i.Datetime)
+                                 .ToListAsync();
         }
 
-        // Delete an inquiry via API
+        // Delete an inquiry by ID
         public async Task<bool> DeleteInquiryAsync(Guid id)
         {
-            try
-            {
-                var response = await _http.DeleteAsync($"api/Submit/delete/{id}");
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine($"Failed to delete inquiry: {error}");
-                }
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Exception in DeleteInquiryAsync: {ex.Message}");
+            var inquiry = await _context.InterestedParents.FindAsync(id);
+            if (inquiry == null)
                 return false;
-            }
+
+            _context.InterestedParents.Remove(inquiry);
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

@@ -42,7 +42,7 @@
                 <div class="form-group">
                     <label for="reason">Reason for Inquiry</label>
                     <textarea id="reason" rows="5" @bind="inquiry.ReasonForInquiry" class="form-control"></textarea>
-                    
+
                 </div>
 
                 <div class="button-group">
@@ -80,6 +80,7 @@
         try
         {
             inquiry.guid = Guid.NewGuid();
+            inquiry.Datetime = DateTime.UtcNow;
             var response = await Http.PostAsJsonAsync("https://localhost:7139/api/Submit/submit", inquiry);
             Console.WriteLine($"Response Status Code: {(int)response.StatusCode} - {response.StatusCode}");
             if (response.IsSuccessStatusCode)
@@ -110,6 +111,7 @@
         public string Email { get; set; }
         public string ReasonForInquiry { get; set; }
         public string Phone { get; set; }
+        public DateTime? Datetime{ get; set; }
 
     }
     private bool showText = true;

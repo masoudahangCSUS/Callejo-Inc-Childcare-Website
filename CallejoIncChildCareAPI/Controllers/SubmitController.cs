@@ -1,61 +1,69 @@
 ﻿using Common.Models.Data;
-using Common.Services.User;
+using Common.Services.Submit;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
 using System;
+using System.Threading.Tasks;
+
 namespace CallejoIncChildcareAPI.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class SubmitController : ControllerBase
     {
-        // DB Context declaration
-        private readonly CallejoSystemDbContext _context;
+        private readonly ISubmitService _submitService;
 
-        // Inject DB context in the constructor for DB access
-        public SubmitController(CallejoSystemDbContext context)
+        public SubmitController(ISubmitService submitService)
         {
-            _context = context;
+            _submitService = submitService;
         }
 
-
-        // Post Form Data to DB
+        // POST: api/Submit/submit
         [HttpPost("submit")]
         public async Task<IActionResult> SubmitForm([FromBody] InterestedParent inquiry)
         {
-            _context.InterestedParents.Add(inquiry);
-            await _context.SaveChangesAsync();
-            return Ok(inquiry);
+            try
+            {
+                await _submitService.AddInquiryAsync(inquiry);
+                return Ok(inquiry);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error submitting inquiry: {ex.Message}");
+            }
         }
 
-        // Retrieve data from DB
+        // GET: api/Submit/data
         [HttpGet("data")]
         public async Task<IActionResult> GetFormData()
         {
-            var data = await _context.InterestedParents  
-                .OrderByDescending(i => i.Datetime)
-                .ToListAsync();
-
-            return Ok(data);
+            try
+            {
+                var data = await _submitService.GetInquiryAsync();
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error retrieving inquiries: {ex.Message}");
+            }
         }
+
         // DELETE: api/Submit/delete/{id}
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> DeleteInquiry(Guid id)
         {
-            var inquiry = await _context.InterestedParents.FindAsync(id);
-
-            if (inquiry == null)
+            try
             {
-                return NotFound("Inquiry not found.");
+                var success = await _submitService.DeleteInquiryAsync(id);
+                if (!success)
+                {
+                    return NotFound("Inquiry not found or could not be deleted.");
+                }
+                return Ok("Inquiry deleted successfully.");
             }
-
-            _context.InterestedParents.Remove(inquiry);
-            await _context.SaveChangesAsync();
-
-            return Ok("Inquiry deleted successfully.");
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Error deleting inquiry: {ex.Message}");
+            }
         }
-
     }
 }
