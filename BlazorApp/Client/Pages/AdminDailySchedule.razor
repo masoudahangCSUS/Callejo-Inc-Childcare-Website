@@ -26,54 +26,9 @@
         <textarea type="text" @bind="specialEvents" class="form-control" rows="5" cols="50"></textarea>
         <br />
         <button @onclick="AddDailySchedule" class="btn btn-primary">Submit</button>
+        <p>@emptyMessage</p>
     </div>
 </div>
-
-@* <link href="custom.css" rel="stylesheet" />
-<div>
-    <h1>MudBlazor DataGrid Example</h1>
-    <MudTable Items="@listDailySchedule.dailySchedules" Hover="true" Sortable="true" Filterable="true" Class="custom-table">
-        <ToolBarContent>
-            <MudTextField @bind-Value="newScheduleEntry.Description" Label="New Schedule Description" />
-            <MudButton OnClick="AddDailySchedule">Add Daily Schedule</MudButton>
-        </ToolBarContent>
-        <HeaderContent>
-            <MudTh>Id</MudTh>
-            <MudTh>Description</MudTh>
-            <MudTh>Description Special</MudTh>
-            <MudTh>Date Created</MudTh>
-        </HeaderContent>
-        <RowTemplate>
-            <MudTd Class="mud-table-cell">@context.Id</MudTd>
-            <MudTd Class="mud-table-cell">
-                @if (context.IsEditing)
-                {
-                    <MudTextField @bind-Value="context.Description" />
-                    <MudTextField @bind-Value="context.Desc_special" />
-                }
-                else
-                {
-                    @context.Description
-                    @context.Desc_special
-                }
-            </MudTd>
-            <MudTd Class="mud-table-cell">
-                @if (context.IsEditing)
-                {
-                    <MudButton OnClick="@(() => SaveSchedule(context))">Save</MudButton>
-                    <MudButton OnClick="@(() => CancelEdit(context))">Cancel</MudButton>
-                }
-                else
-                {
-                    <MudButton OnClick="@(() => EditSchedule(context))">Edit</MudButton>
-                    @* <MudButton OnClick="@(() => ConfirmDelete(context.Id))">Delete</MudButton>
-                }
-            </MudTd>
-        </RowTemplate>
-    </MudTable>
-
-</div> *@
-
 
 @code {
     public DateTime? SelectedDate { get; set; } = DateTime.Now;
@@ -90,6 +45,7 @@
     private Common.View.DailyScheduleView dailySchedule;
     private string newDailySchedule;
     private string specialEvents;
+    private string emptyMessage = string.Empty;
 
     private Common.View.DailyScheduleView newScheduleEntry = new();
     private string editedDesc = string.Empty;
@@ -103,22 +59,30 @@
 
         DateOnly selectedDate = DateOnly.FromDateTime(SelectedDate.Value);
 
-        DailyScheduleView dailyScheduleInfo = new DailyScheduleView
-            {
-                Description = newDailySchedule,
-                CreatedAt = selectedDate,
-                Desc_special = specialEvents
-            };
-        var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
-
-        if (response.Success)
+        if (string.IsNullOrWhiteSpace(newDailySchedule) && string.IsNullOrWhiteSpace(specialEvents))
         {
-            newDailySchedule = string.Empty;
-            specialEvents = string.Empty;
-            SelectedDate = DateTime.Now;
-            displayedText = inputText;
+            emptyMessage = "Cannot submit an empty schedule";
+            return; // Do not submit if both fields are empty
+        }
+        else
+        {
+            DailyScheduleView dailyScheduleInfo = new DailyScheduleView
+                {
+                    Description = newDailySchedule,
+                    CreatedAt = selectedDate,
+                    Desc_special = specialEvents
+                };
+            var response = await DailyScheduleService.InsertDailySchedule(dailyScheduleInfo);
+            if (response.Success)
+            {
+                newDailySchedule = string.Empty;
+                specialEvents = string.Empty;
+                SelectedDate = DateTime.Now;
+                displayedText = inputText;
+                emptyMessage = string.Empty;
 
-            listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
+                listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
+            }
         }
     }
 
@@ -134,15 +98,6 @@
             listDailySchedule = await DailyScheduleService.GetAllDailySchedules();
         }
     }
-
-    // private async Task ConfirmDelete(long id)
-    // {
-    //     bool confirmed = await JSRuntime.InvokeAsync<bool>("confirmDelete", new object[] { });
-    //     if (confirmed)
-    //     {
-    //         await DeleteDailySchedule(id);
-    //     }
-    // }
 
     private async Task DeleteDailySchedule(long id)
     {
