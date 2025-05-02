@@ -91,41 +91,5 @@ namespace CallejoIncChildcareAPI.Controllers
             }
             return BadRequest(result);
         }
-
-        // PUT: 
-        //[AuthorizeAttribute()]
-        [HttpPut]
-        public ActionResult<APIResponse> UpdateDailySchedule([FromBody] DailyScheduleView dailyScheduleView)
-        {
-            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            //{
-            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            //}
-
-            var result = _dailyScheduleService.UpdateDailySchedule(dailyScheduleView);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
-
-        //DELETE:
-        //[AuthorizeAttribute()]
-        [HttpDelete("{id}")]
-        public ActionResult<APIResponse> DeleteDailySchedule(long id)
-        {
-            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            //{
-            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            //}
-
-            var result = _dailyScheduleService.DeleteDailySchedule(id);
-            if (result.Success)
-            {
-                return Ok(result);
-            }
-            return BadRequest(result);
-        }
     }
 }
