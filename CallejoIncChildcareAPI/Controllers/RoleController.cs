@@ -24,27 +24,27 @@ namespace CallejoIncChildcareAPI.Controllers
 
 
         // GET: api/Role
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpGet]
         public ActionResult<ListRoles> GetAllRoles()
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
             var result = _roleService.GetAllRoles();
             return Ok(result);
         }
 
         // GET: api/Role/{id}
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpGet("{id}")]
         public ActionResult<ListRoles> GetRole(long id)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
 
             var result = _roleService.GetRole(id);
             if (result.Success)
@@ -55,14 +55,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // POST: api/Role
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpPost]
         public ActionResult<APIResponse> InsertRole([FromBody] RoleView roleInfo)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
 
             var result = _roleService.InsertRole(roleInfo);
             if (result.Success)
@@ -73,14 +73,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // PUT: api/Role/{id}
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpPut]
         public ActionResult<APIResponse> UpdateRole([FromBody] RoleView roleInfo)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
 
             var result = _roleService.UpdateRole(roleInfo);
             if (result.Success)
@@ -91,14 +91,14 @@ namespace CallejoIncChildcareAPI.Controllers
         }
 
         // DELETE: api/Role/{id}
-        [AuthorizeAttribute()]
+        //[AuthorizeAttribute()]
         [HttpDelete("{id}")]
         public ActionResult<APIResponse> DeleteRole(long id)
         {
-            if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
-            {
-                return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
-            }
+            //if (!_loginService.IsUserAuthenticated(AuthorizeAction.UserName, AuthorizeAction.AuthorizationToken))
+            //{
+            //    return Unauthorized(new APIResponse { Success = false, Message = "User is not authenticated." });
+            //}
 
             var result = _roleService.DeleteRole(id);
             if (result.Success)

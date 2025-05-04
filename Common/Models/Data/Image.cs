@@ -7,9 +7,9 @@ public partial class Image
 {
     public int Id { get; set; }
 
-    public string FileName { get; set; }
+    public string ImageUrl { get; set; } = null!;
 
-    public bool IsPublished { get; set; } = false;
+    public bool? IsPublished { get; set; }
 
-    public DateTime? UploadedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? UploadedAt { get; set; }
 }
