@@ -5,11 +5,11 @@
 </p>
 
 ## Project Synopsis
-The Callejo Inc. Childcare Website is an ongoing senior project being developed by Tech Squad, a team of Computer Science students at California State University, Sacramento. Running from Fall 2024 to Spring 2025, this project aims to support Jane Callejo’s family-owned childcare business by creating a user-friendly and effective website.
+The Callejo Inc. Childcare Website is a complete senior project developed by Tech Squad, a team of Computer Science students at California State University, Sacramento. Spanning from Fall 2024 to Spring 2025, this project was created to support the daily operations of Jane Callejo’s family-owned childcare business.
 
-Our goal is to make daily operations at Callejo Inc. smoother and more efficient. Right now, tasks like managing child rosters, scheduling staff, and keeping track of business expenses are done manually, which takes time and can lead to mistakes. By building this website, we hope to centralize these processes, making them easier to manage and reducing the chance for errors. This will ultimately save time for the staff and allow them to focus more on what really matters—caring for the children.
+Prior to this system, key processes such as managing child rosters, and tracking business expenses were done manually, leading to inefficiencies and the potential for errors. Our team developed a centralized, user-friendly web application to streamline these operations, reduce administrative workload, and improve record accuracy.
 
-We’re also focusing on making communication with parents easier and clearer. The website will provide timely updates and notifications so parents stay informed and connected. Through these features, we aim to create a reliable and organized system that supports the childcare center’s operations and builds trust with families. We're currently in the process of developing the website and are committed to delivering a tool that meets the needs of both the business and the parents it serves.
+Additionally, the platform enhances communication with parents by providing timely updates and notifications. By delivering a secure, responsive, and role-based interface for both parents and administrators, our system improves operational transparency and helps staff stay focused on providing quality childcare.
 
 ## Key Features
 - **Feature 1**: User Experience
@@ -48,33 +48,13 @@ Personalized Customer Page:
 </p>
 
 ## Testing
-*Placeholder for testing details to be filled in CSC 191.*
+To ensure reliability and maintainability, our team implemented unit tests for the main API controllers using the xUnit testing framework and Moq for mocking dependencies. Located in the CallejoIncChildcareAPI.Tests/Controllers directory, there are several tests that the team created. To run these tests, simply right click one of the tests and click "Run Test".
 
 ## Deployment
 *Placeholder for deployment steps and considerations to be completed in CSC 191.*
 
 ## Developer Instructions
 *Placeholder for developer setup instructions including dependencies, installation, and configuration steps to be completed in CSC 191.*
-
-## Future Enhancements
-
-### 1. Expense Tracking and Reporting
-- **Expense Tracking**: Add a feature in the admin panel for the childcare operator to log and manage business expenses.
-- **Receipt Management**: Allow the operator to upload receipts for better financial tracking.
-- **Expense Reporting**: Generate detailed reports (daily, weekly, and monthly) summarizing expenses.
-
-### 2. Email Notification System
-- Modularize our email system to allow childcare operators to send updates or notifications to parents and guardians:
-  - Automated thank-you emails with attached paperwork for parents expressing interest in enrolling their children.
-  - Customizable email templates for sending important announcements or reminders.
-
-### 3. Authentication, Authorization, and State Management
-- Introduce an authentication and authorization system to manage user roles (e.g., admin, parent, staff) and dynamically change website content based on the logged-in state and user role.
-- Implement state management to maintain user sessions and improve user experience.
-
-### 4. Enhanced Admin Panel
-- Provide functionality in the admin panel to allow the operator to:
-  - Add, remove, or update registration paperwork for parents and guardians.
 
 ## Contributors
 **Team Tech Squad**
