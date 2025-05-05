@@ -5,7 +5,7 @@
 </p>
 
 ## Project Synopsis
-The Callejo Inc. Childcare Website is a complete senior project developed by Tech Squad, a team of Computer Science students at California State University, Sacramento. Spanning from Fall 2024 to Spring 2025, this project was created to support the daily operations of Jane Callejo’s family-owned childcare business.
+The Callejo Inc. Childcare Website is a completed senior project developed by Tech Squad, a team of Computer Science students at California State University, Sacramento. Spanning from Fall 2024 to Spring 2025, this project was created to support the daily operations of Jane Callejo’s family-owned childcare business.
 
 Prior to this system, key processes such as managing child rosters, and tracking business expenses were done manually, leading to inefficiencies and the potential for errors. Our team developed a centralized, user-friendly web application to streamline these operations, reduce administrative workload, and improve record accuracy.
 
@@ -36,7 +36,7 @@ The software engineering team developed a comprehensive web application involvin
   <img src="childcare_ERD.png" alt="ERD" style="width: 600px;">
 </p>
 
-### Prototype Images
+### Images of Website
 Welcome Page: 
 <p align="left">
   <img src="visitors_page.png" alt="visitors_page" style="width: 500px;">
@@ -47,8 +47,16 @@ Personalized Customer Page:
   <img src="customer_page.png" alt="customer_page" style="width: 500px;">
 </p>
 
+Admin Portal Page: 
+<p align="left">
+  <img src="admin_portal.png" alt="admin_portal" style="width: 500px;">
+</p>
+
 ## Testing
 To ensure reliability and maintainability, our team implemented unit tests for the main API controllers using the xUnit testing framework and Moq for mocking dependencies. Located in the CallejoIncChildcareAPI.Tests/Controllers directory, there are several tests that the team created. To run these tests, simply right click one of the tests and click "Run Test".
+<p align="left">
+  <img src="tests.png" alt="tests" style="width: 500px;">
+</p>
 
 ## Deployment
 *Placeholder for deployment steps and considerations to be completed in CSC 191.*
