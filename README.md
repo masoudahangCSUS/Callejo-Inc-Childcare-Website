@@ -73,7 +73,7 @@ git clone https://github.com/masoudahangCSUS/Callejo-Inc-Childcare-Website.git
 4. Download the Database backup file located on the GitHub repo
 5. Open SQL Server and restore the database using the backup file
 <p align="left">
-  <img src="tests.png" alt="restore DB" style="width: 500px;">
+  <img src="RestoreDB.png" alt="restore DB" style="width: 200px;">
 </p>
 6. Open the repository on Visual Studio
 7. Open the NuGet Package Manager Console <br>
@@ -88,7 +88,7 @@ Scaffold-DbContext "Server=.;Database=Callejo_System_DB;Trusted_Connection=True;
    b. Creating a new startup item by right-clicking the BlazorApp solution and then setting up multiple startup projects in properties <br>
       (Solution 'BlazorApp'--> Properties) <br>
 <p align="left">
-  <img src="tests.png" alt="run project" style="width: 500px;">
+  <img src="RunProject.png" alt="run project" style="width: 600px;">
 </p>
 <br>
 For more information, check out our maintinence manual 
