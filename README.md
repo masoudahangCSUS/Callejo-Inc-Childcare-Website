@@ -59,10 +59,39 @@ To ensure reliability and maintainability, our team implemented unit tests for t
 </p>
 
 ## Deployment
-*Placeholder for deployment steps and considerations to be completed in CSC 191.*
+Depolyment is handled via Hostek. This is handled by the client and Callejo Inc. business, however, and so our team does not handle deployment. Refer to Developer Instructions for running locally. <br>
+Currently deployed website: https://childcareprotools.com/
 
 ## Developer Instructions
-*Placeholder for developer setup instructions including dependencies, installation, and configuration steps to be completed in CSC 191.*
+To run this application, it will require 
+1. Set up Visual Studio 2022: https://visualstudio.microsoft.com/downloads/
+2. Set up SQL Server 2022 Developer: https://www.microsoft.com/en-us/sql-server/sql-server-downloads
+3. Clone the repository
+```
+git clone https://github.com/masoudahangCSUS/Callejo-Inc-Childcare-Website.git
+```
+4. Download the Database backup file located on the GitHub repo
+5. Open SQL Server and restore the database using the backup file
+<p align="left">
+  <img src="tests.png" alt="restore DB" style="width: 500px;">
+</p>
+6. Open the repository on Visual Studio
+7. Open the NuGet Package Manager Console <br>
+   (Tools --> NuGet Package Manager --> Package Manager Console)
+8. Run the following command in the Console to sync the Database and API: 
+```
+Scaffold-DbContext "Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir "Models/Data" -Project "Common" -f
+```
+9. Run the project via one of two methods: <br>
+   a. Executing the API at the top and then right-clicking the BlazorApp project on the Solution Explorer and starting a new instance of the project <br>
+      (BlazorApp --> Debug --> Start New Instance) <br>
+   b. Creating a new startup item by right-clicking the BlazorApp solution and then setting up multiple startup projects in properties <br>
+      (Solution 'BlazorApp'--> Properties) <br>
+<p align="left">
+  <img src="tests.png" alt="run project" style="width: 500px;">
+</p>
+<br>
+For more information, check out our maintinence manual 
 
 ## Contributors
 **Team Tech Squad**
