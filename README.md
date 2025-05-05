@@ -67,9 +67,11 @@ To run this application, it will require
 1. Set up Visual Studio 2022: https://visualstudio.microsoft.com/downloads/
 2. Set up SQL Server 2022 Developer: https://www.microsoft.com/en-us/sql-server/sql-server-downloads
 3. Clone the repository
+
 ```
 git clone https://github.com/masoudahangCSUS/Callejo-Inc-Childcare-Website.git
 ```
+
 4. Download the Database backup file located on the GitHub repo
 5. Open SQL Server and restore the database using the backup file
 <p align="left">
@@ -79,10 +81,12 @@ git clone https://github.com/masoudahangCSUS/Callejo-Inc-Childcare-Website.git
 7. Open the NuGet Package Manager Console <br>
    (Tools --> NuGet Package Manager --> Package Manager Console)
 8. Run the following command in the Console to sync the Database and API: 
+
 ```
 Scaffold-DbContext "Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir "Models/Data" -Project "Common" -f
 ```
-9. Run the project via one of two methods: <br>
+
+9. Run the project via one of two methods: 
    a. Executing the API at the top and then right-clicking the BlazorApp project on the Solution Explorer and starting a new instance of the project <br>
       (BlazorApp --> Debug --> Start New Instance) <br>
    b. Creating a new startup item by right-clicking the BlazorApp solution and then setting up multiple startup projects in properties <br>
