@@ -61,6 +61,9 @@ To ensure reliability and maintainability, our team implemented unit tests for t
 ## Deployment
 Depolyment is handled via Hostek. This is handled by the client and Callejo Inc. business, however, and so our team does not handle deployment. Refer to Developer Instructions for running locally. <br>
 Currently deployed website: https://childcareprotools.com/
+<p align="left">
+  <img src="DeployedWebsite.png" alt="website" style="width: 600px;">
+</p>
 
 ## Developer Instructions
 To run this application, it will require 
@@ -77,15 +80,14 @@ git clone https://github.com/masoudahangCSUS/Callejo-Inc-Childcare-Website.git
 <p align="left">
   <img src="RestoreDB.png" alt="restore DB" style="width: 200px;">
 </p>
-6. Open the repository on Visual Studio
+6. Open the repository on Visual Studio <br>
 7. Open the NuGet Package Manager Console <br>
-   (Tools --> NuGet Package Manager --> Package Manager Console)
-8. Run the following command in the Console to sync the Database and API: 
+   (Tools --> NuGet Package Manager --> Package Manager Console) <br>
+8. Run the following command in the Console to sync the Database and API: <br>
 
 ```
 Scaffold-DbContext "Server=.;Database=Callejo_System_DB;Trusted_Connection=True;TrustServerCertificate=True" Microsoft.EntityFrameworkCore.SqlServer -OutputDir "Models/Data" -Project "Common" -f
 ```
-
 9. Run the project via one of two methods: 
    a. Executing the API at the top and then right-clicking the BlazorApp project on the Solution Explorer and starting a new instance of the project <br>
       (BlazorApp --> Debug --> Start New Instance) <br>
